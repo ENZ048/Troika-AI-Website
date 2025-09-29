@@ -5,7 +5,7 @@ import styled from "styled-components";
 const DeviceFrame = styled.div`
   position: relative;
   width: 100%;
-  max-width: 500px; /* Clean chat width */
+  max-width: 450px; /* Clean chat width */
   margin: 5px auto; /* Center the frame on all screen sizes */
   padding: 0; /* No padding needed */
   border-radius: 30px; /* Adjusted for slimmer profile */
@@ -71,12 +71,12 @@ const DeviceFrame = styled.div`
 
   /* Enhanced mobile breakpoints */
   @media (max-width: 1200px) {
-    max-width: 500px;
+    max-width: 450px;
     border-radius: 34px;
   }
 
   @media (max-width: 1024px) {
-    max-width: 500px;
+    max-width: 450px;
     border-radius: 32px;
   }
 
