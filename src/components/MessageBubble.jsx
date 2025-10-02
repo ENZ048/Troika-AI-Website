@@ -6,10 +6,10 @@ import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 
 const MessageWrapper = styled.div`
   display: flex !important;
-  align-items: flex-end !important;
+  flex-direction: column !important;
+  align-items: ${(props) => (props.$isUser ? "flex-end" : "flex-start")} !important;
   position: relative;
   margin: 0.5rem 0;
-  justify-content: ${(props) => (props.$isUser ? "flex-end" : "flex-start")} !important;
   padding: ${(props) => (props.$isUser ? "0 16px 0 0" : "0 0 0 16px")};
   overflow: visible;
   width: 100% !important;
@@ -18,7 +18,7 @@ const MessageWrapper = styled.div`
   ${(props) => props.$isUser && `
     margin-left: auto !important;
     margin-right: 0 !important;
-    justify-content: flex-end !important;
+    align-items: flex-end !important;
   `}
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints */
