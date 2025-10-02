@@ -5,16 +5,6 @@ import ReactMarkdown from "react-markdown";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 
 const MessageWrapper = styled.div`
-<<<<<<< HEAD
-  display: flex;
-  flex-direction: column;
-  align-items: ${(props) => (props.$isUser ? "flex-end" : "flex-start")};
-  position: relative;
-  margin: 0.5rem 0;
-  padding: ${(props) => (props.$isUser ? "0 16px 0 0" : "0 0 0 16px")};
-  overflow: visible;
-  width: 100%;
-=======
   display: flex !important;
   align-items: flex-end !important;
   position: relative;
@@ -30,7 +20,6 @@ const MessageWrapper = styled.div`
     margin-right: 0 !important;
     justify-content: flex-end !important;
   `}
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints */
   @media (max-width: 1200px) {
@@ -109,11 +98,7 @@ const MessageBubble = styled.div`
   white-space: pre-wrap;
   hyphens: none;
   word-break: normal;
-<<<<<<< HEAD
-  max-width: ${(props) => (props.$isUser ? "90%" : "80%")};
-=======
   max-width: ${(props) => (props.$isUser ? "75%" : "80%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
   position: relative;
   margin: 0.25rem 0;
   width: fit-content;
@@ -136,31 +121,21 @@ const MessageBubble = styled.div`
       ? `
     background: #000;
     color: #fff;
-<<<<<<< HEAD
-=======
     align-self: flex-end !important;
     text-align: right !important;
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
   `
       : `
     background: #f8f9fa;
     color: #000;
-<<<<<<< HEAD
-=======
     align-self: flex-start !important;
     text-align: left !important;
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
   `}
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints with improved font scaling */
   @media (max-width: 1200px) {
     padding: 0.76rem 1rem; /* Increased by 5% from 0.72rem 0.95rem */
     font-size: 1.19rem; /* Increased by additional 10% from 1.08rem for better readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "79%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "79%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 17px;
     line-height: 1.45;
   }
@@ -168,11 +143,7 @@ const MessageBubble = styled.div`
   @media (max-width: 1024px) {
     padding: 0.74rem 0.95rem; /* Increased by 5% from 0.7rem 0.9rem */
     font-size: 1.17rem; /* Increased by additional 10% from 1.06rem for better readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "78%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "78%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 16px;
     line-height: 1.42;
   }
@@ -180,11 +151,7 @@ const MessageBubble = styled.div`
   @media (max-width: 900px) {
     padding: 0.71rem 0.92rem; /* Increased by 5% from 0.68rem 0.88rem */
     font-size: 1.13rem; /* Increased by additional 10% from 1.03rem for better mobile readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "79%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "79%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 15.5px;
     line-height: 1.4;
   }
@@ -192,11 +159,7 @@ const MessageBubble = styled.div`
   @media (max-width: 768px) {
     padding: 0.68rem 0.89rem; /* Increased by 5% from 0.65rem 0.85rem */
     font-size: 1.11rem; /* Increased by additional 10% from 1.01rem for maintained readability on tablets */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "80%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "80%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 15px;
     margin: 0.4rem 0;
     line-height: 1.38;
@@ -205,11 +168,7 @@ const MessageBubble = styled.div`
   @media (max-width: 640px) {
     padding: 0.63rem 0.84rem; /* Increased by 5% from 0.6rem 0.8rem */
     font-size: 1.07rem; /* Increased by additional 10% from 0.97rem for good mobile readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "82%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "82%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 14px;
     margin: 0.35rem 0;
     line-height: 1.35;
@@ -218,11 +177,7 @@ const MessageBubble = styled.div`
   @media (max-width: 600px) {
     padding: 0.61rem 0.82rem; /* Increased by 5% from 0.58rem 0.78rem */
     font-size: 1.05rem; /* Increased by additional 10% from 0.95rem for small screens */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "83%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "83%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 13.5px;
     margin: 0.32rem 0;
     line-height: 1.33;
@@ -231,11 +186,7 @@ const MessageBubble = styled.div`
   @media (max-width: 480px) {
     padding: 0.58rem 0.79rem; /* Increased by 5% from 0.55rem 0.75rem */
     font-size: 1.09rem; /* Increased by additional 10% from 0.99rem for better mobile readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "85%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "85%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 13px;
     margin: 0.3rem 0;
     line-height: 1.32;
@@ -244,11 +195,7 @@ const MessageBubble = styled.div`
   @media (max-width: 414px) {
     padding: 0.55rem 0.76rem; /* Increased by 5% from 0.52rem 0.72rem */
     font-size: 1.07rem; /* Increased by additional 10% from 0.97rem for iPhone readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "86%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "86%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 12.5px;
     margin: 0.28rem 0;
     line-height: 1.3;
@@ -257,11 +204,7 @@ const MessageBubble = styled.div`
   @media (max-width: 390px) {
     padding: 0.53rem 0.74rem; /* Increased by 5% from 0.5rem 0.7rem */
     font-size: 1.05rem; /* Increased by additional 10% from 0.95rem for small phone optimization */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "87%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "87%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 12px;
     margin: 0.26rem 0;
     line-height: 1.28;
@@ -270,11 +213,7 @@ const MessageBubble = styled.div`
   @media (max-width: 375px) {
     padding: 0.5rem 0.71rem; /* Increased by 5% from 0.48rem 0.68rem */
     font-size: 1.01rem; /* Increased by additional 10% from 0.92rem for iPhone SE readability */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "87.5%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "87.5%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 11.5px;
     margin: 0.24rem 0;
     line-height: 1.26;
@@ -283,11 +222,7 @@ const MessageBubble = styled.div`
   @media (max-width: 360px) {
     padding: 0.53rem 0.74rem; /* Increased by 5% from 0.5rem 0.7rem */
     font-size: 0.99rem; /* Increased by additional 10% from 0.9rem for very small screens */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "88%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "88%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 12px;
     margin: 0.25rem 0;
     line-height: 1.25;
@@ -296,11 +231,7 @@ const MessageBubble = styled.div`
   @media (max-width: 320px) {
     padding: 0.47rem 0.68rem; /* Increased by 5% from 0.45rem 0.65rem */
     font-size: 0.97rem; /* Increased by additional 10% from 0.88rem for minimum readable size */
-<<<<<<< HEAD
-    max-width: ${(props) => (props.$isUser ? "90%" : "90%")};
-=======
     max-width: ${(props) => (props.$isUser ? "75%" : "90%")};
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
     border-radius: 10px;
     margin: 0.2rem 0;
     line-height: 1.22;
@@ -460,7 +391,6 @@ const MessageBubbleComponent = ({
   setAnimatedMessageIdx
 }) => {
   return (
-<<<<<<< HEAD
     <MessageWrapper $isUser={isUser}>
       <MessageBubble $isUser={isUser}>
         {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
@@ -539,107 +469,6 @@ const MessageBubbleComponent = ({
         </Timestamp>
       </MessageActions>
     </MessageWrapper>
-=======
-    <div style={{ 
-      width: '100%',
-      margin: '0.5rem 0',
-      padding: isUser ? '0 16px 0 0' : '0 0 0 16px',
-      display: 'flex',
-      justifyContent: isUser ? 'flex-end' : 'flex-start'
-    }}>
-      <div style={{ 
-        maxWidth: isUser ? '75%' : '90%',
-        width: 'fit-content'
-      }}>
-        <MessageBubble $isUser={isUser} style={{ 
-          alignSelf: isUser ? 'flex-end' : 'flex-start',
-          textAlign: 'left',
-          marginLeft: isUser ? 'auto' : '0'
-        }}>
-          {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
-          {!isUser &&
-          index === chatHistoryLength - 1 &&
-          !isTyping &&
-          animatedMessageIdx !== index ? (
-            <TypewriterMarkdown
-              text={message.text}
-              onComplete={() => setAnimatedMessageIdx(index)}
-              speed={15}
-            />
-          ) : (
-            <div style={{ textAlign: 'left' }}>
-            <ReactMarkdown
-              components={{
-                a: ({ node, ...props }) => (
-                  <a
-                    {...props}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      padding: "0",
-                      color: "#1e90ff",
-                      textDecoration: "none",
-                      transition: "all 0.2s ease-in-out",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.textDecoration =
-                        "underline";
-                      e.target.style.color = "#0f62fe";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.textDecoration = "none";
-                      e.target.style.color = "#1e90ff";
-                    }}
-                  />
-                ),
-                p: ({ node, ...props }) => (
-                  <p
-                    style={{ 
-                      margin: "0", 
-                      padding: "0",
-                      textAlign: "left"
-                    }}
-                    {...props}
-                  />
-                ),
-              }}
-            >
-              {message.text}
-            </ReactMarkdown>
-            </div>
-          )}
-        </MessageBubble>
-
-        <MessageActions $isUser={isUser}>
-          {!isUser && message.audio && (
-            <PlayButton
-              onClick={() => {
-                console.log(`Play button clicked for message ${index}, audio data:`, message.audio);
-                playAudio(message.audio, index);
-              }}
-              disabled={isTyping}
-              title={currentlyPlaying === index ? "Stop audio" : "Play audio"}
-            >
-              {currentlyPlaying === index ? (
-                <FaStopCircle />
-              ) : (
-                <FaVolumeUp />
-              )}
-            </PlayButton>
-          )}
-          <Timestamp>
-            {message.timestamp ? message.timestamp.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }) : new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Timestamp>
-        </MessageActions>
-      </div>
-    </div>
->>>>>>> 5c07f446a3b3a8ea9bc6719ef67cfce141369d9a
   );
 };
 
