@@ -17,20 +17,14 @@ const GlobalStyle = createGlobalStyle`
       scroll-behavior: smooth;
       /* Better touch scrolling on iOS */
       -webkit-overflow-scrolling: touch;
+      /* Ensure background covers full viewport on mobile */
+      background: url('/new-bg.svg') center/cover no-repeat fixed, #3a3a3a;
+      min-height: 100vh;
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center center;
     }
 
-    /* Keyframes for the animated background */
-    @keyframes gradient-flow {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
 
     body {
       margin: 0;
@@ -44,20 +38,12 @@ const GlobalStyle = createGlobalStyle`
       text-rendering: optimizeLegibility;
       /* Prevent horizontal scroll */
       max-width: 100vw;
-      /* Very bright glass-like gradient background inspired by logo color scheme */
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(0, 204, 204, 0.35) 0%, transparent 70%),
-        radial-gradient(circle at 80% 20%, rgba(128, 0, 255, 0.32) 0%, transparent 70%),
-        radial-gradient(circle at 40% 40%, rgba(0, 179, 179, 0.28) 0%, transparent 70%),
-        radial-gradient(circle at 60% 60%, rgba(102, 0, 204, 0.25) 0%, transparent 60%),
-        radial-gradient(circle at 10% 10%, rgba(0, 153, 153, 0.20) 0%, transparent 50%),
-        linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 25%, #3e3e3e 50%, #4d4d4d 75%, #3f3f3f 100%);
+      /* Use the new-bg.svg as background */
+      background: url('/new-bg.svg') center/cover no-repeat fixed, #3a3a3a;
       min-height: 100vh;
-      backdrop-filter: blur(1px);
-
-      /* ✨ Added animation properties */
-      background-size: 200% 200%; /* Make the background larger than the viewport */
-      animation: gradient-flow 25s ease infinite; /* Apply the animation */
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center center;
     }
 
     /* Prevent zoom on input focus for mobile */
@@ -205,7 +191,30 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   
-  /* Enhanced mobile responsive adjustments - Comprehensive breakpoints */
+    /* Mobile background optimization */
+    @media (max-width: 768px) {
+      html, body {
+        background: url('/new-bg.svg') center/cover no-repeat fixed, #3a3a3a;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+        height: 100vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      html, body {
+        background: url('/new-bg.svg') center/cover no-repeat fixed, #3a3a3a;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+        height: 100vh;
+      }
+    }
+
+    /* Enhanced mobile responsive adjustments - Comprehensive breakpoints */
   @media (max-width: 1200px) {
     .cosmic-circle {
       width: 190px;

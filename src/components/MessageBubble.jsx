@@ -5,13 +5,21 @@ import ReactMarkdown from "react-markdown";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 
 const MessageWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
+  display: flex !important;
+  align-items: flex-end !important;
   position: relative;
   margin: 0.5rem 0;
-  justify-content: ${(props) => (props.$isUser ? "flex-end" : "flex-start")};
+  justify-content: ${(props) => (props.$isUser ? "flex-end" : "flex-start")} !important;
   padding: ${(props) => (props.$isUser ? "0 16px 0 0" : "0 0 0 16px")};
   overflow: visible;
+  width: 100% !important;
+  
+  /* Force right alignment for user messages */
+  ${(props) => props.$isUser && `
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    justify-content: flex-end !important;
+  `}
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints */
   @media (max-width: 1200px) {
@@ -90,7 +98,7 @@ const MessageBubble = styled.div`
   white-space: pre-wrap;
   hyphens: none;
   word-break: normal;
-  max-width: ${(props) => (props.$isUser ? "100%" : "80%")};
+  max-width: ${(props) => (props.$isUser ? "75%" : "80%")};
   position: relative;
   margin: 0.25rem 0;
   width: fit-content;
@@ -113,19 +121,21 @@ const MessageBubble = styled.div`
       ? `
     background: #000;
     color: #fff;
-    align-self: flex-end;
+    align-self: flex-end !important;
+    text-align: right !important;
   `
       : `
     background: #f8f9fa;
     color: #000;
-    align-self: flex-start;
+    align-self: flex-start !important;
+    text-align: left !important;
   `}
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints with improved font scaling */
   @media (max-width: 1200px) {
     padding: 0.76rem 1rem; /* Increased by 5% from 0.72rem 0.95rem */
     font-size: 1.19rem; /* Increased by additional 10% from 1.08rem for better readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "79%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "79%")};
     border-radius: 17px;
     line-height: 1.45;
   }
@@ -133,7 +143,7 @@ const MessageBubble = styled.div`
   @media (max-width: 1024px) {
     padding: 0.74rem 0.95rem; /* Increased by 5% from 0.7rem 0.9rem */
     font-size: 1.17rem; /* Increased by additional 10% from 1.06rem for better readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "78%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "78%")};
     border-radius: 16px;
     line-height: 1.42;
   }
@@ -141,7 +151,7 @@ const MessageBubble = styled.div`
   @media (max-width: 900px) {
     padding: 0.71rem 0.92rem; /* Increased by 5% from 0.68rem 0.88rem */
     font-size: 1.13rem; /* Increased by additional 10% from 1.03rem for better mobile readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "79%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "79%")};
     border-radius: 15.5px;
     line-height: 1.4;
   }
@@ -149,7 +159,7 @@ const MessageBubble = styled.div`
   @media (max-width: 768px) {
     padding: 0.68rem 0.89rem; /* Increased by 5% from 0.65rem 0.85rem */
     font-size: 1.11rem; /* Increased by additional 10% from 1.01rem for maintained readability on tablets */
-    max-width: ${(props) => (props.$isUser ? "100%" : "80%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "80%")};
     border-radius: 15px;
     margin: 0.4rem 0;
     line-height: 1.38;
@@ -158,7 +168,7 @@ const MessageBubble = styled.div`
   @media (max-width: 640px) {
     padding: 0.63rem 0.84rem; /* Increased by 5% from 0.6rem 0.8rem */
     font-size: 1.07rem; /* Increased by additional 10% from 0.97rem for good mobile readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "82%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "82%")};
     border-radius: 14px;
     margin: 0.35rem 0;
     line-height: 1.35;
@@ -167,7 +177,7 @@ const MessageBubble = styled.div`
   @media (max-width: 600px) {
     padding: 0.61rem 0.82rem; /* Increased by 5% from 0.58rem 0.78rem */
     font-size: 1.05rem; /* Increased by additional 10% from 0.95rem for small screens */
-    max-width: ${(props) => (props.$isUser ? "100%" : "83%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "83%")};
     border-radius: 13.5px;
     margin: 0.32rem 0;
     line-height: 1.33;
@@ -176,7 +186,7 @@ const MessageBubble = styled.div`
   @media (max-width: 480px) {
     padding: 0.58rem 0.79rem; /* Increased by 5% from 0.55rem 0.75rem */
     font-size: 1.09rem; /* Increased by additional 10% from 0.99rem for better mobile readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "85%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "85%")};
     border-radius: 13px;
     margin: 0.3rem 0;
     line-height: 1.32;
@@ -185,7 +195,7 @@ const MessageBubble = styled.div`
   @media (max-width: 414px) {
     padding: 0.55rem 0.76rem; /* Increased by 5% from 0.52rem 0.72rem */
     font-size: 1.07rem; /* Increased by additional 10% from 0.97rem for iPhone readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "86%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "86%")};
     border-radius: 12.5px;
     margin: 0.28rem 0;
     line-height: 1.3;
@@ -194,7 +204,7 @@ const MessageBubble = styled.div`
   @media (max-width: 390px) {
     padding: 0.53rem 0.74rem; /* Increased by 5% from 0.5rem 0.7rem */
     font-size: 1.05rem; /* Increased by additional 10% from 0.95rem for small phone optimization */
-    max-width: ${(props) => (props.$isUser ? "100%" : "87%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "87%")};
     border-radius: 12px;
     margin: 0.26rem 0;
     line-height: 1.28;
@@ -203,7 +213,7 @@ const MessageBubble = styled.div`
   @media (max-width: 375px) {
     padding: 0.5rem 0.71rem; /* Increased by 5% from 0.48rem 0.68rem */
     font-size: 1.01rem; /* Increased by additional 10% from 0.92rem for iPhone SE readability */
-    max-width: ${(props) => (props.$isUser ? "100%" : "87.5%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "87.5%")};
     border-radius: 11.5px;
     margin: 0.24rem 0;
     line-height: 1.26;
@@ -212,7 +222,7 @@ const MessageBubble = styled.div`
   @media (max-width: 360px) {
     padding: 0.53rem 0.74rem; /* Increased by 5% from 0.5rem 0.7rem */
     font-size: 0.99rem; /* Increased by additional 10% from 0.9rem for very small screens */
-    max-width: ${(props) => (props.$isUser ? "100%" : "88%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "88%")};
     border-radius: 12px;
     margin: 0.25rem 0;
     line-height: 1.25;
@@ -221,7 +231,7 @@ const MessageBubble = styled.div`
   @media (max-width: 320px) {
     padding: 0.47rem 0.68rem; /* Increased by 5% from 0.45rem 0.65rem */
     font-size: 0.97rem; /* Increased by additional 10% from 0.88rem for minimum readable size */
-    max-width: ${(props) => (props.$isUser ? "100%" : "90%")};
+    max-width: ${(props) => (props.$isUser ? "75%" : "90%")};
     border-radius: 10px;
     margin: 0.2rem 0;
     line-height: 1.22;
@@ -381,9 +391,22 @@ const MessageBubbleComponent = ({
   setAnimatedMessageIdx
 }) => {
   return (
-    <MessageWrapper $isUser={isUser}>
-      <div>
-        <MessageBubble $isUser={isUser}>
+    <div style={{ 
+      width: '100%',
+      margin: '0.5rem 0',
+      padding: isUser ? '0 16px 0 0' : '0 0 0 16px',
+      display: 'flex',
+      justifyContent: isUser ? 'flex-end' : 'flex-start'
+    }}>
+      <div style={{ 
+        maxWidth: isUser ? '75%' : '90%',
+        width: 'fit-content'
+      }}>
+        <MessageBubble $isUser={isUser} style={{ 
+          alignSelf: isUser ? 'flex-end' : 'flex-start',
+          textAlign: 'left',
+          marginLeft: isUser ? 'auto' : '0'
+        }}>
           {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
           {!isUser &&
           index === chatHistoryLength - 1 &&
@@ -395,6 +418,7 @@ const MessageBubbleComponent = ({
               speed={15}
             />
           ) : (
+            <div style={{ textAlign: 'left' }}>
             <ReactMarkdown
               components={{
                 a: ({ node, ...props }) => (
@@ -421,7 +445,11 @@ const MessageBubbleComponent = ({
                 ),
                 p: ({ node, ...props }) => (
                   <p
-                    style={{ margin: "0", padding: "0" }}
+                    style={{ 
+                      margin: "0", 
+                      padding: "0",
+                      textAlign: "left"
+                    }}
                     {...props}
                   />
                 ),
@@ -429,6 +457,7 @@ const MessageBubbleComponent = ({
             >
               {message.text}
             </ReactMarkdown>
+            </div>
           )}
         </MessageBubble>
 
@@ -460,7 +489,7 @@ const MessageBubbleComponent = ({
           </Timestamp>
         </MessageActions>
       </div>
-    </MessageWrapper>
+    </div>
   );
 };
 

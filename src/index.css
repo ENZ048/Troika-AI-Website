@@ -1,3 +1,8 @@
+html {
+  background: url('/new-bg.svg') center/cover no-repeat fixed;
+  min-height: 100vh;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -5,9 +10,6 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #8b5cf6 50%, #06b6d4 75%, #3b82f6 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,17 +17,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 
 a {
   font-weight: 500;
@@ -43,7 +34,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   height: 100vh;
-  background: inherit;
+  background: url('/new-bg.svg') center/cover no-repeat fixed, #667eea;
 }
 
 h1 {
@@ -73,9 +64,6 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 25%, #a5b4fc 50%, #06b6d4 75%, #3b82f6 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
   }
   a:hover {
     color: #747bff;
