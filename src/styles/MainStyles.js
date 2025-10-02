@@ -157,7 +157,6 @@ export const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
   background: transparent;
-  backdrop-filter: blur(12px);
   z-index: 9999;
   display: flex;
   align-items: center;
