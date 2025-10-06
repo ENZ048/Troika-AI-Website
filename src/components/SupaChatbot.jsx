@@ -80,6 +80,10 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [welcomeMessage, setWelcomeMessage] = useState(getTimeBasedGreeting());
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  
+  // Debug logging for production
+  console.log('showWelcome state:', showWelcome);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
   const [hasShownConfetti, setHasShownConfetti] = useState(false);
   // Removed showSuggestions state - no longer needed

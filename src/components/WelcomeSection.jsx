@@ -16,6 +16,11 @@ const WelcomeContainer = styled.div`
   min-height: 0;
   width: 100%;
   max-width: 100%;
+  
+  /* Force visibility in production */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
 
   &::before {
     content: '';
@@ -364,6 +369,11 @@ const SuggestionsContainer = styled.div`
   position: relative;
   z-index: 2;
   margin: 0 auto;
+  
+  /* Force visibility in production */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: grid !important;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -418,6 +428,11 @@ const FeatureTags = styled.div`
   z-index: 2;
   flex-wrap: wrap;
   justify-content: center;
+  
+  /* Force visibility in production */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
