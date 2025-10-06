@@ -335,6 +335,14 @@ export const ChatContainer = styled.div`
   background: transparent;
   width: 100%;
   align-items: stretch;
+  
+  /* Ensure InputArea is always visible and positioned correctly */
+  & > *:last-child {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+    margin-top: auto !important;
+  }
 
   /* Enable scrolling only on smaller devices when in welcome mode */
   ${props => props.$isWelcomeMode && `

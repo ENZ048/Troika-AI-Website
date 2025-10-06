@@ -17,9 +17,23 @@ const InputContainer = styled.div`
   transition: background 0.3s ease, border-top 0.3s ease;
   padding-bottom: 1.5rem;
   z-index: 10;
-  margin-top: auto;
+  margin-top: 0;
   min-height: 120px;
   overflow: visible;
+  
+  /* Force visibility in production */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+  
+  /* Debug background to ensure visibility */
+  background: ${props => props.$isDarkMode ? 'rgba(31, 31, 31, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
+  
+  /* Force positioning */
+  position: sticky !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
 
   @media (max-width: 768px) {
     padding-bottom: 1.25rem;
