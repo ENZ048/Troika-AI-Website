@@ -15,14 +15,19 @@ import ChatHeader from "./ChatHeader";
 import MessageBubbleComponent from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
 import VoiceInputIndicatorComponent from "./VoiceInputIndicator";
+import WelcomeSection from "./WelcomeSection";
+import Confetti from "./Confetti";
 // import InlineAuth from "./InlineAuth";
 // import OtpVerification from "./OtpVerification";
 import InputArea from "./InputArea";
 // Removed SuggestionButtons import - no longer needed
 
 // Import styles
-import { Wrapper, Overlay, Chatbox, ChatContainer, MessagesContainer } from "../styles/MainStyles";
+import { Wrapper, Overlay, AnimatedBlob, Chatbox, ChatContainer, MessagesContainer, MessagesInnerContainer } from "../styles/MainStyles";
 import GlobalStyle from "../styles/GlobalStyles";
+
+// Import theme
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 
 // Import hooks
 import { useBattery } from "../hooks/useBattery";
@@ -34,7 +39,9 @@ import { useVoiceRecording } from "../hooks/useVoiceRecording";
 import { getTimeBasedGreeting } from "../utils/timeUtils";
 import { isMobileDevice, getDeviceInfo, hapticFeedback, debounce } from "../utils/mobileUtils";
 
-const SupaChatbot = ({ chatbotId, apiBase }) => {
+const SupaChatbotInner = ({ chatbotId, apiBase }) => {
+  const { isDarkMode } = useTheme();
+
   // State management
   const [showChat, setShowChat] = useState(true);
   const [phone, setPhone] = useState("9999999999");
@@ -72,6 +79,9 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
   const [ttsGenerationInProgress, setTtsGenerationInProgress] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState(getTimeBasedGreeting());
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [confettiTrigger, setConfettiTrigger] = useState(0);
+  const [hasShownConfetti, setHasShownConfetti] = useState(false);
   // Removed showSuggestions state - no longer needed
   // Removed "I'm interested" functionality
   // const [hasShownInterestResponse, setHasShownInterestResponse] = useState(false);
@@ -823,9 +833,15 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
   // Removed handleSuggestionClick function - no longer needed
 
 
+
   const handleSendMessage = useCallback(
     async (inputText) => {
       console.log('handleSendMessage called with:', { inputText, message, sessionId, verified, needsAuth });
+      
+      // Hide welcome section when user sends a message
+      if (showWelcome) {
+        setShowWelcome(false);
+      }
       
       // Removed auth check for default auth state
       // if (needsAuth && !verified) {
@@ -849,6 +865,12 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
       setChatHistory((prev) => [...prev, userMessage]);
       setMessage("");
       setIsTyping(true);
+
+      // Trigger confetti effect only on first message
+      if (!hasShownConfetti) {
+        setConfettiTrigger(prev => prev + 1);
+        setHasShownConfetti(true);
+      }
 
       // Increment user message count
       console.log('Incrementing user message count, current count:', userMessageCount);
@@ -962,6 +984,28 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
     ]
   );
 
+  const handleSuggestionClick = useCallback((action) => {
+    console.log('Suggestion clicked:', action);
+    setShowWelcome(false);
+    
+    const suggestionMessages = {
+      'pricing': 'What are your pricing plans?',
+      'getting-started': 'How do I get started?',
+      'languages': 'What languages do you support?',
+      'demo': 'I would like to book a demo call'
+    };
+    
+    const message = suggestionMessages[action] || 'Tell me more about this';
+
+    // Trigger confetti only on first interaction
+    if (!hasShownConfetti) {
+      setConfettiTrigger(prev => prev + 1);
+      setHasShownConfetti(true);
+    }
+
+    handleSendMessage(message);
+  }, [handleSendMessage, hasShownConfetti]);
+
   // Voice recording handlers
   const handleMicClick = () => {
     if (!isMobile) {
@@ -1055,20 +1099,28 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
       <GlobalStyle />
 
       {showChat && (
-        <Overlay ref={overlayRef}>
-          <DeviceFrameComponent>
-            <Chatbox ref={chatboxRef}>
-              <ChatHeader
-                currentTime={currentTime}
-                batteryLevel={batteryLevel}
-                isCharging={isCharging}
-                chatbotLogo={chatbotLogo}
-              />
+        <Overlay ref={overlayRef} $isDarkMode={isDarkMode}>
+          <AnimatedBlob $isDarkMode={isDarkMode} />
+          <Chatbox ref={chatboxRef} $isDarkMode={isDarkMode}>
+            <ChatHeader
+              currentTime={currentTime}
+              batteryLevel={batteryLevel}
+              isCharging={isCharging}
+              chatbotLogo={chatbotLogo}
+              isMuted={isMuted}
+              toggleMute={toggleMute}
+            />
 
-              <ChatContainer>
-                <MessagesContainer 
-                  ref={messagesContainerRef}
-                >
+            <ChatContainer $isWelcomeMode={showWelcome}>
+              {showWelcome && (
+                <WelcomeSection onSuggestionClick={handleSuggestionClick} />
+              )}
+              
+              <MessagesContainer 
+                ref={messagesContainerRef}
+                style={{ display: showWelcome ? 'none' : 'flex' }}
+              >
+                <MessagesInnerContainer>
                   {chatHistory.map((msg, idx) => (
                     <MessageBubbleComponent
                       key={idx}
@@ -1086,70 +1138,49 @@ const SupaChatbot = ({ chatbotId, apiBase }) => {
 
                   <TypingIndicator isTyping={isTyping} />
 
-                  {/* Authentication components - commented out for default auth state */}
-                  {/* <InlineAuth
-                    showInlineAuthInput={showInlineAuthInput}
-                    authMethod={authMethod}
-                    email={email}
-                    setEmail={setEmail}
-                    phone={phone}
-                    setPhone={setPhone}
-                    isPhoneValid={isPhoneValid}
-                    setIsPhoneValid={setIsPhoneValid}
-                    handleSendOtp={handleSendOtp}
-                    loadingOtp={loadingOtp}
-                    resendTimeout={resendTimeout}
-                  />
-
-                  <OtpVerification
-                    showOtpInput={showOtpInput}
-                    authMethod={authMethod}
-                    email={email}
-                    phone={phone}
-                    otp={otp}
-                    setOtp={setOtp}
-                    handleVerifyOtp={handleVerifyOtp}
-                    loadingVerify={loadingVerify}
-                    resendTimeout={resendTimeout}
-                    handleSendOtp={handleSendOtp}
-                  /> */}
-
-                  {/* Removed SuggestionButtons component - no longer needed */}
-
                   <div ref={endOfMessagesRef} />
-                </MessagesContainer>
+                </MessagesInnerContainer>
+              </MessagesContainer>
 
-                <VoiceInputIndicatorComponent isRecording={isRecording} />
+              <VoiceInputIndicatorComponent isRecording={isRecording} />
 
-                <InputArea
-                  message={message}
-                  setMessage={setMessage}
-                  handleKeyPress={handleKeyPress}
-                  isTyping={isTyping}
-                  userMessageCount={userMessageCount}
-                  verified={verified}
-                  needsAuth={needsAuth}
-                  isRecording={isRecording}
-                  isMuted={isMuted}
-                  toggleMute={toggleMute}
-                  handleMicClick={handleMicClick}
-                  handleMicTouchStart={handleMicTouchStart}
-                  handleMicTouchEnd={handleMicTouchEnd}
-                  handleMicMouseDown={handleMicMouseDown}
-                  handleMicMouseUp={handleMicMouseUp}
-                  isMobile={isMobile}
-                  handleSendMessage={handleSendMessage}
-                  currentlyPlaying={currentlyPlaying}
-                />
-              </ChatContainer>
-              <div className="gesture-bar" />
-            </Chatbox>
-          </DeviceFrameComponent>
+              <InputArea
+                message={message}
+                setMessage={setMessage}
+                handleKeyPress={handleKeyPress}
+                isTyping={isTyping}
+                userMessageCount={userMessageCount}
+                verified={verified}
+                needsAuth={needsAuth}
+                isRecording={isRecording}
+                handleMicClick={handleMicClick}
+                handleMicTouchStart={handleMicTouchStart}
+                handleMicTouchEnd={handleMicTouchEnd}
+                handleMicMouseDown={handleMicMouseDown}
+                handleMicMouseUp={handleMicMouseUp}
+                isMobile={isMobile}
+                handleSendMessage={handleSendMessage}
+                currentlyPlaying={currentlyPlaying}
+              />
+            </ChatContainer>
+          </Chatbox>
 
           <ToastContainer position="top-center" />
+          <Confetti 
+            trigger={confettiTrigger} 
+            onComplete={() => console.log('Confetti animation completed')}
+          />
         </Overlay>
       )}
     </Wrapper>
+  );
+};
+
+const SupaChatbot = (props) => {
+  return (
+    <ThemeProvider>
+      <SupaChatbotInner {...props} />
+    </ThemeProvider>
   );
 };
 

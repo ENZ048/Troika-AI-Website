@@ -124,7 +124,7 @@ const SuggestionButton = styled.button`
   @media (max-width: 1024px) {
     margin: 10px 0px;
     padding: 11px 18px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     border-radius: 12px;
   }
 

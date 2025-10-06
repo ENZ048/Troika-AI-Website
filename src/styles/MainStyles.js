@@ -156,117 +156,146 @@ export const Overlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: transparent;
+  background: ${props => props.$isDarkMode
+    ? 'linear-gradient(to bottom right, #111827, #1f2937, #111827)'
+    : 'linear-gradient(to bottom right, #e0e7ff, #f0f9ff, #fef3c7)'};
   z-index: 9999;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   padding: 0;
-  overscroll-behavior: contain; /* prevents scroll chaining to host page */
-  touch-action: pan-y; /* keeps vertical scrolling smooth inside */
-  z-index: 2147481000; /* sits above WP sticky headers/admin bar */
-  overflow: visible; /* Ensure buttons are not clipped */
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  z-index: 2147481000;
+  overflow: hidden;
+  transition: background 0.5s ease;
+  position: relative;
 
-  /* Enhanced mobile responsiveness - Comprehensive breakpoints */
+  /* Animated blob backgrounds */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, ${props => props.$isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)'} 0%, transparent 70%);
+    animation: blob 7s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -30%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, ${props => props.$isDarkMode ? 'rgba(236, 72, 153, 0.15)' : 'rgba(236, 72, 153, 0.1)'} 0%, transparent 70%);
+    animation: blob 8s ease-in-out infinite reverse;
+    animation-delay: 2s;
+    pointer-events: none;
+  }
+
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(20px, -50px) scale(1.1);
+    }
+    50% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    75% {
+      transform: translate(20px, 50px) scale(1.05);
+    }
+  }
+
+  /* Enhanced mobile responsiveness - Full screen coverage */
   @media (max-width: 1200px) {
-    align-items: flex-start;
-    padding-top: 20px;
-    padding-left: 15px;
-    padding-right: 15px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 1024px) {
-    align-items: flex-start;
-    padding-top: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 900px) {
-    align-items: flex-start;
-    padding-top: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 768px) {
-    align-items: flex-start;
-    padding-top: 10px;
-    padding-left: 8px;
-    padding-right: 8px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 640px) {
-    align-items: flex-start;
-    padding-top: 8px;
-    padding-left: 6px;
-    padding-right: 6px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 600px) {
-    align-items: flex-start;
-    padding-top: 6px;
-    padding-left: 5px;
-    padding-right: 5px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 480px) {
-    align-items: flex-start;
-    padding-top: 5px;
-    padding-left: 4px;
-    padding-right: 4px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 414px) {
-    align-items: flex-start;
-    padding-top: 4px;
-    padding-left: 3px;
-    padding-right: 3px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 390px) {
-    align-items: flex-start;
-    padding-top: 3px;
-    padding-left: 2px;
-    padding-right: 2px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 375px) {
-    align-items: flex-start;
-    padding-top: 2px;
-    padding-left: 2px;
-    padding-right: 2px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 360px) {
-    align-items: flex-start;
-    padding-top: 2px;
-    padding-left: 2px;
-    padding-right: 2px;
+    align-items: center;
+    padding: 0;
   }
 
   @media (max-width: 320px) {
-    align-items: flex-start;
-    padding-top: 1px;
-    padding-left: 1px;
-    padding-right: 1px;
+    align-items: center;
+    padding: 0;
   }
 
   /* Landscape mobile optimization */
   @media (max-height: 500px) and (orientation: landscape) {
-    align-items: flex-start;
-    padding-top: 2px;
-    padding-left: 5px;
-    padding-right: 5px;
+    align-items: center;
+    padding: 0;
   }
 
   /* Very small landscape screens */
   @media (max-height: 400px) and (orientation: landscape) {
-    align-items: flex-start;
-    padding-top: 1px;
-    padding-left: 3px;
-    padding-right: 3px;
+    align-items: center;
+    padding: 0;
   }
+`;
+
+export const AnimatedBlob = styled.div`
+  position: absolute;
+  bottom: -8%;
+  left: 40%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, ${props => props.$isDarkMode ? 'rgba(120, 219, 255, 0.15)' : 'rgba(120, 219, 255, 0.1)'} 0%, transparent 70%);
+  animation: blob 10s ease-in-out infinite;
+  animation-delay: 4s;
+  pointer-events: none;
+  z-index: 1;
 `;
 
 export const Chatbox = styled.div`
@@ -277,157 +306,22 @@ export const Chatbox = styled.div`
   opacity: 0;
   animation: slideUp 0.5s ease-out forwards;
   width: 100%;
-  max-width: 820px;
-  height: 96vh;
-  max-height: 96vh;
+  height: 100vh;
   position: relative;
+  display: flex;
+  flex-direction: column;
 
-  /* Enhanced responsive breakpoints - Comprehensive mobile coverage */
-  @media (max-width: 1200px) {
-    width: 100%;
-    max-width: 430px;
-    height: 96vh;
-    max-height: 96vh;
-  }
 
-  @media (max-width: 1024px) {
-    width: 100%;
-    max-width: 430px;
-    height: 95vh;
-    max-height: 95vh;
-  }
-
-  @media (max-width: 900px) {
-    width: 96%;
-    max-width: 96%;
-    height: 94vh;
-    max-height: 94vh;
-  }
-
-  @media (max-width: 768px) {
-    width: 95%;
-    max-width: 95%;
-    height: 95vh;
-    max-height: 95vh;
-  }
-
-  @media (max-width: 640px) {
-    width: 96%;
-    max-width: 96%;
-    height: 90vh;
-    max-height: 90vh;
-  }
-
-  @media (max-width: 600px) {
-    width: 97%;
-    max-width: 97%;
-    height: 88vh;
-    max-height: 88vh;
-  }
-
-  @media (max-width: 480px) {
-    width: 98%;
-    max-width: 98%;
-    height: 85vh;
-    max-height: 85vh;
-  }
-
-  @media (max-width: 414px) {
-    width: 98.5%;
-    max-width: 98.5%;
-    height: 84vh;
-    max-height: 84vh;
-  }
-
-  @media (max-width: 390px) {
-    width: 99%;
-    max-width: 99%;
-    height: 83vh;
-    max-height: 83vh;
-  }
-
-  @media (max-width: 375px) {
-    width: 99%;
-    max-width: 99%;
-    height: 82vh;
-    max-height: 82vh;
-  }
-
-  @media (max-width: 360px) {
-    width: 99%;
-    max-width: 99%;
-    height: 82vh;
-    max-height: 82vh;
-  }
-
-  @media (max-width: 320px) {
-    width: 100%;
-    max-width: 100%;
-    height: 80vh;
-    max-height: 80vh;
-  }
-
-  /* Landscape mobile optimization */
-  @media (max-height: 500px) and (orientation: landscape) {
-    width: 95%;
-    max-width: 95%;
-    height: 90vh;
-    max-height: 90vh;
-  }
-
-  /* Very small landscape screens */
-  @media (max-height: 400px) and (orientation: landscape) {
-    width: 96%;
-    max-width: 96%;
-    height: 88vh;
-    max-height: 88vh;
-  }
-
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: none;
+  transition: background 0.3s ease;
 
-  /* Responsive border radius - Enhanced mobile coverage */
-  @media (max-width: 900px) {
-    border-radius: 19px;
-  }
-
-  @media (max-width: 640px) {
-    border-radius: 18px;
-  }
-
-  @media (max-width: 600px) {
-    border-radius: 17px;
-  }
-
-  @media (max-width: 480px) {
-    border-radius: 16px;
-  }
-
-  @media (max-width: 414px) {
-    border-radius: 15px;
-  }
-
-  @media (max-width: 390px) {
-    border-radius: 14px;
-  }
-
-  @media (max-width: 375px) {
-    border-radius: 13px;
-  }
-
-  @media (max-width: 360px) {
-    border-radius: 12px;
-  }
-
-  @media (max-width: 320px) {
-    border-radius: 10px;
-  }
 `;
 
 export const ChatContainer = styled.div`
@@ -437,98 +331,106 @@ export const ChatContainer = styled.div`
   height: 100%;
   min-height: 0;
   position: relative;
-  overflow: hidden;
+  overflow: ${props => props.$isWelcomeMode ? 'hidden' : 'hidden'};
   background: transparent;
+  width: 100%;
+  align-items: center;
+
+  /* Enable scrolling only on smaller devices when in welcome mode */
+  ${props => props.$isWelcomeMode && `
+    @media (max-height: 700px), (max-width: 480px) {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Hide scrollbar for all browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* WebKit browsers */
+    }
+
+    /* Smooth scrolling for mobile */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  `}
 `;
 
 export const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
-  padding: 1rem 0 0 0; /* Added top padding to move greeting message down */
+  overflow-x: visible;
+  padding: 0.5rem 0 0 0; /* Removed horizontal padding for full screen */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  background: transparent;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Hide scrollbar for all browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  
+  &::-webkit-scrollbar {
+    display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+  }
+
+  /* Smooth scrolling for mobile */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+`;
+
+export const MessagesInnerContainer = styled.div`
+  width: 100%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   min-height: 0;
   position: relative;
   background: transparent;
 
-  /* Enhanced scrollbar for mobile */
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  @media (max-width: 480px) {
-    &::-webkit-scrollbar {
-      width: 3px;
-    }
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(241, 241, 241, 0.3);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(193, 193, 193, 0.6);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(168, 168, 168, 0.8);
-  }
-
-  /* Mobile-specific scrollbar styling */
-  @media (max-width: 480px) {
-    &::-webkit-scrollbar-track {
-      background: rgba(241, 241, 241, 0.2);
-      border-radius: 2px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(193, 193, 193, 0.5);
-      border-radius: 2px;
-    }
-  }
-
-  /* Smooth scrolling for mobile */
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-
-  /* Responsive top padding for greeting message positioning */
+  /* Responsive padding for greeting message positioning - full screen */
   @media (max-width: 1200px) {
-    padding: 0.95rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 1024px) {
-    padding: 0.9rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 900px) {
-    padding: 0.85rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 768px) {
-    padding: 0.8rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 640px) {
-    padding: 0.75rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 600px) {
-    padding: 0.7rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 480px) {
-    padding: 0.65rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 414px) {
-    padding: 0.6rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 390px) {
-    padding: 0.55rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 375px) {
@@ -536,11 +438,11 @@ export const MessagesContainer = styled.div`
   }
 
   @media (max-width: 360px) {
-    padding: 0.45rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 
   @media (max-width: 320px) {
-    padding: 0.4rem 0 0 0;
+    padding: 0.5rem 0 0 0;
   }
 `;
 
@@ -548,5 +450,6 @@ export const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px; /* Adds space between messages */
-  padding: 1.25rem;
+  padding: 0.75rem 0.5rem; /* Minimal horizontal padding for hover effects */
+  overflow: visible;
 `;

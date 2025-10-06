@@ -2,185 +2,136 @@ import React from "react";
 import styled from "styled-components";
 import { FiArrowUp, FiMic, FiSquare, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
+import { useTheme } from "../contexts/ThemeContext";
 
 const InputContainer = styled.div`
   flex-shrink: 0;
-  padding: 1rem 1.25rem 1.25rem 1.25rem;
-  border-top: none;
-  background: transparent;
+  padding: 1rem 2rem 1rem 2rem;
+  border-top: 1px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
+  background: ${props => props.$isDarkMode ? 'rgba(31, 31, 31, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
   position: relative;
-
-  /* Enhanced mobile responsiveness - Better mobile spacing */
-  @media (max-width: 1200px) {
-    padding: 1.2rem 1.1rem 1.1rem 1.1rem;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 1.1rem 1rem 1rem 1rem;
-  }
-
-  @media (max-width: 900px) {
-    padding: 1rem 0.9rem 0.9rem 0.9rem;
-  }
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s ease, border-top 0.3s ease;
+  padding-bottom: 1rem;
 
   @media (max-width: 768px) {
-    padding: 0.9rem 0.8rem 0.8rem 0.8rem;
-  }
-
-  @media (max-width: 640px) {
-    padding: 0.8rem 0.7rem 0.7rem 0.7rem;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0.75rem 0.65rem 0.65rem 0.65rem;
+    padding-bottom: 0.75rem;
   }
 
   @media (max-width: 480px) {
-    padding: 0.7rem 0.6rem 0.6rem 0.6rem;
-  }
-
-  @media (max-width: 414px) {
-    padding: 0.65rem 0.55rem 0.55rem 0.55rem;
-  }
-
-  @media (max-width: 390px) {
-    padding: 0.6rem 0.5rem 0.5rem 0.5rem;
-  }
-
-  @media (max-width: 375px) {
-    padding: 0.55rem 0.45rem 0.45rem 0.45rem;
-  }
-
-  @media (max-width: 360px) {
-    padding: 0.5rem 0.4rem 0.4rem 0.4rem;
-  }
-
-  @media (max-width: 320px) {
-    padding: 0.45rem 0.35rem 0.35rem 0.35rem;
+    padding-bottom: 0.5rem;
   }
 `;
 
 const ChatInput = styled.input`
-  padding: 1.01rem 172px 1.01rem 1.15rem; /* Increased by 15% from 0.875rem 150px 0.875rem 1rem */
-  border: 1px solid #e5e7eb;
-  border-radius: 29px; /* Increased by 15% from 25px */
-  font-size: 1rem; /* Increased by 15% from 1rem for better readability */
+  padding: 1rem 200px 1rem 1rem;
+  border: 1px solid ${props => props.$isDarkMode ? '#4a4a4a' : '#e5e7eb'};
+  border-radius: 25px;
+  font-size: 1.125rem;
   width: 100%;
   box-sizing: border-box;
   outline: none;
   transition: all 0.3s;
-  background: #f8f9fa;
-  color: #000;
-  line-height: 1.4; /* Added line height for better readability */
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    background: #2d2d2d;
-    color: #ffffff;
-    border-color: #4a4a4a;
-  }
-  
+  background: ${props => props.$isDarkMode ? 'rgba(45, 45, 45, 0.8)' : 'rgba(248, 249, 250, 0.8)'};
+  color: ${props => props.$isDarkMode ? '#ffffff' : '#000'};
+  line-height: 1.4;
+
   /* Force visibility in all modes */
   &::placeholder {
-    color: #666;
-    @media (prefers-color-scheme: dark) {
-      color: #999;
-    }
+    color: ${props => props.$isDarkMode ? '#999' : '#666'};
   }
-  
+
   &:focus {
     border-color: #8b5cf6;
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: #ffffff;
-    
-    /* Dark mode focus state */
-    @media (prefers-color-scheme: dark) {
-      background: #2d2d2d;
-      color: #ffffff;
-    }
+    background: ${props => props.$isDarkMode ? 'rgba(45, 45, 45, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
+    color: ${props => props.$isDarkMode ? '#ffffff' : '#000'};
   }
 
   /* Enhanced mobile responsiveness - Better mobile input layout with improved font scaling */
   @media (max-width: 1200px) {
     padding: 1.04rem 161px 1.04rem 1.04rem; /* Increased by 15% from 0.9rem 140px 0.9rem 0.9rem */
-    font-size: 1.13rem; /* Increased by 15% from 0.98rem for better readability */
+    font-size: 1.25rem; /* Increased from 1.13rem for better readability */
     border-radius: 28px; /* Increased by 15% from 24px */
     line-height: 1.38;
   }
 
   @media (max-width: 1024px) {
     padding: 0.98rem 155px 0.98rem 0.92rem; /* Increased by 15% from 0.85rem 135px 0.85rem 0.8rem */
-    font-size: 1.1rem; /* Increased by 15% from 0.96rem for improved readability */
+    font-size: 1.2rem; /* Increased from 1.1rem for improved readability */
     border-radius: 26px; /* Increased by 15% from 23px */
     line-height: 1.36;
   }
 
   @media (max-width: 900px) {
     padding: 0.92rem 150px 0.92rem 0.86rem; /* Increased by 15% from 0.8rem 130px 0.8rem 0.75rem */
-    font-size: 1.08rem; /* Increased by 15% from 0.94rem for better mobile readability */
+    font-size: 1.15rem; /* Increased from 1.08rem for better mobile readability */
     border-radius: 25px; /* Increased by 15% from 22px */
     line-height: 1.34;
   }
 
   @media (max-width: 768px) {
     padding: 0.86rem 144px 0.86rem 0.81rem; /* Increased by 15% from 0.75rem 125px 0.75rem 0.7rem */
-    font-size: 1.06rem; /* Increased by 15% from 0.92rem for maintained readability on tablets */
+    font-size: 1.1rem; /* Increased from 1.06rem for maintained readability on tablets */
     border-radius: 24px; /* Increased by 15% from 21px */
     line-height: 1.32;
   }
 
   @media (max-width: 640px) {
     padding: 0.81rem 138px 0.81rem 0.75rem; /* Increased by 15% from 0.7rem 120px 0.7rem 0.65rem */
-    font-size: 1.04rem; /* Increased by 15% from 0.9rem for good mobile readability */
+    font-size: 1.08rem; /* Increased from 1.04rem for good mobile readability */
     border-radius: 22px; /* Increased by 15% from 19px */
     line-height: 1.3;
   }
 
   @media (max-width: 600px) {
     padding: 0.75rem 132px 0.75rem 0.69rem; /* Increased by 15% from 0.65rem 115px 0.65rem 0.6rem */
-    font-size: 1.01rem; /* Increased by 15% from 0.88rem for optimized small screens */
+    font-size: 1.05rem; /* Increased from 1.01rem for optimized small screens */
     border-radius: 21px; /* Increased by 15% from 18px */
     line-height: 1.28;
   }
 
   @media (max-width: 480px) {
     padding: 0.69rem 127px 0.69rem 0.63rem; /* Increased by 15% from 0.6rem 110px 0.6rem 0.55rem */
-    font-size: 1.06rem; /* Increased by 15% from 0.92rem for better mobile readability */
+    font-size: 1.08rem; /* Increased from 1.06rem for better mobile readability */
     border-radius: 20px; /* Increased by 15% from 17px */
     line-height: 1.26;
   }
 
   @media (max-width: 414px) {
     padding: 0.63rem 121px 0.63rem 0.58rem; /* Increased by 15% from 0.55rem 105px 0.55rem 0.5rem */
-    font-size: 1.04rem; /* Increased by 15% from 0.9rem for iPhone readability */
+    font-size: 1.06rem; /* Increased from 1.04rem for iPhone readability */
     border-radius: 18px; /* Increased by 15% from 16px */
     line-height: 1.24;
   }
 
   @media (max-width: 390px) {
     padding: 0.58rem 115px 0.58rem 0.52rem; /* Increased by 15% from 0.5rem 100px 0.5rem 0.45rem */
-    font-size: 1.01rem; /* Increased by 15% from 0.88rem for small phone optimization */
+    font-size: 1.03rem; /* Increased from 1.01rem for small phone optimization */
     border-radius: 17px; /* Increased by 15% from 15px */
     line-height: 1.22;
   }
 
   @media (max-width: 375px) {
     padding: 0.52rem 109px 0.52rem 0.46rem; /* Increased by 15% from 0.45rem 95px 0.45rem 0.4rem */
-    font-size: 0.99rem; /* Increased by 15% from 0.86rem for iPhone SE readability */
+    font-size: 1.01rem; /* Increased from 0.99rem for iPhone SE readability */
     border-radius: 16px; /* Increased by 15% from 14px */
     line-height: 1.2;
   }
 
   @media (max-width: 360px) {
     padding: 0.46rem 104px 0.46rem 0.4rem; /* Increased by 15% from 0.4rem 90px 0.4rem 0.35rem */
-    font-size: 0.97rem; /* Increased by 15% from 0.84rem for very small screens */
+    font-size: 0.99rem; /* Increased from 0.97rem for very small screens */
     border-radius: 15px; /* Increased by 15% from 13px */
     line-height: 1.18;
   }
 
   @media (max-width: 320px) {
     padding: 0.4rem 98px 0.4rem 0.35rem; /* Increased by 15% from 0.35rem 85px 0.35rem 0.3rem */
-    font-size: 0.94rem; /* Increased by 15% from 0.82rem for minimum readable size */
+    font-size: 0.96rem; /* Increased from 0.94rem for minimum readable size */
     border-radius: 14px; /* Increased by 15% from 12px */
     line-height: 1.16;
   }
@@ -191,17 +142,18 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 800px;
   overflow: hidden;
 `;
 
 const InputButtons = styled.div`
   position: absolute;
-  right: 9px; /* Increased by 15% from 8px */
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 7px; /* Increased by 15% from 6px */
+  gap: 8px;
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints */
   @media (max-width: 1200px) {
@@ -265,26 +217,51 @@ const InputButtons = styled.div`
   }
 `;
 
+const ActionButton = styled.button`
+  background: ${props => props.$variant === 'primary' ? 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' : 'white'};
+  border: ${props => props.$variant === 'primary' ? 'none' : '1px solid #e5e7eb'};
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: ${props => props.$variant === 'primary' ? 'white' : '#6b7280'};
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+  box-shadow: ${props => props.$variant === 'primary' ? '0 2px 8px rgba(139, 92, 246, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.1)'};
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: ${props => props.$variant === 'primary' ? '0 4px 12px rgba(139, 92, 246, 0.4)' : '0 2px 6px rgba(0, 0, 0, 0.15)'};
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    font-size: 18px;
+  }
+`;
+
 const SendButton = styled.button`
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
   border: none;
-  border-radius: 50%;
-  width: 41px; /* Increased by 15% from 36px */
-  height: 41px; /* Increased by 15% from 36px */
-  min-width: 41px; /* Increased by 15% from 36px */
-  min-height: 41px; /* Increased by 15% from 36px */
-  max-width: 41px; /* Increased by 15% from 36px */
-  max-height: 41px; /* Increased by 15% from 36px */
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: white;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
-  aspect-ratio: 1;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 
   svg {
     color: inherit;
@@ -819,8 +796,6 @@ const InputArea = ({
   verified,
   needsAuth,
   isRecording,
-  isMuted,
-  toggleMute,
   handleMicClick,
   handleMicTouchStart,
   handleMicTouchEnd,
@@ -830,19 +805,21 @@ const InputArea = ({
   handleSendMessage,
   currentlyPlaying
 }) => {
+  const { isDarkMode } = useTheme();
   const shouldDisable = isTyping; // Simplified - only disable when typing
-  
+
   return (
-    <InputContainer>
+    <InputContainer $isDarkMode={isDarkMode}>
       <InputWrapper>
         <ChatInput
+          $isDarkMode={isDarkMode}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder={
             isTyping
               ? "Thinking..."
-              : "Type your message..."
+              : "Ask me anything..."
           }
           disabled={shouldDisable}
           style={{
@@ -851,7 +828,8 @@ const InputArea = ({
           }}
         />
         <InputButtons>
-          <VoiceButton
+          <ActionButton
+            $variant="secondary"
             $isRecording={isRecording}
             onClick={handleMicClick}
             onTouchStart={handleMicTouchStart}
@@ -862,30 +840,7 @@ const InputArea = ({
             title={isRecording ? "Stop recording" : "Start voice recording"}
           >
             {isRecording && !isMobile ? <FiSquare /> : <FiMic />}
-          </VoiceButton>
-          <MuteButton
-            $isMuted={isMuted}
-            $isPlaying={currentlyPlaying !== null}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log(`Mute button clicked, current state: ${isMuted}, currentlyPlaying: ${currentlyPlaying}`);
-              console.log('toggleMute function:', typeof toggleMute);
-              if (typeof toggleMute === 'function') {
-                toggleMute();
-              } else {
-                console.error('toggleMute is not a function!');
-              }
-            }}
-            disabled={false}
-            title={
-              currentlyPlaying !== null 
-                ? (isMuted ? "Unmute currently playing audio" : "Mute currently playing audio")
-                : (isMuted ? "Unmute audio" : "Mute audio")
-            }
-          >
-            {isMuted ? <FiVolumeX /> : <FiVolume2 />}
-          </MuteButton>
+          </ActionButton>
           <SendButton
             onClick={() => {
               console.log('Send button clicked', { isTyping, shouldDisable, message });
@@ -900,27 +855,30 @@ const InputArea = ({
         </InputButtons>
       </InputWrapper>
 
-      {/* Instructions (hide when gated) */}
-      <p
+      {/* Feature highlights */}
+      <div
         style={{
-          textAlign: "center",
-          color: "#6b7280",
-          fontSize: "0.8rem", /* Increased base size for better readability */
-          margin: "0.8rem 0 0 0",
-          lineHeight: "1.3", /* Added line height for better readability */
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1.5rem",
+          marginTop: "0.25rem",
+          flexWrap: "wrap",
+          width: "100%",
+          maxWidth: "800px",
         }}
       >
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.25rem",
-            flexWrap: "wrap",
-            lineHeight: "1.2",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: isDarkMode ? "#a0a0a0" : "#6b7280", fontSize: "0.85rem" }}>
           <span>Powered by</span>
+          <img
+            src="/logo.png"
+            alt="Troika Tech"
+            style={{
+              height: "14px",
+              width: "auto",
+              filter: isDarkMode ? "brightness(0.8)" : "none"
+            }}
+          />
           <a
             href="https://troikatech.in/"
             target="_blank"
@@ -928,20 +886,15 @@ const InputArea = ({
             style={{
               color: "inherit",
               textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
+              transition: "color 0.2s ease"
             }}
+            onMouseEnter={(e) => e.target.style.color = "#8b5cf6"}
+            onMouseLeave={(e) => e.target.style.color = "inherit"}
           >
-            <img
-              src="https://raw.githubusercontent.com/troikatechindia/Asset/refs/heads/main/logo.png"
-              alt="Troika Tech Logo"
-              style={{ height: "12px", verticalAlign: "middle" }}
-            />
-            <strong>Troika Tech</strong>
+            Troika Tech
           </a>
-        </span>
-      </p>
+        </div>
+      </div>
     </InputContainer>
   );
 };

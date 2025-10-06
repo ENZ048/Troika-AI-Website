@@ -12,7 +12,7 @@ const VoiceInputIndicator = styled.div`
 `;
 
 const ListeningText = styled.div`
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   background: linear-gradient(135deg, #8a2be2, #14b8a6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
