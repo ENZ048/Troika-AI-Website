@@ -331,10 +331,10 @@ export const ChatContainer = styled.div`
   height: 100%;
   min-height: 0;
   position: relative;
-  overflow: ${props => props.$isWelcomeMode ? 'hidden' : 'hidden'};
+  overflow: visible;
   background: transparent;
   width: 100%;
-  align-items: center;
+  align-items: stretch;
 
   /* Enable scrolling only on smaller devices when in welcome mode */
   ${props => props.$isWelcomeMode && `

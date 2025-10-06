@@ -15,14 +15,18 @@ const InputContainer = styled.div`
   flex-direction: column;
   align-items: center;
   transition: background 0.3s ease, border-top 0.3s ease;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
+  z-index: 10;
+  margin-top: auto;
+  min-height: 120px;
+  overflow: visible;
 
   @media (max-width: 768px) {
-    padding-bottom: 0.75rem;
+    padding-bottom: 1.25rem;
   }
 
   @media (max-width: 480px) {
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
   }
 `;
 
@@ -862,13 +866,26 @@ const InputArea = ({
           alignItems: "center",
           justifyContent: "center",
           gap: "1.5rem",
-          marginTop: "0.25rem",
+          marginTop: "0.5rem",
           flexWrap: "wrap",
           width: "100%",
           maxWidth: "800px",
+          position: "relative",
+          zIndex: 10,
+          minHeight: "2rem",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: isDarkMode ? "#a0a0a0" : "#6b7280", fontSize: "0.85rem" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "0.5rem", 
+          color: isDarkMode ? "#ffffff" : "#374151", 
+          fontSize: "0.95rem",
+          fontWeight: "600",
+          padding: "0.5rem 0",
+          visibility: "visible",
+          opacity: 1
+        }}>
           <span>Powered by</span>
           <img
             src="/logo.png"

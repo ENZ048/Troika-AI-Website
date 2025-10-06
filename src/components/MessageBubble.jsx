@@ -33,7 +33,7 @@ const MessageContainer = styled.div`
 `;
 
 const MessageBubble = styled.div`
-  padding: 1.25rem;
+  padding: ${(props) => props.$isUser ? "1.25rem 2rem" : "1.25rem"};
   border-radius: 24px;
   font-size: 1rem;
   line-height: 1.6;
@@ -60,13 +60,13 @@ const MessageBubble = styled.div`
   @media (max-width: 480px) {
     margin: ${(props) => (props.$isUser ? "0.4rem 0" : "0.2rem 0")};
     min-width: ${(props) => (props.$isUser ? "100px" : "50px")};
-    padding: 1rem;
+    padding: ${(props) => props.$isUser ? "1rem 1.5rem" : "1rem"};
   }
   
   @media (max-width: 360px) {
     margin: ${(props) => (props.$isUser ? "0.3rem 0" : "0.15rem 0")};
     min-width: ${(props) => (props.$isUser ? "90px" : "40px")};
-    padding: 0.875rem;
+    padding: ${(props) => props.$isUser ? "0.875rem 1.25rem" : "0.875rem"};
   }
 
   ${({ $isUser, $isDarkMode }) =>
