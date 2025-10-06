@@ -52,7 +52,7 @@ const WelcomeContainer = styled.div`
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
-    padding: 3rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     justify-content: flex-start;
   }
 
