@@ -26,27 +26,27 @@ const MessageWrapper = styled.div`
 `;
 
 const MessageContainer = styled.div`
-  max-width: 75%;
+  max-width: ${(props) => (props.$isUser ? "85%" : "75%")};
   display: flex;
   flex-direction: column;
   order: ${(props) => (props.$isUser ? "2" : "1")};
 `;
 
 const MessageBubble = styled.div`
-  padding: ${(props) => props.$isUser ? "1.25rem 2rem" : "1.25rem"};
+  padding: 1.25rem;
   border-radius: 24px;
   font-size: 1rem;
   line-height: 1.6;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: ${(props) => (props.$isUser ? "nowrap" : "pre-wrap")};
-  hyphens: none;
-  word-break: normal;
-  max-width: ${(props) => (props.$isUser ? "90%" : "80%")};
+  hyphens: auto;
+  word-break: break-word;
+  max-width: ${(props) => (props.$isUser ? "95%" : "80%")};
   position: relative;
   margin: ${(props) => (props.$isUser ? "0.5rem 0" : "0.25rem 0")};
   width: ${(props) => (props.$isUser ? "auto" : "fit-content")};
-  min-width: ${(props) => (props.$isUser ? "120px" : "60px")};
+  min-width: ${(props) => (props.$isUser ? "200px" : "60px")};
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   transform: scale(1);
@@ -59,14 +59,14 @@ const MessageBubble = styled.div`
   /* Better mobile spacing */
   @media (max-width: 480px) {
     margin: ${(props) => (props.$isUser ? "0.4rem 0" : "0.2rem 0")};
-    min-width: ${(props) => (props.$isUser ? "100px" : "50px")};
-    padding: ${(props) => props.$isUser ? "1rem 1.5rem" : "1rem"};
+    min-width: ${(props) => (props.$isUser ? "150px" : "50px")};
+    padding: 1rem;
   }
   
   @media (max-width: 360px) {
     margin: ${(props) => (props.$isUser ? "0.3rem 0" : "0.15rem 0")};
-    min-width: ${(props) => (props.$isUser ? "90px" : "40px")};
-    padding: ${(props) => props.$isUser ? "0.875rem 1.25rem" : "0.875rem"};
+    min-width: ${(props) => (props.$isUser ? "120px" : "40px")};
+    padding: 0.875rem;
   }
 
   ${({ $isUser, $isDarkMode }) =>
@@ -86,9 +86,17 @@ const MessageBubble = styled.div`
 `;
 
 const MessageContent = styled.div`
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  
   p {
     margin: 0;
     padding: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 `;
 
