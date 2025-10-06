@@ -26,26 +26,47 @@ const MessageWrapper = styled.div`
 `;
 
 const MessageContainer = styled.div`
-  max-width: 85%;
+  max-width: 75%;
   display: flex;
   flex-direction: column;
+  order: ${(props) => (props.$isUser ? "2" : "1")};
 `;
 
 const MessageBubble = styled.div`
   padding: 1.25rem;
   border-radius: 24px;
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.6;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: ${(props) => (props.$isUser ? "nowrap" : "pre-wrap")};
+  hyphens: none;
+  word-break: normal;
+  max-width: ${(props) => (props.$isUser ? "90%" : "80%")};
+  position: relative;
+  margin: ${(props) => (props.$isUser ? "0.5rem 0" : "0.25rem 0")};
+  width: ${(props) => (props.$isUser ? "auto" : "fit-content")};
+  min-width: ${(props) => (props.$isUser ? "120px" : "60px")};
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   transform: scale(1);
   transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
 
   &:hover {
-    transform: scale(1.01);
+    transform: scale(1.02);
+  }
+  
+  /* Better mobile spacing */
+  @media (max-width: 480px) {
+    margin: ${(props) => (props.$isUser ? "0.4rem 0" : "0.2rem 0")};
+    min-width: ${(props) => (props.$isUser ? "100px" : "50px")};
+    padding: 1rem;
+  }
+  
+  @media (max-width: 360px) {
+    margin: ${(props) => (props.$isUser ? "0.3rem 0" : "0.15rem 0")};
+    min-width: ${(props) => (props.$isUser ? "90px" : "40px")};
+    padding: 0.875rem;
   }
 
   ${({ $isUser, $isDarkMode }) =>
@@ -53,20 +74,18 @@ const MessageBubble = styled.div`
       ? `
     background: linear-gradient(to right, #3b82f6, #8b5cf6);
     color: #ffffff;
-    border-radius: 24px 24px 8px 24px;
+    border-radius: 24px 24px 4px 24px;
   `
       : `
     background: ${$isDarkMode ? '#1f2937' : '#ffffff'};
     color: ${$isDarkMode ? '#ffffff' : '#1f2937'};
-    border-radius: 24px 24px 24px 8px;
+    border-radius: 24px 24px 24px 4px;
     border: 1px solid ${$isDarkMode ? '#374151' : '#e5e7eb'};
   `}
 
 `;
 
 const MessageContent = styled.div`
-  text-align: left;
-
   p {
     margin: 0;
     padding: 0;
@@ -154,7 +173,7 @@ const BotName = styled.span`
 `;
 
 const Timestamp = styled.span`
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: ${props => props.$isUser
     ? 'rgba(191, 219, 254, 1)'
     : props.$isDarkMode ? '#9ca3af' : '#9ca3af'};
@@ -178,7 +197,7 @@ const MessageBubbleComponent = ({
 
   return (
     <MessageWrapper $isUser={isUser}>
-      <MessageContainer>
+      <MessageContainer $isUser={isUser}>
         {/* Show AI Assistant header OUTSIDE bubble for bot messages */}
         {!isUser && (
           <BotHeader>
@@ -196,8 +215,7 @@ const MessageBubbleComponent = ({
         )}
 
         <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode}>
-
-          <MessageContent>
+          <MessageContent $isUser={isUser}>
             {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
             {!isUser &&
             index === chatHistoryLength - 1 &&

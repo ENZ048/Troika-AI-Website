@@ -44,7 +44,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // State management
   const [showChat, setShowChat] = useState(true);
-  const [phone, setPhone] = useState("9999999999");
+  const [phone, setPhone] = useState("9999999999"); // Default phone for backend auth requirement
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [verified, setVerified] = useState(true);
@@ -387,14 +387,27 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Removed prefetch Thank you TTS useEffect - no longer needed
 
-  // Initialize session
+  // Initialize session - Always generate new session ID on page refresh
   useEffect(() => {
-    let id = localStorage.getItem("sessionId");
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem("sessionId", id);
-    }
+    // Always generate a new session ID on page refresh
+    const id = crypto.randomUUID();
+    localStorage.setItem("sessionId", id);
     setSessionId(id);
+    
+    // Set verified state to true to bypass auth UI while sending default phone
+    setVerified(true);
+    setNeedsAuth(false);
+    setShowInlineAuth(false);
+    setShowAuthScreen(false);
+    
+    // Clear any existing auth data from localStorage
+    try {
+      localStorage.removeItem(AUTH_GATE_KEY(id, chatbotId));
+      localStorage.removeItem(SESSION_STORE_KEY("whatsapp"));
+      localStorage.removeItem(SESSION_STORE_KEY("email"));
+    } catch (error) {
+      console.log("Error clearing auth data:", error);
+    }
   }, []);
 
   // Load user message count when sessionId and chatbotId are available
@@ -411,7 +424,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   }, [sessionId, chatbotId]);
 
   // Check if user needs auth based on message count when component mounts or verified state changes
-  useEffect(() => {
+  // COMMENTED OUT - Auth is now controlled by backend configuration only
+  /* useEffect(() => {
     console.log('Auth trigger check:', {
       userMessageCount,
       verified,
@@ -428,7 +442,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setNeedsAuth(false);
       setShowInlineAuth(false);
     }
-  }, [userMessageCount, verified]);
+  }, [userMessageCount, verified]); */
 
   // Set initial greeting
   useEffect(() => {
@@ -706,7 +720,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       hasMounted.current = true;
     }
 
-    if (sessionId) {
+    // COMMENTED OUT - Auth gate logic disabled for backend-controlled auth
+    /* if (sessionId) {
       try {
         const shouldGate =
           localStorage.getItem(AUTH_GATE_KEY(sessionId, chatbotId)) === "1";
@@ -715,7 +730,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           setShowInlineAuth(true);
         }
       } catch {}
-    }
+    } */
   }, [chatbotId, sessionId, apiBase]);
 
   // OTP handling functions - commented out for default auth state
@@ -882,7 +897,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           chatbotId,
           query: textToSend,
           sessionId,
-          phone: phone, // Always send phone for default auth state
+          phone: "9999999999", // Send default phone number for backend auth requirement
         };
         console.log('Sending request to backend:', requestData);
         const response = await axios.post(`${apiBase}/chat/query`, requestData);
@@ -916,14 +931,10 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
         // Removed suggestion hiding - no longer needed
 
-        // Handle authentication requirements from backend
+        // Handle authentication requirements from backend - IGNORED since we're using default phone
         if (requiresAuthNext) {
-          setAuthMethod(auth_method || authMethod || "whatsapp");
-          setNeedsAuth(true);
-          setShowInlineAuth(true);
-          try {
-            localStorage.setItem(AUTH_GATE_KEY(sessionId, chatbotId), "1");
-          } catch {}
+          console.log('Backend requested auth, but ignoring since using default phone');
+          // Don't show auth UI - we're using default phone number
         }
       } catch (err) {
         if (
@@ -931,15 +942,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           (err?.response?.data?.error === "NEED_AUTH" ||
             err?.response?.data?.error === "AUTH_REQUIRED")
         ) {
-          setAuthMethod(
-            err.response.data.auth_method || authMethod || "whatsapp"
-          );
-          setNeedsAuth(true);
-          setShowInlineAuth(true);
-          try {
-            localStorage.setItem(AUTH_GATE_KEY(sessionId, chatbotId), "1");
-          } catch {}
-          toast.info(err.response.data.message || "Please verify to continue.");
+          console.log('Backend auth error, but ignoring since using default phone');
+          // Don't show auth UI - we're using default phone number
+          toast.error("Authentication error - please try again.");
         } else if (err?.response?.status === 403) {
           const errorMessage = err?.response?.data?.message || "";
           if (
@@ -949,12 +954,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           ) {
             toast.error(errorMessage);
           } else {
-            setNeedsAuth(true);
-            setShowInlineAuth(true);
-            try {
-              localStorage.setItem(AUTH_GATE_KEY(sessionId, chatbotId), "1");
-            } catch {}
-            toast.error("Authentication required to continue.");
+            console.log('Backend auth error, but ignoring since using default phone');
+            // Don't show auth UI - we're using default phone number
+            toast.error("Authentication error - please try again.");
           }
         } else {
           console.error("Chat error:", err);

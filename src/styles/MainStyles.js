@@ -389,7 +389,7 @@ export const MessagesContainer = styled.div`
 
 export const MessagesInnerContainer = styled.div`
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   min-height: 0;
