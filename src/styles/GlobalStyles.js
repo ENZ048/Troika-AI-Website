@@ -5,12 +5,22 @@ const GlobalStyle = createGlobalStyle`
       font-family: "Hanken Grotesk", "Amaranth", "Poppins", sans-serif;
       box-sizing: border-box;
     }
+    
+    /* Normalize font sizes between dev and production */
+    html {
+      font-size: 16px !important;
+    }
+    
+    body {
+      font-size: 16px !important;
+      line-height: 1.5 !important;
+    }
 
     /* Mobile viewport optimization - Enhanced */
     html {
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-      text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100% !important;
+      -ms-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
       /* Prevent horizontal scroll on mobile */
       overflow-x: hidden;
       /* Smooth scrolling */
@@ -23,6 +33,9 @@ const GlobalStyle = createGlobalStyle`
       background-attachment: fixed;
       background-size: cover;
       background-position: center center;
+      /* Prevent browser zoom differences */
+      zoom: 1 !important;
+      transform: scale(1) !important;
     }
 
 
@@ -44,6 +57,9 @@ const GlobalStyle = createGlobalStyle`
       background-attachment: fixed;
       background-size: cover;
       background-position: center center;
+      /* Ensure consistent scaling */
+      zoom: 1 !important;
+      transform: scale(1) !important;
     }
 
     /* Prevent zoom on input focus for mobile */
@@ -51,11 +67,24 @@ const GlobalStyle = createGlobalStyle`
     input[type="email"], 
     input[type="tel"], 
     textarea {
-      font-size: 16px;
+      font-size: 16px !important;
       
       @media (max-width: 480px) {
-        font-size: 16px; /* Prevents zoom on iOS */
+        font-size: 16px !important; /* Prevents zoom on iOS */
       }
+    }
+    
+    /* Ensure consistent sizing across all elements */
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+      font-size: inherit !important;
+    }
+    
+    /* Reset any browser-specific scaling */
+    #root {
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      font-size: 16px !important;
     }
 
     /* Touch optimization - Enhanced for mobile */
