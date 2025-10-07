@@ -757,24 +757,24 @@ const WelcomeSection = ({ onSuggestionClick }) => {
 
   const suggestions = [
     {
+      icon: "🛠️",
+      text: "What Services You Offer?",
+      action: "services"
+    },
+    {
+      icon: "🏢",
+      text: "Who is Troika Tech?",
+      action: "about"
+    },
+    {
       icon: "💰",
       text: "What are your pricing plans?",
       action: "pricing"
     },
     {
-      icon: "🚀",
-      text: "How do I get started?",
-      action: "getting-started"
-    },
-    {
-      icon: "🌍",
-      text: "What languages do you support?",
-      action: "languages"
-    },
-    {
-      icon: "📞",
-      text: "Book a demo call",
-      action: "demo"
+      icon: "💡",
+      text: "How your services can help me?",
+      action: "help"
     }
   ];
 

@@ -1023,17 +1023,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
     
     const suggestionMessages = {
-      'getting-started': 'How do I get started?',
-      'languages': 'What languages do you support?',
-      'demo': 'I would like to book a demo call'
+      'services': 'What Services You Offer?',
+      'about': 'Who is Troika Tech?',
+      'pricing': 'What are your pricing plans?',
+      'help': 'How your services can help me?'
     };
     
     const message = suggestionMessages[action] || 'Tell me more about this';
-
-    // Trigger confetti only on demo button click
-    if (action === 'demo') {
-      setConfettiTrigger(prev => prev + 1);
-    }
 
     handleSendMessage(message);
   }, [handleSendMessage]);

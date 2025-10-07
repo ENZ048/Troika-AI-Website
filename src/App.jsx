@@ -37,9 +37,9 @@ function App() {
     <>
     <ErrorBoundary>
       <SupaChatbot
-      chatbotId={"688068d45ba526540d784b24"}
+      chatbotId={"68da398a0f936d435d7aa19d"}
       apiBase={"https://api.0804.in/api"}
-      // gitapiBase={"http://localhost:5000/api"}
+      // apiBase={"http://localhost:5000/api"}
       />
     </ErrorBoundary>
     </>
