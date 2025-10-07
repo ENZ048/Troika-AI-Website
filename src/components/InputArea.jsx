@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { FiArrowUp, FiMic, FiSquare, FiVolume2, FiVolumeX } from "react-icons/fi";
+import { FiArrowUp, FiMic, FiSquare, FiVolume2, FiVolumeX, FiSend } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
 import { useTheme } from "../contexts/ThemeContext";
 
 const InputContainer = styled.div`
   flex-shrink: 0;
-  padding: 1rem 2rem 1rem 2rem;
+  padding: 1rem 2rem 0rem 2rem;
   border-top: 1px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
   background: ${props => props.$isDarkMode ? 'rgba(31, 31, 31, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
   position: relative;
@@ -18,7 +18,7 @@ const InputContainer = styled.div`
   padding-bottom: 1.5rem;
   z-index: 10;
   margin-top: 0;
-  min-height: 120px;
+  min-height: 100px;
   overflow: visible;
   
   /* Force visibility in production */
@@ -36,11 +36,19 @@ const InputContainer = styled.div`
   right: 0 !important;
 
   @media (max-width: 768px) {
-    padding-bottom: 1.25rem;
+    padding: 1.25rem 1.5rem 1.25rem 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1.5rem 1.25rem 1.5rem 1.25rem;
   }
 
   @media (max-width: 480px) {
-    padding-bottom: 1rem;
+    padding: 1.75rem 1rem 1.75rem 1rem;
+  }
+
+  @media (max-width: 375px) {
+    padding: 2rem 0.75rem 2rem 0.75rem;
   }
 `;
 
@@ -92,63 +100,63 @@ const ChatInput = styled.input`
   }
 
   @media (max-width: 768px) {
-    padding: 0.86rem 144px 0.86rem 0.81rem; /* Increased by 15% from 0.75rem 125px 0.75rem 0.7rem */
+    padding: 0.75rem 144px 0.75rem 1rem; /* Reduced vertical padding */
     font-size: 1.1rem; /* Increased from 1.06rem for maintained readability on tablets */
     border-radius: 24px; /* Increased by 15% from 21px */
     line-height: 1.32;
   }
 
   @media (max-width: 640px) {
-    padding: 0.81rem 138px 0.81rem 0.75rem; /* Increased by 15% from 0.7rem 120px 0.7rem 0.65rem */
+    padding: 0.8rem 138px 0.8rem 1.1rem; /* Reduced vertical padding */
     font-size: 1.08rem; /* Increased from 1.04rem for good mobile readability */
     border-radius: 22px; /* Increased by 15% from 19px */
     line-height: 1.3;
   }
 
   @media (max-width: 600px) {
-    padding: 0.75rem 132px 0.75rem 0.69rem; /* Increased by 15% from 0.65rem 115px 0.65rem 0.6rem */
+    padding: 0.9rem 132px 0.9rem 1.2rem; /* Reduced vertical padding */
     font-size: 1.05rem; /* Increased from 1.01rem for optimized small screens */
     border-radius: 21px; /* Increased by 15% from 18px */
     line-height: 1.28;
   }
 
   @media (max-width: 480px) {
-    padding: 0.69rem 127px 0.69rem 0.63rem; /* Increased by 15% from 0.6rem 110px 0.6rem 0.55rem */
+    padding: 1rem 127px 1rem 1.3rem; /* Reduced vertical padding */
     font-size: 1.08rem; /* Increased from 1.06rem for better mobile readability */
     border-radius: 20px; /* Increased by 15% from 17px */
     line-height: 1.26;
   }
 
   @media (max-width: 414px) {
-    padding: 0.63rem 121px 0.63rem 0.58rem; /* Increased by 15% from 0.55rem 105px 0.55rem 0.5rem */
+    padding: 1.1rem 121px 1.1rem 1.4rem; /* Reduced vertical padding */
     font-size: 1.06rem; /* Increased from 1.04rem for iPhone readability */
     border-radius: 18px; /* Increased by 15% from 16px */
     line-height: 1.24;
   }
 
   @media (max-width: 390px) {
-    padding: 0.58rem 115px 0.58rem 0.52rem; /* Increased by 15% from 0.5rem 100px 0.5rem 0.45rem */
+    padding: 1.2rem 115px 1.2rem 1.5rem; /* Reduced vertical padding */
     font-size: 1.03rem; /* Increased from 1.01rem for small phone optimization */
     border-radius: 17px; /* Increased by 15% from 15px */
     line-height: 1.22;
   }
 
   @media (max-width: 375px) {
-    padding: 0.52rem 109px 0.52rem 0.46rem; /* Increased by 15% from 0.45rem 95px 0.45rem 0.4rem */
+    padding: 1.3rem 109px 1.3rem 1.6rem; /* Reduced vertical padding */
     font-size: 1.01rem; /* Increased from 0.99rem for iPhone SE readability */
     border-radius: 16px; /* Increased by 15% from 14px */
     line-height: 1.2;
   }
 
   @media (max-width: 360px) {
-    padding: 0.46rem 104px 0.46rem 0.4rem; /* Increased by 15% from 0.4rem 90px 0.4rem 0.35rem */
+    padding: 1.4rem 104px 1.4rem 1.7rem; /* Reduced vertical padding */
     font-size: 0.99rem; /* Increased from 0.97rem for very small screens */
     border-radius: 15px; /* Increased by 15% from 13px */
     line-height: 1.18;
   }
 
   @media (max-width: 320px) {
-    padding: 0.4rem 98px 0.4rem 0.35rem; /* Increased by 15% from 0.35rem 85px 0.35rem 0.3rem */
+    padding: 1.5rem 98px 1.5rem 1.8rem; /* Reduced vertical padding */
     font-size: 0.96rem; /* Increased from 0.94rem for minimum readable size */
     border-radius: 14px; /* Increased by 15% from 12px */
     line-height: 1.16;
@@ -261,7 +269,55 @@ const ActionButton = styled.button`
   }
 
   svg {
-    font-size: 18px;
+    font-size: 21px; /* Increased by 15% from 18px */
+    width: 21px; /* Increased by 15% from 18px */
+    height: 21px; /* Increased by 15% from 18px */
+  }
+
+  /* Mobile responsive design - matching SendButton */
+  @media (max-width: 1200px) {
+    width: 42px; /* Increased by 15% from 40px */
+    height: 42px; /* Increased by 15% from 40px */
+    min-width: 42px; /* Increased by 15% from 40px */
+    min-height: 42px; /* Increased by 15% from 40px */
+    max-width: 42px; /* Increased by 15% from 40px */
+    max-height: 42px; /* Increased by 15% from 40px */
+
+    svg {
+      font-size: 22px; /* Increased by 15% from 19px */
+      width: 22px; /* Increased by 15% from 19px */
+      height: 22px; /* Increased by 15% from 19px */
+    }
+  }
+
+  @media (max-width: 1024px) {
+    width: 41px; /* Increased by 15% from 40px */
+    height: 41px; /* Increased by 15% from 40px */
+    min-width: 41px; /* Increased by 15% from 40px */
+    min-height: 41px; /* Increased by 15% from 40px */
+    max-width: 41px; /* Increased by 15% from 40px */
+    max-height: 41px; /* Increased by 15% from 40px */
+
+    svg {
+      font-size: 21px; /* Increased by 15% from 18px */
+      width: 21px; /* Increased by 15% from 18px */
+      height: 21px; /* Increased by 15% from 18px */
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 41px; /* Increased by 15% from 36px */
+    height: 41px; /* Increased by 15% from 36px */
+    min-width: 41px; /* Increased by 15% from 36px */
+    min-height: 41px; /* Increased by 15% from 36px */
+    max-width: 41px; /* Increased by 15% from 36px */
+    max-height: 41px; /* Increased by 15% from 36px */
+
+    svg {
+      font-size: 20px; /* Increased by 15% from 17px */
+      width: 20px; /* Increased by 15% from 17px */
+      height: 20px; /* Increased by 15% from 17px */
+    }
   }
 `;
 
@@ -868,7 +924,7 @@ const InputArea = ({
             }}
             disabled={shouldDisable}
           >
-            <FiArrowUp />
+            <FiSend />
           </SendButton>
         </InputButtons>
       </InputWrapper>

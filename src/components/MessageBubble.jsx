@@ -26,23 +26,22 @@ const MessageWrapper = styled.div`
 `;
 
 const MessageContainer = styled.div`
-  max-width: ${(props) => (props.$isUser ? "85%" : "75%")};
+  max-width: 75%;
   display: flex;
   flex-direction: column;
   order: ${(props) => (props.$isUser ? "2" : "1")};
 `;
 
 const MessageBubble = styled.div`
-  padding: 1.25rem;
+  padding: 0.875rem 1rem;
   border-radius: 24px;
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: ${(props) => (props.$isUser ? "nowrap" : "pre-wrap")};
   hyphens: auto;
   word-break: break-word;
-  max-width: ${(props) => (props.$isUser ? "95%" : "80%")};
   position: relative;
   margin: ${(props) => (props.$isUser ? "0.5rem 0" : "0.25rem 0")};
   width: ${(props) => (props.$isUser ? "auto" : "fit-content")};
@@ -52,6 +51,19 @@ const MessageBubble = styled.div`
   transform: scale(1);
   transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
 
+  /* Increased min-width for bot messages on big screens - following Reference.jsx approach */
+  @media (min-width: 1200px) {
+    min-width: ${(props) => (props.$isUser ? "200px" : "300px")};
+  }
+
+  @media (min-width: 1400px) {
+    min-width: ${(props) => (props.$isUser ? "200px" : "350px")};
+  }
+
+  @media (min-width: 1600px) {
+    min-width: ${(props) => (props.$isUser ? "200px" : "400px")};
+  }
+
   &:hover {
     transform: scale(1.02);
   }
@@ -60,13 +72,13 @@ const MessageBubble = styled.div`
   @media (max-width: 480px) {
     margin: ${(props) => (props.$isUser ? "0.4rem 0" : "0.2rem 0")};
     min-width: ${(props) => (props.$isUser ? "150px" : "50px")};
-    padding: 1rem;
+    padding: 0.75rem 0.875rem;
   }
   
   @media (max-width: 360px) {
     margin: ${(props) => (props.$isUser ? "0.3rem 0" : "0.15rem 0")};
     min-width: ${(props) => (props.$isUser ? "120px" : "40px")};
-    padding: 0.875rem;
+    padding: 0.625rem 0.75rem;
   }
 
   ${({ $isUser, $isDarkMode }) =>
@@ -90,13 +102,92 @@ const MessageContent = styled.div`
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
+  /* Prevent pre-wrap from forcing line breaks inside lists */
+  ol, ul, li { white-space: normal; }
   
   p {
-    margin: 0;
+    margin: 0 0 0.4rem 0;
     padding: 0;
     word-wrap: break-word;
     overflow-wrap: break-word;
     word-break: break-word;
+    line-height: 1.45;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Ordered lists (numbered) */
+  ol {
+    margin: 0.15rem 0;
+    padding-left: 1.5rem;
+    list-style-position: outside;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Unordered lists (bullets) */
+  ul {
+    margin: 0.15rem 0;
+    padding-left: 1.5rem;
+    list-style-position: outside;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* List items */
+  li {
+    margin: 0.2rem 0;
+    padding-left: 0.25rem; /* tighter so text aligns closer to marker */
+    line-height: 1.45;
+    
+    /* Nested paragraphs in list items */
+    p {
+      margin: 0;
+      display: inline;
+      line-height: inherit;
+    }
+  }
+
+  /* Reduce spacing for nested lists */
+  li ul, li ol {
+    margin: 0.25rem 0 0.15rem 0;
+    padding-left: 1.25rem;
+  }
+  
+  /* Nested list items should have less spacing */
+  li li {
+    margin: 0.15rem 0;
+    padding-left: 0.3rem;
+    line-height: 1.4;
+  }
+
+  /* Strong/bold text in lists */
+  strong {
+    font-weight: 600;
+  }
+
+  /* Remove extra spacing from markdown-generated content */
+  > *:first-child {
+    margin-top: 0;
+  }
+  
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Ensure proper spacing between different list types */
+  ol + p, ul + p {
+    margin-top: 0.5rem;
+  }
+  
+  p + ol, p + ul {
+    margin-top: 0.35rem;
   }
 `;
 

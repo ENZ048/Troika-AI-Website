@@ -9,6 +9,7 @@ export { default as TypingIndicator } from './TypingIndicator';
 export { default as VoiceInputIndicatorComponent } from './VoiceInputIndicator';
 export { default as InputArea } from './InputArea';
 export { default as SuggestionButtons } from './SuggestionButtons';
+export { default as ServiceSelectionButtons } from './ServiceSelectionButtons';
 
 // Auth Components
 export { default as InlineAuth } from './InlineAuth';

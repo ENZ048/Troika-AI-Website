@@ -929,7 +929,7 @@ const ChatHeader = ({
               <OnlineIndicator />
               <span>Online</span>
               <StatusDivider className="hide-on-mobile">•</StatusDivider>
-              <span className="hide-on-mobile">Avg: 2s</span>
+              <span className="hide-on-mobile">Avg Response: 2s</span>
             </Status>
           </StatusBlock>
         </HeaderLeft>

@@ -17,6 +17,7 @@ import TypingIndicator from "./TypingIndicator";
 import VoiceInputIndicatorComponent from "./VoiceInputIndicator";
 import WelcomeSection from "./WelcomeSection";
 import Confetti from "./Confetti";
+import ServiceSelectionButtons from "./ServiceSelectionButtons";
 // import InlineAuth from "./InlineAuth";
 // import OtpVerification from "./OtpVerification";
 import InputArea from "./InputArea";
@@ -80,12 +81,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [welcomeMessage, setWelcomeMessage] = useState(getTimeBasedGreeting());
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
-  
-  // Debug logging for production
-  console.log('showWelcome state:', showWelcome);
-  console.log('NODE_ENV:', process.env.NODE_ENV);
+  const [showServiceSelection, setShowServiceSelection] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
-  const [hasShownConfetti, setHasShownConfetti] = useState(false);
   // Removed showSuggestions state - no longer needed
   // Removed "I'm interested" functionality
   // const [hasShownInterestResponse, setHasShownInterestResponse] = useState(false);
@@ -885,12 +882,6 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setMessage("");
       setIsTyping(true);
 
-      // Trigger confetti effect only on first message
-      if (!hasShownConfetti) {
-        setConfettiTrigger(prev => prev + 1);
-        setHasShownConfetti(true);
-      }
-
       // Increment user message count
       console.log('Incrementing user message count, current count:', userMessageCount);
       incrementUserMessageCount();
@@ -990,12 +981,48 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     ]
   );
 
+  const handleServiceSelection = useCallback((serviceName) => {
+    console.log('Service selected:', serviceName);
+    
+    // Hide service selection buttons
+    setShowServiceSelection(false);
+    
+    // Send pricing request message to backend
+    const pricingMessage = `give me pricing of ${serviceName}`;
+    handleSendMessage(pricingMessage);
+  }, [handleSendMessage]);
+
   const handleSuggestionClick = useCallback((action) => {
     console.log('Suggestion clicked:', action);
     setShowWelcome(false);
     
+    // Special handling for pricing - show service selection instead of sending message
+    if (action === 'pricing') {
+      // Add user message to chat history
+      const userMessage = { 
+        sender: "user", 
+        text: "What are your pricing plans?", 
+        timestamp: new Date() 
+      };
+      setChatHistory((prev) => [...prev, userMessage]);
+      
+      // Add bot message with service selection
+      setIsTyping(true);
+      setTimeout(() => {
+        const botMessage = {
+          sender: "bot",
+          text: "Which service are you interested in?",
+          timestamp: new Date(),
+          showServiceButtons: true // Flag to show service buttons
+        };
+        setChatHistory((prev) => [...prev, botMessage]);
+        setShowServiceSelection(true);
+        setIsTyping(false);
+      }, 500); // Small delay for natural feel
+      return;
+    }
+    
     const suggestionMessages = {
-      'pricing': 'What are your pricing plans?',
       'getting-started': 'How do I get started?',
       'languages': 'What languages do you support?',
       'demo': 'I would like to book a demo call'
@@ -1003,14 +1030,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     
     const message = suggestionMessages[action] || 'Tell me more about this';
 
-    // Trigger confetti only on first interaction
-    if (!hasShownConfetti) {
+    // Trigger confetti only on demo button click
+    if (action === 'demo') {
       setConfettiTrigger(prev => prev + 1);
-      setHasShownConfetti(true);
     }
 
     handleSendMessage(message);
-  }, [handleSendMessage, hasShownConfetti]);
+  }, [handleSendMessage]);
 
   // Voice recording handlers
   const handleMicClick = () => {
@@ -1128,18 +1154,25 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
               >
                 <MessagesInnerContainer>
                   {chatHistory.map((msg, idx) => (
-                    <MessageBubbleComponent
-                      key={idx}
-                      message={msg}
-                      index={idx}
-                      isUser={msg.sender === "user"}
-                      isTyping={isTyping}
-                      animatedMessageIdx={animatedMessageIdx}
-                      chatHistoryLength={chatHistory.length}
-                      currentlyPlaying={currentlyPlaying}
-                      playAudio={playAudio}
-                      setAnimatedMessageIdx={setAnimatedMessageIdx}
-                    />
+                    <React.Fragment key={idx}>
+                      <MessageBubbleComponent
+                        message={msg}
+                        index={idx}
+                        isUser={msg.sender === "user"}
+                        isTyping={isTyping}
+                        animatedMessageIdx={animatedMessageIdx}
+                        chatHistoryLength={chatHistory.length}
+                        currentlyPlaying={currentlyPlaying}
+                        playAudio={playAudio}
+                        setAnimatedMessageIdx={setAnimatedMessageIdx}
+                      />
+                      {msg.showServiceButtons && showServiceSelection && (
+                        <ServiceSelectionButtons
+                          isVisible={true}
+                          onServiceClick={handleServiceSelection}
+                        />
+                      )}
+                    </React.Fragment>
                   ))}
 
                   <TypingIndicator isTyping={isTyping} />

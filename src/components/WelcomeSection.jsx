@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useTheme } from "../contexts/ThemeContext";
+import { FaGlobe, FaBolt, FaRobot } from "react-icons/fa";
 
 const WelcomeContainer = styled.div`
   display: flex;
@@ -10,45 +11,42 @@ const WelcomeContainer = styled.div`
   padding: 4rem 2rem;
   text-align: center;
   background: transparent;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   position: relative;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
   width: 100%;
   max-width: 100%;
+  height: 100%;
   
   /* Force visibility in production */
   visibility: visible !important;
   opacity: 1 !important;
   display: flex !important;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-    animation: float 6s ease-in-out infinite;
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: -30%;
-    right: -30%;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
-    animation: float 8s ease-in-out infinite reverse;
+  &::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(30px, -30px) rotate(120deg); }
-    66% { transform: translate(-20px, 20px) rotate(240deg); }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 3px;
   }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5);
+  }
+
+  /* Firefox scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
@@ -169,6 +167,7 @@ const AvatarCircle = styled.div`
   box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
   position: relative;
   margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
 
   &::before {
     content: '';
@@ -186,6 +185,15 @@ const AvatarCircle = styled.div`
   @keyframes rotate {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px); 
+    }
+    50% { 
+      transform: translateY(-10px); 
+    }
   }
 
   /* Tablet responsive design */
@@ -330,7 +338,17 @@ const OnlineIndicator = styled.div`
   border-radius: 50%;
   border: 3px solid white;
   box-shadow: 0 0 0 2px #10b981;
-  animation: pulse 2s infinite;
+  animation: pulse 2s infinite, float-indicator 3s ease-in-out infinite;
+  animation-delay: 0.5s;
+
+  @keyframes float-indicator {
+    0%, 100% { 
+      transform: translateY(0px) scale(1); 
+    }
+    50% { 
+      transform: translateY(-2px) scale(1.05); 
+    }
+  }
 `;
 
 const GreetingText = styled.h1`
@@ -422,12 +440,14 @@ const SuggestionText = styled.span`
 
 const FeatureTags = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-top: 1.5rem;
+  margin-bottom: 2rem;
   position: relative;
   z-index: 2;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   
   /* Force visibility in production */
   visibility: visible !important;
@@ -446,166 +466,294 @@ const FeatureTags = styled.div`
   }
 
   @media (max-width: 768px) {
-    gap: 0.6rem;
-    margin-top: 0.875rem;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   @media (max-width: 640px) {
-    gap: 0.5rem;
-    margin-top: 0.75rem;
+    gap: 0.875rem;
+    margin-top: 2.25rem;
+    margin-bottom: 1.75rem;
+    max-width: 280px;
   }
 
   @media (max-width: 600px) {
-    gap: 0.4rem;
-    margin-top: 0.625rem;
+    gap: 0.875rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    max-width: 260px;
   }
 
   @media (max-width: 480px) {
-    gap: 0.3rem;
-    margin-top: 0.5rem;
+    gap: 0.875rem;
+    margin-top: 1.75rem;
+    margin-bottom: 1.25rem;
+    max-width: 240px;
   }
 
   @media (max-width: 414px) {
-    gap: 0.25rem;
-    margin-top: 0.4rem;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    max-width: 220px;
   }
 
   @media (max-width: 390px) {
-    gap: 0.2rem;
-    margin-top: 0.35rem;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.875rem;
+    max-width: 200px;
   }
 
   @media (max-width: 375px) {
-    gap: 0.15rem;
-    margin-top: 0.3rem;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    max-width: 180px;
   }
 
   @media (max-width: 360px) {
-    gap: 0.1rem;
-    margin-top: 0.25rem;
+    gap: 0.75rem;
+    margin-top: 0.875rem;
+    margin-bottom: 0.625rem;
+    max-width: 160px;
   }
 
   @media (max-width: 320px) {
-    gap: 0.05rem;
-    margin-top: 0.2rem;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    max-width: 140px;
+  }
+`;
+
+const ScrollIndicator = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+  opacity: ${props => props.$show ? 1 : 0};
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+
+  .scroll-text {
+    font-size: 0.75rem;
+    color: ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
+    font-weight: 500;
+  }
+
+  .scroll-arrow {
+    width: 20px;
+    height: 20px;
+    border: 2px solid ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: rotate(45deg) translateY(0);
+    }
+    40% {
+      transform: rotate(45deg) translateY(-5px);
+    }
+    60% {
+      transform: rotate(45deg) translateY(-3px);
+    }
   }
 `;
 
 const FeatureTag = styled.div`
-  background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  background: white;
+  color: #374151;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  min-width: 160px;
+  justify-content: center;
+  width: auto;
+  box-sizing: border-box;
   white-space: nowrap;
 
   &:hover {
-    background: rgba(139, 92, 246, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .feature-icon {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature-text {
+    font-weight: 600;
+    color: #1f2937;
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    margin-left: -0.25rem;
+  }
+
+  @media (min-width: 1001px) {
+    gap: 0.75rem;
+    
+    .feature-text {
+      margin-left: 0;
+    }
   }
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
-    padding: 0.45rem 0.9rem;
-    font-size: 0.8rem;
-    border-radius: 18px;
-    gap: 0.45rem;
+    padding: 0.875rem 1rem;
+    font-size: 0.85rem;
+    min-width: 120px;
   }
 
   @media (max-width: 900px) {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-    border-radius: 16px;
-    gap: 0.4rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.8rem;
+    min-width: 110px;
   }
 
   @media (max-width: 768px) {
-    padding: 0.35rem 0.7rem;
-    font-size: 0.7rem;
-    border-radius: 14px;
-    gap: 0.35rem;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    min-width: 100%;
     width: 100%;
-    max-width: 200px;
-    justify-content: center;
+    max-width: 100%;
+    justify-content: flex-start;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 640px) {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.65rem;
-    border-radius: 12px;
-    gap: 0.3rem;
-    max-width: 180px;
+    padding: 0.9rem 1rem;
+    font-size: 0.85rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 600px) {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.6rem;
-    border-radius: 10px;
-    gap: 0.25rem;
-    max-width: 160px;
+    padding: 0.85rem 0.9rem;
+    font-size: 0.8rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 480px) {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.55rem;
-    border-radius: 8px;
-    gap: 0.2rem;
-    max-width: 140px;
+    padding: 0.8rem 0.85rem;
+    font-size: 0.75rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 414px) {
-    padding: 0.18rem 0.35rem;
-    font-size: 0.5rem;
-    border-radius: 7px;
-    gap: 0.18rem;
-    max-width: 120px;
+    padding: 0.75rem 0.8rem;
+    font-size: 0.7rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 390px) {
-    padding: 0.15rem 0.3rem;
-    font-size: 0.48rem;
-    border-radius: 6px;
-    gap: 0.15rem;
-    max-width: 110px;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.65rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 375px) {
-    padding: 0.12rem 0.25rem;
-    font-size: 0.45rem;
-    border-radius: 5px;
-    gap: 0.12rem;
-    max-width: 100px;
+    padding: 0.65rem 0.7rem;
+    font-size: 0.6rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 360px) {
-    padding: 0.1rem 0.2rem;
-    font-size: 0.42rem;
-    border-radius: 4px;
-    gap: 0.1rem;
-    max-width: 90px;
+    padding: 0.6rem 0.65rem;
+    font-size: 0.55rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 
   @media (max-width: 320px) {
-    padding: 0.08rem 0.15rem;
-    font-size: 0.4rem;
-    border-radius: 3px;
-    gap: 0.08rem;
-    max-width: 80px;
+    padding: 0.55rem 0.6rem;
+    font-size: 0.5rem;
+    min-width: 100%;
+    max-width: 100%;
+    gap: 0;
+    
+    .feature-text {
+      margin-left: -0.5rem;
+    }
   }
 `;
 
 const WelcomeSection = ({ onSuggestionClick }) => {
   const { isDarkMode } = useTheme();
+  const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
 
   const suggestions = [
     {
@@ -631,52 +779,78 @@ const WelcomeSection = ({ onSuggestionClick }) => {
   ];
 
   const features = [
-    { icon: "💬", text: "80+ Languages" },
-    { icon: "⚡", text: "Instant Responses" },
-    { icon: "✨", text: "AI-Powered" }
+    { icon: FaGlobe, text: "80+ Languages", color: "#3B82F6" },
+    { icon: FaBolt, text: "Instant Responses", color: "#F59E0B" },
+    { icon: FaRobot, text: "AI-Powered", color: "#8B5CF6" }
   ];
 
-  return (
-    <WelcomeContainer>
-      <AvatarContainer>
-        <AvatarCircle>
-          <AvatarImage
-            src="https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png"
-            alt="Supa Agent"
-            onError={(e) => {
-              e.target.src = "https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png";
-            }}
-          />
-          <OnlineIndicator />
-        </AvatarCircle>
-      </AvatarContainer>
-      
-      <GreetingText $isDarkMode={isDarkMode}>Hi! I'm Supa Agent 👋</GreetingText>
-      <SubText $isDarkMode={isDarkMode}>Your AI assistant ready to help in any language! 🌍</SubText>
+  // Check if content overflows and show scroll indicator
+  React.useEffect(() => {
+    const checkScrollable = () => {
+      const container = document.querySelector('[data-welcome-container]');
+      if (container) {
+        const isScrollable = container.scrollHeight > container.clientHeight;
+        setShowScrollIndicator(isScrollable);
+      }
+    };
 
-      <SuggestionsContainer>
-        {suggestions.map((suggestion, index) => (
-          <SuggestionCard
-            key={index}
-            $isDarkMode={isDarkMode}
-            onClick={() => onSuggestionClick && onSuggestionClick(suggestion.action)}
-          >
-            <SuggestionIcon>{suggestion.icon}</SuggestionIcon>
-            <SuggestionText $isDarkMode={isDarkMode}>{suggestion.text}</SuggestionText>
-          </SuggestionCard>
-        ))}
-      </SuggestionsContainer>
-      
-      <FeatureTags>
-        {features.map((feature, index) => (
-          <FeatureTag key={index}>
-            <span>{feature.icon}</span>
-            <span>{feature.text}</span>
-          </FeatureTag>
-        ))}
-      </FeatureTags>
-      
-    </WelcomeContainer>
+    checkScrollable();
+    window.addEventListener('resize', checkScrollable);
+    return () => window.removeEventListener('resize', checkScrollable);
+  }, []);
+
+  return (
+    <>
+      <WelcomeContainer data-welcome-container>
+        <AvatarContainer>
+          <AvatarCircle>
+            <AvatarImage
+              src="https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png"
+              alt="Supa Agent"
+              onError={(e) => {
+                e.target.src = "https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png";
+              }}
+            />
+            <OnlineIndicator />
+          </AvatarCircle>
+        </AvatarContainer>
+        
+        <GreetingText $isDarkMode={isDarkMode}>Hi! I'm Supa Agent 👋</GreetingText>
+        <SubText $isDarkMode={isDarkMode}>Your AI assistant ready to help in any language! 🌍</SubText>
+
+        <SuggestionsContainer>
+          {suggestions.map((suggestion, index) => (
+            <SuggestionCard
+              key={index}
+              $isDarkMode={isDarkMode}
+              onClick={() => onSuggestionClick && onSuggestionClick(suggestion.action)}
+            >
+              <SuggestionIcon>{suggestion.icon}</SuggestionIcon>
+              <SuggestionText $isDarkMode={isDarkMode}>{suggestion.text}</SuggestionText>
+            </SuggestionCard>
+          ))}
+        </SuggestionsContainer>
+        
+        <FeatureTags>
+          {features.map((feature, index) => {
+            const IconComponent = feature.icon;
+            return (
+              <FeatureTag key={index}>
+                <div className="feature-icon" style={{ color: feature.color }}>
+                  <IconComponent />
+                </div>
+                <span className="feature-text">{feature.text}</span>
+              </FeatureTag>
+            );
+          })}
+        </FeatureTags>
+      </WelcomeContainer>
+
+      <ScrollIndicator $show={showScrollIndicator} $isDarkMode={isDarkMode}>
+        <div className="scroll-text">Scroll to view all content</div>
+        <div className="scroll-arrow"></div>
+      </ScrollIndicator>
+    </>
   );
 };
 

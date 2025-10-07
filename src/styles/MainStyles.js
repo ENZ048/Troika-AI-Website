@@ -369,13 +369,30 @@ export const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
   overflow-x: visible;
-  padding: 0.5rem 0 0 0; /* Removed horizontal padding for full screen */
+  padding: 1.5rem; /* Match Reference.jsx p-6 (24px) */
   display: flex;
   flex-direction: column;
   min-height: 0;
   position: relative;
   background: transparent;
   width: 100%;
+
+  /* Responsive padding to match Reference.jsx behavior */
+  @media (max-width: 768px) {
+    padding: 1rem; /* p-4 (16px) */
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.75rem; /* p-3 (12px) */
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem; /* p-2 (8px) */
+  }
+
+  @media (max-width: 375px) {
+    padding: 0.25rem; /* p-1 (4px) */
+  }
   max-width: 100%;
   margin: 0;
   display: flex;
@@ -397,7 +414,7 @@ export const MessagesContainer = styled.div`
 
 export const MessagesInnerContainer = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -460,4 +477,33 @@ export const MessageContainer = styled.div`
   gap: 10px; /* Adds space between messages */
   padding: 0.75rem 0.5rem; /* Minimal horizontal padding for hover effects */
   overflow: visible;
+
+  /* Reduce horizontal padding on smaller screens */
+  @media (max-width: 768px) {
+    padding: 0.75rem 0.25rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.75rem 0.2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 0.15rem;
+  }
+
+  @media (max-width: 414px) {
+    padding: 0.75rem 0.1rem;
+  }
+
+  @media (max-width: 375px) {
+    padding: 0.75rem 0.05rem;
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.75rem 0.025rem;
+  }
+
+  @media (max-width: 320px) {
+    padding: 0.75rem 0;
+  }
 `;

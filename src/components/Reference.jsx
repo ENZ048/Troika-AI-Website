@@ -590,7 +590,7 @@ User's message: `;
       </div>
 
       <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-6 shadow-2xl z-10">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg transform hover:scale-110 transition-transform">
@@ -904,7 +904,7 @@ User's message: `;
           </div>
         )}
         
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-3xl mx-auto space-y-6">
           {showWelcome && messages.length === 0 && (
             <div className="text-center space-y-8 py-12 animate-fade-in">
               <div className="relative inline-block">
@@ -1035,7 +1035,7 @@ User's message: `;
 
       {uploadedFiles.length > 0 && (
         <div className="px-6 pb-2">
-          <div className="max-w-4xl mx-auto flex gap-2 flex-wrap">
+          <div className="max-w-3xl mx-auto flex gap-2 flex-wrap">
             {uploadedFiles.map(file => (
               <div key={file.id} className={`flex items-center gap-2 ${theme.cardBg} px-3 py-2 rounded-lg border ${theme.border} shadow-sm`}>
                 <FileText size={16} className="text-blue-500" />
@@ -1051,7 +1051,7 @@ User's message: `;
       )}
 
       <div className={`relative ${theme.inputBg} border-t ${theme.border} p-6 shadow-2xl z-10`}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="flex items-end gap-3">
             <button
               onClick={() => fileInputRef.current?.click()}
