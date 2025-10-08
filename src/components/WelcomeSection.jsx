@@ -9,6 +9,7 @@ const WelcomeContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   padding: 4rem 2rem;
+  padding-top: 6rem; /* Extra space above to prevent touching header */
   text-align: center;
   background: transparent;
   flex: 1 1 auto;
@@ -51,56 +52,74 @@ const WelcomeContainer = styled.div`
   /* Tablet responsive design */
   @media (max-width: 1024px) {
     padding: 0.5rem 1.5rem;
+    padding-top: 5rem; /* Reduced top padding for tablets */
     justify-content: flex-start;
   }
 
   @media (max-width: 900px) {
     padding: 2.5rem 1.25rem;
+    padding-top: 5.5rem; /* Adequate space for floating avatar */
     justify-content: flex-start;
   }
 
   @media (max-width: 768px) {
     padding: 2rem 1rem;
+    padding-top: 5rem; /* Good spacing for mobile */
     justify-content: flex-start;
   }
 
   @media (max-width: 640px) {
     padding: 1.5rem 0.75rem;
+    padding-top: 4.5rem; /* Reduced but safe spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 600px) {
     padding: 1.25rem 0.5rem;
+    padding-top: 4rem; /* Compact but safe */
     justify-content: flex-start;
   }
 
   @media (max-width: 480px) {
     padding: 1rem 0.4rem;
+    padding-top: 3.5rem; /* Mobile-optimized spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 414px) {
     padding: 0.875rem 0.3rem;
+    padding-top: 3rem; /* iPhone Plus spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 390px) {
     padding: 0.75rem 0.25rem;
+    padding-top: 2.75rem; /* Small phone spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 375px) {
     padding: 0.625rem 0.2rem;
+    padding-top: 2.5rem; /* iPhone standard spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 360px) {
     padding: 0.5rem 0.15rem;
+    padding-top: 2.25rem; /* Android standard spacing */
     justify-content: flex-start;
   }
 
   @media (max-width: 320px) {
-    padding: 0.4rem 0.1rem;
+    padding: 0.3rem 0.05rem;
+    padding-top: 2rem; /* Very small screen spacing */
+    justify-content: flex-start;
+  }
+
+  /* Extra small screens */
+  @media (max-width: 280px) {
+    padding: 0.2rem 0.025rem;
+    padding-top: 1.75rem; /* Minimal but safe spacing */
     justify-content: flex-start;
   }
 `;
@@ -109,50 +128,68 @@ const AvatarContainer = styled.div`
   position: relative;
   z-index: 2;
   margin-bottom: 1.5rem;
+  margin-top: 1rem; /* Additional top margin for extra safety */
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
     margin-bottom: 1.25rem;
+    margin-top: 0.75rem;
   }
 
   @media (max-width: 900px) {
     margin-bottom: 1rem;
+    margin-top: 0.75rem;
   }
 
   @media (max-width: 768px) {
     margin-bottom: 0.875rem;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 640px) {
     margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 600px) {
     margin-bottom: 0.625rem;
+    margin-top: 0.4rem;
   }
 
   @media (max-width: 480px) {
     margin-bottom: 0.5rem;
+    margin-top: 0.4rem;
   }
 
   @media (max-width: 414px) {
     margin-bottom: 0.4rem;
+    margin-top: 0.3rem;
   }
 
   @media (max-width: 390px) {
     margin-bottom: 0.35rem;
+    margin-top: 0.3rem;
   }
 
   @media (max-width: 375px) {
     margin-bottom: 0.3rem;
+    margin-top: 0.25rem;
   }
 
   @media (max-width: 360px) {
     margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
   }
 
   @media (max-width: 320px) {
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.2rem;
+  }
+
+  /* Extra small screens */
+  @media (max-width: 280px) {
+    margin-bottom: 0.4rem;
+    margin-top: 0.2rem;
   }
 `;
 
@@ -182,6 +219,25 @@ const AvatarCircle = styled.div`
     animation: rotate 3s linear infinite;
   }
 
+  /* Reduce border thickness on smaller screens */
+  @media (max-width: 480px) {
+    &::before {
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    &::before {
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+    }
+  }
+
   @keyframes rotate {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -193,6 +249,20 @@ const AvatarCircle = styled.div`
     }
     50% { 
       transform: translateY(-10px); 
+    }
+  }
+
+  /* Reduce floating animation on smaller screens */
+  @media (max-width: 480px) {
+    animation: floatMobile 3s ease-in-out infinite;
+  }
+
+  @keyframes floatMobile {
+    0%, 100% { 
+      transform: translateY(0px); 
+    }
+    50% { 
+      transform: translateY(-5px); 
     }
   }
 
@@ -258,9 +328,18 @@ const AvatarCircle = styled.div`
   }
 
   @media (max-width: 320px) {
-    width: 55px;
-    height: 55px;
-    margin-bottom: 0.1rem;
+    width: 70px;
+    height: 70px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25);
+  }
+
+  /* Extra small screens - maintain minimum usable size */
+  @media (max-width: 280px) {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 0.4rem;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
   }
 `;
 
@@ -323,8 +402,14 @@ const AvatarImage = styled.img`
   }
 
   @media (max-width: 320px) {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Extra small screens - maintain minimum usable size */
+  @media (max-width: 280px) {
+    width: 45px;
+    height: 45px;
   }
 `;
 
@@ -349,6 +434,34 @@ const OnlineIndicator = styled.div`
       transform: translateY(-2px) scale(1.05); 
     }
   }
+
+  /* Responsive sizing for smaller screens */
+  @media (max-width: 480px) {
+    width: 14px;
+    height: 14px;
+    top: 8px;
+    right: 8px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #10b981;
+  }
+
+  @media (max-width: 375px) {
+    width: 12px;
+    height: 12px;
+    top: 6px;
+    right: 6px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #10b981;
+  }
+
+  @media (max-width: 320px) {
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    right: 5px;
+    border: 1px solid white;
+    box-shadow: 0 0 0 1px #10b981;
+  }
 `;
 
 const GreetingText = styled.h1`
@@ -359,9 +472,24 @@ const GreetingText = styled.h1`
   position: relative;
   z-index: 2;
   transition: color 0.3s ease;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   @media (max-width: 768px) {
     font-size: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.75rem;
+  }
+
+  @media (max-width: 375px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 1.25rem;
   }
 `;
 
@@ -372,9 +500,27 @@ const SubText = styled.p`
   position: relative;
   z-index: 2;
   transition: color 0.3s ease;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   @media (max-width: 768px) {
     font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem 0;
+  }
+
+  @media (max-width: 375px) {
+    font-size: 0.85rem;
+    margin: 0 0 1.25rem 0;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 0.8rem;
+    margin: 0 0 1rem 0;
   }
 `;
 
@@ -398,6 +544,23 @@ const SuggestionsContainer = styled.div`
     gap: 0.75rem;
     max-width: 400px;
   }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  @media (max-width: 375px) {
+    gap: 0.4rem;
+    padding: 0 0.25rem;
+  }
+
+  @media (max-width: 320px) {
+    gap: 0.3rem;
+    padding: 0 0.1rem;
+  }
 `;
 
 const SuggestionCard = styled.button`
@@ -412,6 +575,8 @@ const SuggestionCard = styled.button`
   transition: all 0.2s ease;
   text-align: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  min-height: 60px;
 
   &:hover {
     transform: translateY(-2px);
@@ -422,11 +587,41 @@ const SuggestionCard = styled.button`
   &:active {
     transform: translateY(0);
   }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    gap: 0.5rem;
+    min-height: 50px;
+  }
+
+  @media (max-width: 375px) {
+    padding: 0.6rem;
+    gap: 0.4rem;
+    min-height: 45px;
+  }
+
+  @media (max-width: 320px) {
+    padding: 0.5rem;
+    gap: 0.3rem;
+    min-height: 40px;
+  }
 `;
 
 const SuggestionIcon = styled.div`
   font-size: 1.5rem;
   flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 375px) {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 1rem;
+  }
 `;
 
 const SuggestionText = styled.span`
@@ -435,6 +630,21 @@ const SuggestionText = styled.span`
   color: ${props => props.$isDarkMode ? '#e5e7eb' : '#374151'};
   flex: 1;
   transition: color 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 375px) {
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 320px) {
+    font-size: 0.75rem;
+  }
 `;
 
 
@@ -475,6 +685,28 @@ const FeatureTags = styled.div`
     max-width: 300px;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  @media (max-width: 375px) {
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0 0.25rem;
+  }
+
+  @media (max-width: 320px) {
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1rem;
+    padding: 0 0.1rem;
   }
 
   @media (max-width: 640px) {
@@ -577,6 +809,9 @@ const ScrollIndicator = styled.div`
   }
 `;
 
+// =======================================================
+// THIS IS THE CORRECTED PART (REVERTED TO NO WRAPPING)
+// =======================================================
 const FeatureTag = styled.div`
   background: white;
   color: #374151;
@@ -590,11 +825,12 @@ const FeatureTag = styled.div`
   border: none;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  min-width: 160px;
+  width: fit-content;
+  max-width: 100%;
   justify-content: center;
-  width: auto;
   box-sizing: border-box;
   white-space: nowrap;
+  overflow: visible;
 
   &:hover {
     transform: translateY(-2px);
@@ -617,6 +853,10 @@ const FeatureTag = styled.div`
     overflow-wrap: break-word;
     hyphens: auto;
     margin-left: -0.25rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+    max-width: none;
   }
 
   @media (min-width: 1001px) {
@@ -631,122 +871,166 @@ const FeatureTag = styled.div`
   @media (max-width: 1024px) {
     padding: 0.875rem 1rem;
     font-size: 0.85rem;
-    min-width: 120px;
   }
 
   @media (max-width: 900px) {
     padding: 0.8rem 0.9rem;
     font-size: 0.8rem;
-    min-width: 110px;
   }
 
   @media (max-width: 768px) {
     padding: 1rem 1.25rem;
     font-size: 0.9rem;
-    min-width: 100%;
-    width: 100%;
+    width: fit-content;
     max-width: 100%;
-    justify-content: flex-start;
-    gap: 0;
+    justify-content: center;
+    gap: 0.5rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
     }
   }
 
   @media (max-width: 640px) {
     padding: 0.9rem 1rem;
     font-size: 0.85rem;
-    min-width: 100%;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.4rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
     }
   }
 
   @media (max-width: 600px) {
     padding: 0.85rem 0.9rem;
     font-size: 0.8rem;
-    min-width: 100%;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.3rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
     }
   }
 
   @media (max-width: 480px) {
     padding: 0.8rem 0.85rem;
     font-size: 0.75rem;
-    min-width: 100%;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.3rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
     }
   }
 
   @media (max-width: 414px) {
     padding: 0.75rem 0.8rem;
-    font-size: 0.7rem;
-    min-width: 100%;
+    font-size: 0.75rem;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.3rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
     }
   }
 
   @media (max-width: 390px) {
     padding: 0.7rem 0.75rem;
-    font-size: 0.65rem;
-    min-width: 100%;
+    font-size: 0.7rem;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.2rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.4rem;
     }
   }
 
   @media (max-width: 375px) {
     padding: 0.65rem 0.7rem;
-    font-size: 0.6rem;
-    min-width: 100%;
+    font-size: 0.65rem;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.2rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.35rem;
     }
   }
 
   @media (max-width: 360px) {
     padding: 0.6rem 0.65rem;
-    font-size: 0.55rem;
-    min-width: 100%;
+    font-size: 0.6rem;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.2rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.3rem;
     }
   }
 
   @media (max-width: 320px) {
-    padding: 0.55rem 0.6rem;
-    font-size: 0.5rem;
-    min-width: 100%;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.6rem;
+    width: fit-content;
     max-width: 100%;
-    gap: 0;
+    gap: 0.4rem;
     
     .feature-text {
-      margin-left: -0.5rem;
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.4rem;
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 280px) {
+    padding: 0.45rem 0.5rem;
+    font-size: 0.55rem;
+    width: fit-content;
+    max-width: 100%;
+    gap: 0.3rem;
+    
+    .feature-text {
+      margin-left: 0;
+      max-width: none;
+    }
+
+    .feature-icon {
+      font-size: 1.3rem;
     }
   }
 `;

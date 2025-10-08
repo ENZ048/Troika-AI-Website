@@ -390,8 +390,16 @@ export const MessagesContainer = styled.div`
     padding: 0.5rem; /* p-2 (8px) */
   }
 
+  @media (max-width: 414px) {
+    padding: 0.4rem; /* Smaller padding for small phones */
+  }
+
   @media (max-width: 375px) {
-    padding: 0.25rem; /* p-1 (4px) */
+    padding: 0.3rem; /* p-1 (4px) */
+  }
+
+  @media (max-width: 320px) {
+    padding: 0.2rem; /* Minimal padding for very small screens */
   }
   max-width: 100%;
   margin: 0;
