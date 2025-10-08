@@ -993,6 +993,46 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     handleSendMessage(pricingMessage);
   }, [handleSendMessage]);
 
+  const handleBackToWelcome = useCallback(() => {
+    console.log('Back to welcome clicked');
+    
+    // Reset chat state to show welcome screen
+    setShowWelcome(true);
+    setChatHistory([]);
+    setMessage("");
+    setIsTyping(false);
+    setAnimatedMessageIdx(null);
+    setShowServiceSelection(false);
+    setUserMessageCount(0);
+    
+    // Clear any currently playing audio
+    stopAudio();
+    
+    // Reset greeting state
+    setFinalGreetingReady(false);
+    lastGeneratedGreeting.current = null;
+    greetingAutoPlayed.current = false;
+    pendingGreetingAudio.current = null;
+    
+    // Clear user message count from localStorage
+    if (sessionId && chatbotId) {
+      try {
+        const key = `supa_user_message_count:${chatbotId}:${sessionId}`;
+        localStorage.removeItem(key);
+        console.log('Cleared user message count from localStorage');
+      } catch (error) {
+        console.error("Error clearing user message count:", error);
+      }
+    }
+    
+    // Generate new session ID for fresh start
+    const newSessionId = crypto.randomUUID();
+    localStorage.setItem("sessionId", newSessionId);
+    setSessionId(newSessionId);
+    
+    console.log('Reset to welcome screen with new session:', newSessionId);
+  }, [sessionId, chatbotId, stopAudio]);
+
   const handleSuggestionClick = useCallback((action) => {
     console.log('Suggestion clicked:', action);
     setShowWelcome(false);
@@ -1145,6 +1185,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
               chatbotLogo={chatbotLogo}
               isMuted={isMuted}
               toggleMute={toggleMute}
+              onBackClick={!showWelcome ? handleBackToWelcome : null}
             />
 
             <ChatContainer $isWelcomeMode={showWelcome}>

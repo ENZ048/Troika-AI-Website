@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
-import { FiZap, FiUsers, FiMoon, FiSun, FiSettings } from "react-icons/fi";
+import { FiZap, FiUsers, FiMoon, FiSun, FiSettings, FiArrowLeft } from "react-icons/fi";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Header = styled.div`
@@ -19,6 +19,27 @@ const Header = styled.div`
   min-height: 80px;
   width: 100%;
   transition: background 0.3s ease;
+  
+  /* Add left padding to accommodate back button */
+  @media (min-width: 901px) {
+    padding-left: 3rem; /* Space for back button on large screens */
+  }
+  
+  /* Back button positioned at absolute leftmost of screen */
+  .back-button {
+    position: absolute;
+    left: 0; /* True leftmost edge of screen */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    flex-shrink: 0;
+    color: white; /* Make back icon white */
+    
+    /* Hide absolutely positioned back button on screens below 900px */
+    @media (max-width: 900px) {
+      display: none;
+    }
+  }
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
@@ -897,6 +918,58 @@ const HeaderButton = styled.button`
     svg { font-size: 0.7rem; }
     span { display: none; }
   }
+
+  /* Back button specific styling */
+  &.back-button {
+    background: transparent;
+    border-radius: 0 8px 8px 0; /* Rounded on right side only */
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    
+    &:hover {
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    .back-text {
+      display: inline;
+      margin-left: 0.5rem;
+      
+      /* Show text only on large screens (1440px and above) */
+      @media (max-width: 1439px) {
+        display: none;
+      }
+    }
+    
+    /* Ensure proper spacing for icon-only mode on mobile */
+    @media (max-width: 768px) {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0.5rem;
+    }
+  }
+  
+  /* Inline back button styling (replaces settings on smaller screens) */
+  &.back-button-inline {
+    /* Same styling as other header buttons */
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white; /* Make back icon white */
+    font-size: 1.2rem;
+    min-width: 36px;
+    min-height: 36px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+  }
 `;
 
 const ChatHeader = ({
@@ -905,14 +978,36 @@ const ChatHeader = ({
   isCharging,
   chatbotLogo,
   isMuted,
-  toggleMute
+  toggleMute,
+  onBackClick
 }) => {
   const { isDarkMode, toggleTheme } = useTheme();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 900);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
     <Header $isDarkMode={isDarkMode}>
       <HeaderInner>
         <HeaderLeft>
+          {onBackClick && (
+            <HeaderButton
+              title="Go back to main menu"
+              onClick={onBackClick}
+              className="back-button"
+            >
+              <FiArrowLeft />
+              <span className="back-text">Go back to Main Menu</span>
+            </HeaderButton>
+          )}
           <Circle $size={50}>
             <Avatar
               src={chatbotLogo}
@@ -952,9 +1047,20 @@ const ChatHeader = ({
           >
             {isDarkMode ? <FiSun /> : <FiMoon />}
           </HeaderButton>
-          <HeaderButton title="Settings">
-            <FiSettings />
-          </HeaderButton>
+          {/* Show back button on small screens, settings on large screens */}
+          {isSmallScreen && onBackClick ? (
+            <HeaderButton 
+              title="Go back to main menu"
+              onClick={onBackClick}
+              className="back-button-inline"
+            >
+              <FiArrowLeft />
+            </HeaderButton>
+          ) : !isSmallScreen ? (
+            <HeaderButton title="Settings">
+              <FiSettings />
+            </HeaderButton>
+          ) : null}
         </HeaderRight>
       </HeaderInner>
     </Header>
