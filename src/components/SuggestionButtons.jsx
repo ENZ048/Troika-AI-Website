@@ -63,7 +63,7 @@ const SuggestionButton = styled.button`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
   flex-shrink: 0;
-  max-width: 350px;
+  max-width: 400px;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -114,28 +114,31 @@ const SuggestionButton = styled.button`
   @media (max-width: 1024px) {
     padding: 0.45rem 0.9rem;
     font-size: 0.8rem;
+    max-width: 400px;
   }
 
   @media (max-width: 768px) {
     padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
+    max-width: 450px;
   }
 
   @media (max-width: 640px) {
     padding: 0.35rem 0.7rem;
     font-size: 0.7rem;
+    max-width: 500px;
   }
 
   @media (max-width: 480px) {
     padding: 0.3rem 0.6rem;
     font-size: 0.65rem;
-    max-width: 280px;
+    max-width: 350px;
   }
 
   @media (max-width: 360px) {
     padding: 0.25rem 0.5rem;
     font-size: 0.6rem;
-    max-width: 250px;
+    max-width: 320px;
   }
 `;
 
