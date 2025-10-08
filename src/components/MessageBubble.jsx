@@ -4,6 +4,7 @@ import TypewriterMarkdown from "./TypewriterMarkdown";
 import ReactMarkdown from "react-markdown";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
+import SuggestionButtons from "./SuggestionButtons";
 
 const MessageWrapper = styled.div`
   display: flex;
@@ -290,7 +291,8 @@ const MessageBubbleComponent = ({
   chatHistoryLength,
   currentlyPlaying,
   playAudio,
-  setAnimatedMessageIdx
+  setAnimatedMessageIdx,
+  onSuggestionClick
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -390,6 +392,15 @@ const MessageBubbleComponent = ({
               )}
             </PlayButton>
           </AudioButtonWrapper>
+        )}
+
+        {/* Suggestion buttons for bot messages */}
+        {!isUser && message.suggestions && message.suggestions.length > 0 && (
+          <SuggestionButtons
+            suggestions={message.suggestions}
+            onSuggestionClick={onSuggestionClick}
+            isDarkMode={isDarkMode}
+          />
         )}
       </MessageContainer>
     </MessageWrapper>

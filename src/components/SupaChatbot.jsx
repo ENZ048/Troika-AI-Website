@@ -897,12 +897,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         console.log('Sending request to backend:', requestData);
         const response = await axios.post(`${apiBase}/chat/query`, requestData);
 
-        const { answer, audio, requiresAuthNext, auth_method } = response.data;
+        const { answer, audio, requiresAuthNext, auth_method, suggestions } = response.data;
 
         const botMessage = {
           sender: "bot",
           text: answer || "Sorry, I couldn't get that.",
           audio,
+          suggestions: suggestions || [],
           timestamp: new Date(),
         };
         
@@ -1034,6 +1035,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     handleSendMessage(message);
   }, [handleSendMessage]);
 
+  // Handler for suggestion buttons from bot responses
+  const handleBotSuggestionClick = useCallback((suggestionText) => {
+    console.log('Bot suggestion clicked:', suggestionText);
+    setShowWelcome(false);
+    handleSendMessage(suggestionText);
+  }, [handleSendMessage]);
+
   // Voice recording handlers
   const handleMicClick = () => {
     if (!isMobile) {
@@ -1161,6 +1169,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
                         currentlyPlaying={currentlyPlaying}
                         playAudio={playAudio}
                         setAnimatedMessageIdx={setAnimatedMessageIdx}
+                        onSuggestionClick={handleBotSuggestionClick}
                       />
                       {msg.showServiceButtons && showServiceSelection && (
                         <ServiceSelectionButtons
