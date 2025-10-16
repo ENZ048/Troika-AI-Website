@@ -8,20 +8,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Import components
 import DeviceFrameComponent from "./DeviceFrame";
 import ChatHeader from "./ChatHeader";
 import MessageBubbleComponent from "./MessageBubble";
+import TypingIndicator from "./TypingIndicator";
 import VoiceInputIndicatorComponent from "./VoiceInputIndicator";
 import WelcomeSection from "./WelcomeSection";
 import Confetti from "./Confetti";
 import ServiceSelectionButtons from "./ServiceSelectionButtons";
 import Sidebar from "./Sidebar";
 import SocialFeedPanel from "./SocialFeedPanel";
-import StreamingMessage from "./StreamingMessage";
+// import InlineAuth from "./InlineAuth";
+// import OtpVerification from "./OtpVerification";
 import InlineAuth from "./InlineAuth";
 import OtpVerification from "./OtpVerification";
+import StreamingMessage from "./StreamingMessage";
 import InputArea from "./InputArea";
 // Removed SuggestionButtons import - no longer needed
 
@@ -37,7 +41,8 @@ import { useBattery } from "../hooks/useBattery";
 import { useClock } from "../hooks/useClock";
 import { useAudio } from "../hooks/useAudio";
 import { useVoiceRecording } from "../hooks/useVoiceRecording";
-import { useStreamingChat } from "../hooks/useStreamingChat";
+import useAuthentication from "../hooks/useAuthentication";
+import useStreamingChat from "../hooks/useStreamingChat";
 
 // Import utils
 import { getTimeBasedGreeting } from "../utils/timeUtils";
@@ -48,43 +53,22 @@ import frontendInactivityManager from "../services/frontendInactivityManager";
 
 const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const { isDarkMode } = useTheme();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // State management
   const [showChat, setShowChat] = useState(true);
-  const [phone, setPhone] = useState(""); // User's WhatsApp number for OTP authentication
+  const [phone, setPhone] = useState("9999999999"); // Default phone for backend auth requirement
   const [otpSent, setOtpSent] = useState(false);
+  const [isPageRefresh, setIsPageRefresh] = useState(true); // Track if this is a page refresh
   const [otp, setOtp] = useState("");
-  const [verified, setVerified] = useState(false); // Changed to false - require auth
+  const [verified, setVerified] = useState(true);
   const [loadingOtp, setLoadingOtp] = useState(false);
   const [loadingVerify, setLoadingVerify] = useState(false);
   const [message, setMessage] = useState("");
-
-  // Per-tab chat histories - each tab maintains its own conversation history
-  const [chatHistories, setChatHistories] = useState({
-    home: [],
-    'ai-websites': [],
-    'ai-calling': [],
-    'ai-whatsapp': [],
-    'ai-telegram': [],
-    'industry-use-cases': [],
-    'social-media': []
-  });
-
-  // Per-tab state management - each tab has independent states
-  const [tabStates, setTabStates] = useState({
-    home: { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'ai-websites': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'ai-calling': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'ai-whatsapp': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'ai-telegram': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'industry-use-cases': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null },
-    'social-media': { isTyping: false, animatedMessageIdx: null, message: '', currentStreamingMessageId: null }
-  });
-
-  // Enable streaming mode by default
-  const [enableStreaming, setEnableStreaming] = useState(true);
-
+  const [chatHistory, setChatHistory] = useState([]);
   const [isResetting, setIsResetting] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [resendTimeout, setResendTimeout] = useState(0);
   const [resendIntervalId, setResendIntervalId] = useState(null);
@@ -92,8 +76,6 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [needsAuth, setNeedsAuth] = useState(false);
-  const [authMethod, setAuthMethod] = useState("whatsapp");
-  const [email, setEmail] = useState("");
   const [showAuthScreen, setShowAuthScreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [requireAuthText, setRequireAuthText] = useState(
@@ -103,6 +85,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [showInlineAuth, setShowInlineAuth] = useState(false);
   const [showInlineAuthInput, setShowInlineAuthInput] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [currentAuthValue, setCurrentAuthValue] = useState('');
   const [chatbotLogo, setChatbotLogo] = useState(
     "https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png"
   );
@@ -114,7 +97,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [showServiceSelection, setShowServiceSelection] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activePage, setActivePage] = useState('home');
+  // Removed activePage state - now using React Router
   const [socialFeedOpen, setSocialFeedOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   // Removed showSuggestions state - no longer needed
@@ -142,89 +125,233 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const currentTime = useClock();
   const { playAudio, stopAudio, currentlyPlaying, audioObject, toggleMuteForCurrentAudio, muteCurrentAudio, ensureAudioMuted } = useAudio(isMuted, hasUserInteracted);
   const { isRecording, startRecording, stopRecording } = useVoiceRecording(apiBase);
+  
+  // Authentication and streaming hooks
+  const {
+    isAuthenticated,
+    authToken,
+    userInfo,
+    loading: authLoading,
+    error: authError,
+    resendCooldown,
+    sendOtp,
+    verifyOtp,
+    logout,
+    resendOtp
+  } = useAuthentication(apiBase);
 
-  // Helper functions for per-tab chat history management
-  const getCurrentChatHistory = useCallback(() => {
-    return chatHistories[activePage] || [];
-  }, [chatHistories, activePage]);
+  // State for tracking the currently streaming message
+  const [currentStreamingMessageId, setCurrentStreamingMessageId] = useState(null);
 
-  const setCurrentChatHistory = useCallback((updater) => {
-    setChatHistories(prev => {
-      const currentHistory = prev[activePage] || [];
-      const newHistory = typeof updater === 'function' ? updater(currentHistory) : updater;
-      return {
-        ...prev,
-        [activePage]: newHistory
+  // Streaming hook with proper options
+  const {
+    streamingResponse,
+    isStreaming,
+    error: streamingError,
+    audioPlaying,
+    metrics,
+    sendMessage: sendStreamingMessage,
+    stopStreaming,
+    retry,
+    pauseAudio,
+    resumeAudio,
+    getAudioState,
+  } = useStreamingChat({
+    apiBase,
+    chatbotId,
+    sessionId,
+    enableTTS: !isMuted,
+    isMuted,
+    onComplete: (data) => {
+      console.log('🎉 Streaming complete:', data);
+
+      // Add the final message to chat history
+      const currentTab = getCurrentTab();
+      const botMessage = {
+        sender: "bot",
+        text: data.fullAnswer,
+        timestamp: new Date(),
+        suggestions: data.suggestions || [],
       };
-    });
-  }, [activePage]);
 
-  // Helper functions for per-tab state management
-  const getCurrentTabState = useCallback(() => {
-    return tabStates[activePage] || { isTyping: false, animatedMessageIdx: null, message: '' };
-  }, [tabStates, activePage]);
+      addMessageToTab(currentTab, botMessage);
+      setCurrentStreamingMessageId(null);
+      setIsTyping(false);
 
-  const setCurrentTabState = useCallback((updater) => {
-    setTabStates(prev => ({
-      ...prev,
-      [activePage]: typeof updater === 'function' ? updater(prev[activePage]) : updater
-    }));
-  }, [activePage]);
-
-  // Wrapper functions to update specific tab state properties
-  const setIsTyping = useCallback((value) => {
-    setTabStates(prev => ({
-      ...prev,
-      [activePage]: { ...prev[activePage], isTyping: value }
-    }));
-  }, [activePage]);
-
-  const setAnimatedMessageIdx = useCallback((value) => {
-    setTabStates(prev => ({
-      ...prev,
-      [activePage]: { ...prev[activePage], animatedMessageIdx: value }
-    }));
-  }, [activePage]);
-
-  const setCurrentStreamingMessageId = useCallback((value) => {
-    setTabStates(prev => ({
-      ...prev,
-      [activePage]: { ...prev[activePage], currentStreamingMessageId: value }
-    }));
-  }, [activePage]);
-
-  // Derived values from current tab state
-  const isTyping = getCurrentTabState().isTyping;
-  const animatedMessageIdx = getCurrentTabState().animatedMessageIdx;
-  const currentStreamingMessageId = getCurrentTabState().currentStreamingMessageId;
-
-  const clearCurrentChatHistory = useCallback(() => {
-    setChatHistories(prev => ({
-      ...prev,
-      [activePage]: []
-    }));
-  }, [activePage]);
-
-  const clearAllChatHistories = useCallback(() => {
-    setChatHistories({
-      home: [],
-      'ai-websites': [],
-      'ai-calling': [],
-      'ai-whatsapp': [],
-      'ai-telegram': [],
-      'industry-use-cases': [],
-      'social-media': []
-    });
-  }, []);
-
-  // Computed value - current tab's chat history for easier access
-  const chatHistory = getCurrentChatHistory();
+      // Scroll to bottom after message is added
+      setTimeout(() => {
+        if (endOfMessagesRef.current) {
+          endOfMessagesRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
+          });
+        }
+      }, 100);
+    },
+    onError: (error) => {
+      console.error('❌ Streaming error:', error);
+      setCurrentStreamingMessageId(null);
+      setIsTyping(false);
+      toast.error('Failed to get response. Please try again.');
+    },
+  });
 
   // Constants
   const AUTH_GATE_KEY = (sid, bot) => `supa_auth_gate:${bot}:${sid}`;
-  const SESSION_STORE_KEY = (method) =>
-    method === "email" ? "chatbot_user_email" : "chatbot_user_phone";
+  const SESSION_STORE_KEY = "chatbot_user_phone";
   const USER_MESSAGE_COUNT_KEY = (sid, bot) => `supa_user_message_count:${bot}:${sid}`;
+
+  // Route-based tab detection
+  const getCurrentTab = useCallback(() => {
+    const path = location.pathname;
+    if (path === '/' || path === '/home') return 'home';
+    return path.substring(1); // Remove leading slash
+  }, [location.pathname]);
+
+  // Tab-specific chat history helper functions
+  const getTabHistoryKey = useCallback((tabId) => {
+    return `chatHistory_${tabId}`;
+  }, []);
+
+  // Utility function to ensure message has proper timestamp
+  const ensureMessageTimestamp = useCallback((message) => {
+    return {
+      ...message,
+      timestamp: message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp || Date.now())
+    };
+  }, []);
+
+  const loadTabHistory = useCallback((tabId) => {
+    const key = getTabHistoryKey(tabId);
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const history = JSON.parse(saved);
+        // Convert timestamp strings back to Date objects
+        return history.map(message => ensureMessageTimestamp(message));
+      }
+      return [];
+    } catch (error) {
+      console.error('Error loading tab history:', error);
+      return [];
+    }
+  }, [getTabHistoryKey]);
+
+  const saveTabHistory = useCallback((tabId, history) => {
+    const key = getTabHistoryKey(tabId);
+    try {
+      localStorage.setItem(key, JSON.stringify(history));
+    } catch (error) {
+      console.error('Error saving tab history:', error);
+    }
+  }, [getTabHistoryKey]);
+
+  const addMessageToTab = useCallback((tabId, message) => {
+    const currentHistory = loadTabHistory(tabId);
+    const messageWithProperTimestamp = ensureMessageTimestamp(message);
+    const newHistory = [...currentHistory, messageWithProperTimestamp];
+    saveTabHistory(tabId, newHistory);
+    
+    // Update current chat history if this is the active tab
+    if (tabId === getCurrentTab()) {
+      setChatHistory(newHistory);
+    }
+  }, [loadTabHistory, saveTabHistory, getCurrentTab, ensureMessageTimestamp]);
+
+  const clearTabHistory = useCallback((tabId) => {
+    const key = getTabHistoryKey(tabId);
+    localStorage.removeItem(key);
+    
+    // Clear current chat history if this is the active tab
+    if (tabId === getCurrentTab()) {
+      setChatHistory([]);
+    }
+  }, [getTabHistoryKey, getCurrentTab]);
+
+  const clearAllTabHistories = useCallback(() => {
+    console.log('🗑️ Clearing all tab histories');
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (key.startsWith('chatHistory_')) {
+        localStorage.removeItem(key);
+        console.log('🗑️ Cleared history for key:', key);
+      }
+    });
+  }, []);
+
+  // Handle route changes and load appropriate chat history
+  useEffect(() => {
+    const currentTab = getCurrentTab();
+    console.log('🔄 Route changed to:', currentTab);
+    console.log('🔄 Is page refresh:', isPageRefresh);
+    
+    // If this is a page refresh, clear ALL tab histories and show welcome screen
+    if (isPageRefresh) {
+      console.log('🔄 Page refresh detected, clearing ALL tab histories');
+      setShowWelcome(true);
+      setChatHistory([]);
+      
+      // Clear all tab histories from localStorage
+      clearAllTabHistories();
+      
+      setIsPageRefresh(false); // Reset the flag
+      return;
+    }
+    
+    // For navigation (not refresh), load chat history
+    const tabHistory = loadTabHistory(currentTab);
+    console.log('📚 Loaded history for tab:', currentTab, 'Length:', tabHistory.length);
+    
+    if (tabHistory.length === 0) {
+      console.log('🆕 No history found, showing welcome screen');
+      setShowWelcome(true);
+      setChatHistory([]);
+    } else {
+      console.log('📖 History found, showing chat with', tabHistory.length, 'messages');
+      setShowWelcome(false);
+      // Ensure all messages have proper timestamps before setting
+      const historyWithProperTimestamps = tabHistory.map(message => ensureMessageTimestamp(message));
+      setChatHistory(historyWithProperTimestamps);
+    }
+  }, [location.pathname, getCurrentTab, loadTabHistory, ensureMessageTimestamp, isPageRefresh, clearAllTabHistories]);
+
+  // Handle navigation between tabs (not refresh)
+  const handleTabNavigation = useCallback((tabId) => {
+    console.log('🔄 Tab navigation to:', tabId);
+    setIsPageRefresh(false); // This is navigation, not refresh
+    sessionStorage.setItem('hasNavigated', 'true'); // Mark as navigation
+    navigate(`/${tabId}`);
+  }, [navigate]);
+
+  // Cleanup effect to reset navigation flag on unmount
+  useEffect(() => {
+    return () => {
+      // Reset the navigation flag when component unmounts
+      sessionStorage.removeItem('hasNavigated');
+    };
+  }, []);
+
+  // Auto-send conversation transcript after 30 seconds of inactivity
+  useEffect(() => {
+    // Only start timer if verified and there's chat history
+    if (verified && phone && sessionId && chatbotId && chatHistory.length > 0) {
+      console.log('⏰ Resetting inactivity timer due to chat update');
+      frontendInactivityManager.resetInactivityTimer(
+        sessionId,
+        phone,
+        chatbotId,
+        chatHistory,
+        apiBase
+      );
+    }
+
+    // Cleanup timer when component unmounts
+    return () => {
+      if (sessionId) {
+        frontendInactivityManager.clearInactivityTimer(sessionId);
+      }
+    };
+  }, [chatHistory, verified, phone, sessionId, chatbotId, apiBase]);
 
   // Function to check if user has sent 2 messages and needs auth
   const checkUserMessageCount = useCallback(() => {
@@ -250,100 +377,25 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Function to increment user message count
   const incrementUserMessageCount = useCallback(() => {
+    console.log('incrementUserMessageCount called, current count:', userMessageCount);
     setUserMessageCount(prev => {
       const newCount = prev + 1;
+      console.log('Incrementing message count from', prev, 'to', newCount);
       // Persist to localStorage
       if (sessionId && chatbotId) {
         try {
           const key = `supa_user_message_count:${chatbotId}:${sessionId}`;
           localStorage.setItem(key, newCount.toString());
+          console.log('Saved message count to localStorage:', newCount);
         } catch (error) {
           console.error("Error saving user message count:", error);
         }
+      } else {
+        console.log('No sessionId or chatbotId, not saving to localStorage');
       }
       return newCount;
     });
   }, [sessionId, chatbotId, userMessageCount]);
-
-  // Streaming chat hook callbacks
-  const handleStreamingComplete = useCallback((data) => {
-    const { fullAnswer, suggestions, metrics } = data;
-
-    // Update the streaming message with final answer
-    setCurrentChatHistory((prev) => {
-      return prev.map((msg) => {
-        if (msg.isStreaming) {
-          return {
-            ...msg,
-            text: fullAnswer,
-            suggestions: suggestions || [],
-            metrics,
-            isStreaming: false,
-            wasStreamed: true, // Flag to prevent typing animation
-          };
-        }
-        return msg;
-      });
-    });
-
-    // Clear streaming message ID and ensure no typing animation
-    setCurrentStreamingMessageId(null);
-    setIsTyping(false);
-    setAnimatedMessageIdx(null); // Prevent typing animation on completed message
-  }, [setCurrentChatHistory, setCurrentStreamingMessageId, setIsTyping, setAnimatedMessageIdx]);
-
-  const handleStreamingError = useCallback((error) => {
-    console.error('Streaming error:', error);
-
-    // Add error message to chat
-    setCurrentChatHistory((prev) => {
-      // Remove streaming message if exists
-      const filtered = prev.filter(msg => !msg.isStreaming);
-
-      return [
-        ...filtered,
-        {
-          sender: "bot",
-          text: "Sorry, something went wrong. Please try again.",
-          timestamp: new Date(),
-        }
-      ];
-    });
-
-    setCurrentStreamingMessageId(null);
-    setIsTyping(false);
-    toast.error("Failed to get a response.");
-  }, [setCurrentChatHistory, setCurrentStreamingMessageId, setIsTyping]);
-
-  // Streaming chat hook - initialize after helper functions are defined
-  const streamingChat = useStreamingChat({
-    apiBase,
-    chatbotId,
-    sessionId,
-    enableTTS: !isMuted,
-    isMuted,
-    onComplete: handleStreamingComplete,
-    onError: handleStreamingError,
-  });
-
-  // Update streaming message in real-time as new text arrives
-  useEffect(() => {
-    if (streamingChat && streamingChat.isStreaming && streamingChat.streamingResponse && currentStreamingMessageId) {
-      setCurrentChatHistory((prev) => {
-        return prev.map((msg) => {
-          if (msg.id === currentStreamingMessageId) {
-            return {
-              ...msg,
-              text: streamingChat.streamingResponse,
-              audioPlaying: streamingChat.audioPlaying,
-              isStreaming: true,
-            };
-          }
-          return msg;
-        });
-      });
-    }
-  }, [streamingChat?.streamingResponse, streamingChat?.audioPlaying, streamingChat?.isStreaming, currentStreamingMessageId, setCurrentChatHistory]);
 
   // Function to generate TTS for greeting message
   const generateGreetingTTS = useCallback(
@@ -409,7 +461,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         if (greetingAudio) {
           lastGeneratedGreeting.current = greetingText;
 
-          setCurrentChatHistory((prev) => {
+          setChatHistory((prev) => {
             if (prev.length === 0) {
               return [
                 {
@@ -458,8 +510,10 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         if (cancelled) return;
         
         const cfg = data || {};
-        const newAuthMethod = cfg.auth_method || "whatsapp";
-        setAuthMethod(newAuthMethod);
+        const configuredAuthMethod = (cfg.auth_method || "whatsapp").toLowerCase();
+        if (configuredAuthMethod !== "whatsapp") {
+          console.warn(`Unsupported auth method "${configuredAuthMethod}" detected. Defaulting to WhatsApp authentication.`);
+        }
         setRequireAuthText(
           cfg.require_auth_text || "Verify yourself to continue chat"
         );
@@ -477,27 +531,19 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         }
 
         // Check for existing session
-        const storeKey = SESSION_STORE_KEY(newAuthMethod);
+        const storeKey = SESSION_STORE_KEY;
         const saved = localStorage.getItem(storeKey);
         if (saved) {
           try {
-            const qs =
-              newAuthMethod === "email"
-                ? `email=${encodeURIComponent(saved)}`
-                : `phone=${encodeURIComponent(saved)}`;
-
-            const url =
-              newAuthMethod === "email"
-                ? `${apiBase}/otp/check-session?${qs}&chatbotId=${chatbotId}`
-                : `${apiBase}/whatsapp-otp/check-session?${qs}&chatbotId=${chatbotId}`;
+            const qs = `phone=${encodeURIComponent(saved)}`;
+            const url = `${apiBase}/whatsapp-otp/check-session?${qs}&chatbotId=${chatbotId}`;
 
             const res = await fetch(url);
             if (!res.ok) throw new Error("Session validation failed");
             const json = await res.json();
 
             if (json.valid) {
-              if (newAuthMethod === "email") setEmail(saved);
-              else setPhone(saved);
+              setPhone(saved);
               setVerified(true);
               setNeedsAuth(false);
               setShowAuthScreen(false);
@@ -506,7 +552,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
               // Removed setHasShownInterestResponse - no longer needed
               
               // Only set chat history if it's empty (to avoid overriding existing greeting)
-              setCurrentChatHistory(prev => {
+              setChatHistory(prev => {
                 if (prev.length === 0) {
                   return [
                     {
@@ -545,7 +591,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           // This will be handled by the useEffect that loads user message count
         }
       } catch {
-        setAuthMethod("whatsapp");
+        // Default to WhatsApp auth if configuration fetch fails
+        console.warn('Failed to load chatbot configuration. Falling back to WhatsApp authentication.');
       }
     })();
     return () => {
@@ -556,15 +603,14 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   // Generate TTS for initial greeting message
   useEffect(() => {
     const generateInitialGreetingTTS = async () => {
-      const currentHistory = getCurrentChatHistory();
       if (
         chatbotId &&
         apiBase &&
-        currentHistory.length === 1 &&
-        currentHistory[0].sender === "bot" &&
-        !currentHistory[0].audio
+        chatHistory.length === 1 &&
+        chatHistory[0].sender === "bot" &&
+        !chatHistory[0].audio
       ) {
-        const greetingText = currentHistory[0].text;
+        const greetingText = chatHistory[0].text;
         setTimeout(() => {
           ensureGreetingTTS(greetingText);
         }, 200);
@@ -578,8 +624,17 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Initialize session - Always generate new session ID on page refresh
   useEffect(() => {
-    // Always generate a new session ID on page refresh
+    // Check if this is a page refresh by looking for a session flag
+    const isRefresh = !sessionStorage.getItem('hasNavigated');
+    console.log('🔄 Page refresh detected:', isRefresh);
+    setIsPageRefresh(isRefresh);
+    
+    // Set flag to indicate navigation has occurred
+    sessionStorage.setItem('hasNavigated', 'true');
+    
+    // Always generate a new session ID
     const id = crypto.randomUUID();
+    console.log('🔑 Generated new sessionId:', id);
     localStorage.setItem("sessionId", id);
     setSessionId(id);
     
@@ -592,50 +647,11 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     // Clear any existing auth data from localStorage
     try {
       localStorage.removeItem(AUTH_GATE_KEY(id, chatbotId));
-      localStorage.removeItem(SESSION_STORE_KEY("whatsapp"));
-      localStorage.removeItem(SESSION_STORE_KEY("email"));
+      localStorage.removeItem(SESSION_STORE_KEY);
     } catch (error) {
       console.log("Error clearing auth data:", error);
     }
   }, []);
-
-  // Load chat histories from localStorage on component mount
-  useEffect(() => {
-    try {
-      const savedHistories = localStorage.getItem(`supa_chat_histories:${chatbotId}`);
-      if (savedHistories) {
-        const parsed = JSON.parse(savedHistories);
-
-        // Convert timestamp strings back to Date objects
-        const historiesWithDates = {};
-        Object.keys(parsed).forEach(tabId => {
-          historiesWithDates[tabId] = parsed[tabId].map(msg => ({
-            ...msg,
-            timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
-          }));
-        });
-
-        setChatHistories(historiesWithDates);
-      }
-    } catch (error) {
-      console.error('Error loading chat histories from localStorage:', error);
-    }
-  }, [chatbotId]);
-
-  // Save chat histories to localStorage whenever they change (but skip initial render)
-  useEffect(() => {
-    // Skip saving on initial mount to avoid overwriting loaded data
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return;
-    }
-
-    try {
-      localStorage.setItem(`supa_chat_histories:${chatbotId}`, JSON.stringify(chatHistories));
-    } catch (error) {
-      console.error('Error saving chat histories to localStorage:', error);
-    }
-  }, [chatHistories, chatbotId]);
 
   // Load user message count when sessionId and chatbotId are available
   useEffect(() => {
@@ -644,21 +660,22 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       const stored = localStorage.getItem(key);
       const savedCount = stored ? parseInt(stored, 10) : 0;
       setUserMessageCount(savedCount);
-
+      
       // Only trigger auth if user has sent 2+ messages and is not verified
       // This will be handled by the other useEffect that watches userMessageCount and verified
     }
   }, [sessionId, chatbotId]);
 
   // Check if user needs auth based on message count when component mounts or verified state changes
-  useEffect(() => {
+  // COMMENTED OUT - Auth is now controlled by backend configuration only
+  /* useEffect(() => {
     console.log('Auth trigger check:', {
       userMessageCount,
       verified,
       needsAuth,
       showInlineAuth
     });
-
+    
     if (userMessageCount >= 2 && !verified) {
       console.log('Triggering auth - user has sent 2+ messages and not verified');
       setNeedsAuth(true);
@@ -668,40 +685,34 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setNeedsAuth(false);
       setShowInlineAuth(false);
     }
-  }, [userMessageCount, verified]);
+  }, [userMessageCount, verified]); */
 
-  // Set initial greeting - DISABLED: Greeting should only show in WelcomeSection, not as a chat message
-  // This prevents the welcome screen from disappearing when switching tabs without sending a message
+  // Set initial greeting
   useEffect(() => {
-    // Don't add greeting to chat history anymore
-    // The greeting is displayed in the WelcomeSection component
-    // Chat history should only contain actual user and bot conversation messages
-    const currentHistory = getCurrentChatHistory();
-
-    if (!isResetting && !greetingAddedRef.current && showWelcome && chatbotId && !finalGreetingReady && currentHistory.length === 0) {
+    // Only add greeting if:
+    // 1. Not resetting
+    // 2. Not already added (check ref)
+    // 3. showWelcome is true
+    // 4. chatbotId exists
+    // 5. finalGreetingReady is false
+    if (!isResetting && !greetingAddedRef.current && showWelcome && chatbotId && !finalGreetingReady) {
+      console.log('Adding greeting message');
       greetingAddedRef.current = true; // Mark as added IMMEDIATELY
-
-      // DO NOT add greeting to chat history
-      // setCurrentChatHistory([
-      //   {
-      //     sender: "bot",
-      //     text: welcomeMessage,
-      //     timestamp: new Date(),
-      //   },
-      // ]);
-
+      
+      setChatHistory([
+        {
+          sender: "bot",
+          text: welcomeMessage,
+          timestamp: new Date(),
+        },
+      ]);
       setFinalGreetingReady(true);
-
-      // Generate TTS for greeting if needed (optional)
-      // if (apiBase) {
-      //   ensureGreetingTTS(welcomeMessage);
-      // }
-    } else if (currentHistory.length > 0) {
-      // Mark as added so we don't try again
-      greetingAddedRef.current = true;
-      setFinalGreetingReady(true);
+      
+      if (apiBase) {
+        ensureGreetingTTS(welcomeMessage);
+      }
     }
-  }, [chatbotId, finalGreetingReady, welcomeMessage, apiBase, ensureGreetingTTS, showWelcome, isResetting, getCurrentChatHistory]);
+  }, [chatbotId, finalGreetingReady, welcomeMessage, apiBase, ensureGreetingTTS, showWelcome, isResetting]);
 
 
   // Update welcome message periodically
@@ -733,8 +744,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Auto-scroll when new messages are added or typing starts
   useEffect(() => {
-    const currentHistory = getCurrentChatHistory();
-    if ((currentHistory.length > 0 || isTyping) && !showWelcome) {
+    if ((chatHistory.length > 0 || isTyping) && !showWelcome) {
       const scrollToBottom = () => {
         if (endOfMessagesRef.current) {
           endOfMessagesRef.current.scrollIntoView({ 
@@ -764,31 +774,17 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         clearTimeout(extraTimeoutId);
       };
     }
-  }, [getCurrentChatHistory, isTyping, showWelcome]);
+  }, [chatHistory.length, isTyping, showWelcome]);
 
   // Auto-scroll when typing indicator appears
   useEffect(() => {
     if (isTyping && !showWelcome) {
-      // Check if user is near bottom before auto-scrolling
-      const isNearBottom = () => {
-        if (messagesContainerRef.current) {
-          const container = messagesContainerRef.current;
-          const threshold = 100; // pixels from bottom
-          return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
-        }
-        return true; // Default to true if can't determine
-      };
-
+      // Immediate scroll to end of messages
       const scrollToBottom = () => {
-        // Only auto-scroll if user hasn't manually scrolled up
-        if (!isNearBottom()) {
-          return; // User has scrolled up, don't force them down
-        }
-
         if (endOfMessagesRef.current) {
-          endOfMessagesRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
+          endOfMessagesRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end' 
           });
         } else if (messagesContainerRef.current) {
           const container = messagesContainerRef.current;
@@ -798,15 +794,27 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           });
         }
       };
-
-      // Initial scroll when typing starts
+      
+      // Immediate scroll
       scrollToBottom();
-
-      // One more scroll after a short delay to ensure typing indicator is visible
-      const timeoutId = setTimeout(scrollToBottom, 100);
-
+      
+      // Additional scroll after a short delay
+      const timeoutId = setTimeout(scrollToBottom, 50);
+      
+      // Extra scroll after content is rendered
+      const extraTimeoutId = setTimeout(scrollToBottom, 200);
+      
+      // Continuous scroll during typing (more frequent)
+      const intervalId = setInterval(() => {
+        if (isTyping && !showWelcome) {
+          scrollToBottom();
+        }
+      }, 200);
+      
       return () => {
         clearTimeout(timeoutId);
+        clearTimeout(extraTimeoutId);
+        clearInterval(intervalId);
       };
     }
   }, [isTyping, showWelcome]);
@@ -907,8 +915,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
   }, [showWelcome, chatHistory.length]);
 
-  // Handle inline auth input display
-  useEffect(() => {
+  // Handle inline auth input display - commented out for default auth state
+  /* useEffect(() => {
     console.log('Auth display check:', {
       showInlineAuth,
       verified,
@@ -918,7 +926,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       animatedMessageIdx,
       chatHistoryLength: chatHistory.length
     });
-
+    
     if (
       showInlineAuth &&
       !verified &&
@@ -947,20 +955,21 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     isTyping,
     otpSent,
     userMessageCount,
-  ]);
+  ]); */
 
-  // Handle OTP input display after OTP is sent
-  useEffect(() => {
+  // Handle OTP input display after animation completes - commented out for default auth state
+  /* useEffect(() => {
     if (
       otpSent &&
       !verified &&
-      !isTyping
+      !isTyping &&
+      animatedMessageIdx === chatHistory.length - 1
     ) {
       setShowOtpInput(true);
     } else {
       setShowOtpInput(false);
     }
-  }, [otpSent, verified, isTyping]);
+  }, [otpSent, verified, isTyping, animatedMessageIdx]); */
 
   // Check auth gate - commented out for default auth state
   /* useEffect(() => {
@@ -1082,7 +1091,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       lastGeneratedGreeting.current = null;
       localStorage.removeItem("resend_otp_start");
       greetingAutoPlayed.current = false;
-      setCurrentChatHistory([]);
+      setChatHistory([]);
       setFinalGreetingReady(false);
       // Removed setHasShownInterestResponse - no longer needed
       languageMessageShown.current = false;
@@ -1113,33 +1122,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     } */
   }, [chatbotId, sessionId, apiBase]);
 
-  // Auto-send conversation transcript after 30 seconds of inactivity
-  useEffect(() => {
-    // Get current chat history for the active tab
-    const chatHistory = getCurrentChatHistory();
-
-    // Only start timer if WhatsApp is verified and there's chat history
-    if (verified && phone && sessionId && chatbotId && chatHistory.length > 0) {
-      console.log('⏰ Resetting inactivity timer due to chat update');
-      frontendInactivityManager.resetInactivityTimer(
-        sessionId,
-        phone,
-        chatbotId,
-        chatHistory,
-        apiBase
-      );
-    }
-
-    // Cleanup timer when component unmounts
-    return () => {
-      if (sessionId) {
-        frontendInactivityManager.clearInactivityTimer(sessionId);
-      }
-    };
-  }, [getCurrentChatHistory, verified, phone, sessionId, chatbotId, apiBase]);
-
-  // OTP handling functions
-  const handleSendOtp = async () => {
+  // OTP handling functions - commented out for default auth state
+  /* const handleSendOtp = async () => {
     if (resendTimeout > 0 || !authMethod) return;
     try {
       setLoadingOtp(true);
@@ -1176,9 +1160,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     } finally {
       setLoadingOtp(false);
     }
-  };
+  }; */
 
-  const handleVerifyOtp = async () => {
+  /* const handleVerifyOtp = async () => {
     try {
       if (otp.length !== 6)
         return toast.error("Please enter the complete 6-digit code");
@@ -1232,7 +1216,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     } finally {
       setLoadingVerify(false);
     }
-  };
+  }; */
 
   const toggleMute = () => {
     const newMutedState = !isMuted;
@@ -1254,50 +1238,96 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
 
 
+  // New authentication functions using the authentication hook
+  const handleSendOtpNew = async (phoneNumber) => {
+    try {
+      setCurrentAuthValue(phoneNumber);
+      await sendOtp(phoneNumber);
+      setShowInlineAuthInput(false);
+      setShowOtpInput(true);
+      toast.success('OTP sent to your WhatsApp!');
+    } catch (error) {
+      toast.error(error.message || 'Failed to send OTP');
+    }
+  };
+
+  const handleVerifyOtpNew = async (otpCode) => {
+    try {
+      await verifyOtp(otpCode, currentAuthValue);
+      setShowOtpInput(false);
+      setShowInlineAuth(false);
+      toast.success('Authentication successful!');
+    } catch (error) {
+      toast.error(error.message || 'Invalid OTP');
+    }
+  };
+
+  const handleResendOtpNew = async () => {
+    try {
+      if (!currentAuthValue) {
+        toast.error('Enter your WhatsApp number first.');
+        return;
+      }
+      await resendOtp(currentAuthValue);
+      toast.success('OTP resent successfully!');
+    } catch (error) {
+      toast.error(error.message || 'Failed to resend OTP');
+    }
+  };
+
+  // Check if user needs authentication (after 2 messages)
+  const shouldShowAuth = !isAuthenticated && userMessageCount >= 2;
+
   const handleSendMessage = useCallback(
     async (inputText) => {
-      console.log('handleSendMessage called with:', { inputText, message, sessionId, verified, needsAuth, enableStreaming });
+      console.log('handleSendMessage called with:', { inputText, message, sessionId, verified, needsAuth });
 
       // Hide welcome section when user sends a message
       if (showWelcome) {
         setShowWelcome(false);
       }
 
-      // Check if auth is required after user has sent 2 messages
-      if (needsAuth && !verified) {
-        console.log('User needs auth - blocking message send');
+      // Check authentication after 2 messages
+      if (shouldShowAuth) {
+        setShowInlineAuth(true);
+        setShowInlineAuthInput(true);
         return;
       }
 
       if (!sessionId) {
         console.log('No sessionId, returning early');
+        console.log('Current sessionId state:', sessionId);
         return;
       }
 
       const textToSend = inputText || message;
       if (!textToSend.trim()) return;
 
-      // Properly stop any currently playing audio and any ongoing streaming
-      stopAudio();
-      if (streamingChat && streamingChat.isStreaming) {
-        streamingChat.stopStreaming();
+      // Stop any currently streaming response
+      if (isStreaming) {
+        stopStreaming();
       }
+
+      // Properly stop any currently playing audio
+      stopAudio();
 
       // Small delay to ensure audio is fully stopped
       await new Promise(resolve => setTimeout(resolve, 50));
       const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
 
-      // Add user message to current tab's chat history
-      setCurrentChatHistory((prev) => [...prev, userMessage]);
+      // Add message to current tab using route-based system
+      const currentTab = getCurrentTab();
+      console.log('💬 Adding user message to tab:', currentTab);
+      addMessageToTab(currentTab, userMessage);
       setMessage("");
       setIsTyping(true);
-      
+
       // Scroll immediately when typing starts
       const scrollImmediately = () => {
         if (endOfMessagesRef.current) {
-          endOfMessagesRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'end' 
+          endOfMessagesRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
           });
         } else if (messagesContainerRef.current) {
           const container = messagesContainerRef.current;
@@ -1307,171 +1337,58 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           });
         }
       };
-      
+
       // Immediate scroll
       scrollImmediately();
-      
+
       // Additional scroll after content is rendered
       setTimeout(scrollImmediately, 100);
       setTimeout(scrollImmediately, 300);
 
       // Increment user message count
+      console.log('Incrementing user message count, current count:', userMessageCount);
       incrementUserMessageCount();
 
       try {
-        // Use streaming if enabled, otherwise fall back to regular API
-        if (enableStreaming && streamingChat) {
-          console.log('Using streaming mode');
-
-          // Create a placeholder bot message for streaming
-          const streamingMessageId = crypto.randomUUID();
-          const streamingMessage = {
-            id: streamingMessageId,
-            sender: "bot",
-            text: "",
-            suggestions: [],
-            timestamp: new Date(),
-            isStreaming: true,
-          };
-
-          // Add streaming placeholder to chat history
-          setCurrentChatHistory((prev) => [...prev, streamingMessage]);
-
-          // Set current streaming message ID
-          setCurrentStreamingMessageId(streamingMessageId);
-
-          // Start streaming
-          await streamingChat.sendMessage(textToSend);
-
-          // Scroll to bottom during streaming
-          const scrollInterval = setInterval(() => {
-            if (endOfMessagesRef.current) {
-              endOfMessagesRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end'
-              });
-            }
-          }, 500);
-
-          // Clear interval after a while
-          setTimeout(() => clearInterval(scrollInterval), 5000);
-
-        } else {
-          // Regular (non-streaming) message handling - using troika intelligent chat
-          console.log('Using regular mode with troika intelligent chat');
-          const requestData = {
-            chatbotId,
-            query: textToSend,
-            sessionId,
-            phone: verified ? phone : undefined, // Only send phone if user is verified
-          };
-          console.log('Sending request to backend:', requestData);
-          const response = await axios.post(`${apiBase}/troika/intelligent-chat`, requestData);
-
-          const { answer, audio, requiresAuthNext, auth_method, suggestions } = response.data;
-
-          const botMessage = {
-            sender: "bot",
-            text: answer || "Sorry, I couldn't get that.",
-            audio,
-            suggestions: suggestions || [],
-            timestamp: new Date(),
-          };
-
-          setCurrentChatHistory((prev) => {
-            const nh = [...prev, botMessage];
-            const botMessageIndex = nh.length - 1;
-
-            // Auto-play audio after state update with correct index
-            if (audio) {
-              playAudio(audio, botMessageIndex);
-              // Ensure mute state is applied immediately
-              setTimeout(() => {
-                if (audioObject) {
-                  ensureAudioMuted(audioObject, isMuted);
-                }
-              }, 100);
-            }
-
-            // Force scroll to bottom after bot message is added
-            setTimeout(() => {
-              if (endOfMessagesRef.current) {
-                endOfMessagesRef.current.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'end'
-                });
-              } else if (messagesContainerRef.current) {
-                const container = messagesContainerRef.current;
-                container.scrollTo({
-                  top: container.scrollHeight,
-                  behavior: 'smooth'
-                });
-              }
-            }, 100);
-
-            return nh;
-          });
-
-          // Handle authentication requirements from backend - IGNORED since we're using default phone
-          if (requiresAuthNext) {
-            console.log('Backend requested auth, but ignoring since using default phone');
-            // Don't show auth UI - we're using default phone number
-          }
+        // Check if apiBase is defined
+        if (!apiBase) {
+          throw new Error('API Base URL is not defined');
         }
-      } catch (err) {
-        if (
-          err?.response?.status === 403 &&
-          (err?.response?.data?.error === "NEED_AUTH" ||
-            err?.response?.data?.error === "AUTH_REQUIRED")
-        ) {
-          console.log('Backend auth error, but ignoring since using default phone');
-          // Don't show auth UI - we're using default phone number
-          toast.error("Authentication error - please try again.");
-        } else if (err?.response?.status === 403) {
-          const errorMessage = err?.response?.data?.message || "";
-          if (
-            errorMessage.toLowerCase().includes("subscription") &&
-            (errorMessage.toLowerCase().includes("expired") ||
-              errorMessage.toLowerCase().includes("inactive"))
-          ) {
-            toast.error(errorMessage);
-          } else {
-            console.log('Backend auth error, but ignoring since using default phone');
-            // Don't show auth UI - we're using default phone number
-            toast.error("Authentication error - please try again.");
-          }
-        } else {
-          console.error("Chat error:", err);
-          toast.error("Failed to get a response.");
-          setCurrentChatHistory((prev) => [
-            ...prev,
-            {
-              sender: "bot",
-              text: "Something went wrong. Please try again later.",
-              timestamp: new Date(),
-            },
-          ]);
-        }
-      } finally {
+
+        // Generate a unique message ID for tracking streaming response
+        const messageId = `streaming-${Date.now()}`;
+        setCurrentStreamingMessageId(messageId);
+
+        // Start streaming response
+        console.log('🚀 Starting streaming request...');
+        await sendStreamingMessage(textToSend);
+
+        // Note: The response is handled in the onComplete callback of useStreamingChat
+        // The streaming response will be displayed in real-time via StreamingMessage component
+
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setCurrentStreamingMessageId(null);
         setIsTyping(false);
+        toast.error('Failed to send message. Please try again.');
       }
     },
     [
+      showWelcome,
+      sessionId,
+      message,
+      stopAudio,
+      getCurrentTab,
+      addMessageToTab,
+      incrementUserMessageCount,
       apiBase,
       chatbotId,
-      phone,
-      verified,
-      message,
-      playAudio,
-      stopAudio,
-      sessionId,
-      setCurrentChatHistory,
-      setIsTyping,
-      incrementUserMessageCount,
-      enableStreaming,
-      streamingChat,
-      setCurrentStreamingMessageId,
-      currentStreamingMessageId,
+      sendStreamingMessage,
+      isStreaming,
+      stopStreaming,
+      shouldShowAuth,
+      authToken,
+      userMessageCount
     ]
   );
 
@@ -1492,16 +1409,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     // Set resetting flag
     setIsResetting(true);
     
-    // Clear audio and animation states
+    // Clear audio states
     stopAudio();
-
-    // Stop any ongoing streaming
-    if (streamingChat && streamingChat.isStreaming) {
-      streamingChat.stopStreaming();
-    }
-
     setIsTyping(false);
-    setAnimatedMessageIdx(null);
     setShowServiceSelection(false);
     
     // Clear refs
@@ -1514,8 +1424,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     setMessage("");
     setUserMessageCount(0);
     setFinalGreetingReady(false);
-    setCurrentChatHistory([]);
-    setActivePage('home'); // Reset to home page
+    setChatHistory([]);
+    navigate('/'); // Navigate to home route
     setShowWelcome(false); // Set to false first
     
     // Clear user message count from localStorage
@@ -1523,20 +1433,12 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       try {
         const key = `supa_user_message_count:${chatbotId}:${sessionId}`;
         localStorage.removeItem(key);
+        console.log('Cleared user message count from localStorage');
       } catch (error) {
         console.error("Error clearing user message count:", error);
       }
     }
-
-    // Clear all chat histories from localStorage when starting a new chat
-    try {
-      localStorage.removeItem(`supa_chat_histories:${chatbotId}`);
-      // Also clear the state
-      clearAllChatHistories();
-    } catch (error) {
-      console.error("Error clearing chat histories from localStorage:", error);
-    }
-
+    
     // Generate new session ID
     const newSessionId = crypto.randomUUID();
     localStorage.setItem("sessionId", newSessionId);
@@ -1549,23 +1451,32 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }, 50);
     
     console.log('Reset to welcome screen with new session:', newSessionId);
-  }, [sessionId, chatbotId, stopAudio, clearAllChatHistories, streamingChat]);
+  }, [sessionId, chatbotId, stopAudio, navigate]);
 
   const handleSuggestionClick = useCallback((action) => {
-    // CRITICAL: First explicitly clear chat history
-    setCurrentChatHistory([]);
+    // Handle navigation actions
+    if (typeof action === 'object' && action.type === 'navigation') {
+      console.log('🧭 Navigation requested to:', action.action);
+      handleTabNavigation(action.action);
+      return;
+    }
+
+    // Get current tab and clear its history
+    const currentTab = getCurrentTab();
+    console.log('🎯 Suggestion clicked for tab:', currentTab);
+    clearTabHistory(currentTab);
     setShowWelcome(false);
 
     // Handle conversational flow data
     if (typeof action === 'object' && action.type === 'conversational') {
       setTimeout(() => {
-        // Add user message
+        // Add user message to current tab
         const userMessage = {
           sender: "user",
           text: action.action.replace('telegram-', '').replace('-', ' ').toUpperCase(),
           timestamp: new Date()
         };
-        setCurrentChatHistory([userMessage]);
+        addMessageToTab(currentTab, userMessage);
         
         // Add bot message with conversational content
         setIsTyping(true);
@@ -1600,7 +1511,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
             timestamp: new Date(),
             suggestions: action.suggestions || []
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
           
           // Force scroll to bottom after message is added
@@ -1627,13 +1538,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     if (typeof action === 'string' && action.startsWith('<div')) {
       // Use setTimeout to ensure state clearing is complete
       setTimeout(() => {
-        // Add user message
+        // Add user message to current tab
         const userMessage = {
           sender: "user",
           text: "Tell me about AI Calling Agent",
           timestamp: new Date()
         };
-        setCurrentChatHistory([userMessage]); // Set directly, not append
+        addMessageToTab(currentTab, userMessage);
         
         // Add bot message with HTML content
         setIsTyping(true);
@@ -1644,7 +1555,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
             timestamp: new Date(),
             isHTML: true // Flag to indicate this is HTML content
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]); // Now prev will be clean
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50); // Small delay to ensure clearing
@@ -1659,7 +1570,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           text: "What are your pricing plans?", 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -1668,7 +1579,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
             text: staticFAQs["Pricing"],
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -1683,7 +1594,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           text: "Show me the results of AI Websites", 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -1733,7 +1644,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
             timestamp: new Date(),
             isHTML: true
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -2226,7 +2137,7 @@ We combine beautiful design, intelligent automation, and integrated chat agents 
         <td style="padding: 15px; border-right: 1px solid #e5e7eb; vertical-align: top; color: #4b5563;">Built-in AI chat agent captures every lead</td>
         <td style="padding: 15px; vertical-align: top; color: #059669; font-weight: 600;">2×–5× increase in inquiries</td>
       </tr>
-      <tr style="border-bottom: 1px solid #e5e7eb;">
+      <tr style="border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
         <td style="padding: 15px; border-right: 1px solid #e5e7eb; vertical-align: top; font-weight: 500; color: #374151;">Team spends time replying manually</td>
         <td style="padding: 15px; border-right: 1px solid #e5e7eb; vertical-align: top; color: #4b5563;">AI handles FAQs & responses automatically</td>
         <td style="padding: 15px; vertical-align: top; color: #059669; font-weight: 600;">Time saved, faster service</td>
@@ -2278,7 +2189,7 @@ AI websites solve this by combining design + automation + data capture into one 
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -2287,7 +2198,7 @@ AI websites solve this by combining design + automation + data capture into one 
             text: staticFAQs[action],
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -2302,7 +2213,7 @@ AI websites solve this by combining design + automation + data capture into one 
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -2329,7 +2240,7 @@ Our AI Website isn't a normal website; it's a conversion engine with:
 > *"We are not selling a website  We are selling a business system that talks, learns, and sells."*`,
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -2372,7 +2283,7 @@ Integrates with WhatsApp & email follow-up.
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -2381,7 +2292,7 @@ Integrates with WhatsApp & email follow-up.
             text: roiFAQs[action],
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -2396,7 +2307,7 @@ Integrates with WhatsApp & email follow-up.
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        setChatHistory([userMessage]); // Direct set, not append
         
         setIsTyping(true);
       setTimeout(() => {
@@ -2669,7 +2580,7 @@ AI Website is built for instant replies, 24×7.<br>
 </div>`,
           timestamp: new Date()
         };
-        setCurrentChatHistory((prev) => [...prev, botMessage]);
+        setChatHistory((prev) => [...prev, botMessage]);
         setIsTyping(false);
       }, 500);
       }, 50);
@@ -2819,7 +2730,7 @@ AI Website is built for instant replies, 24×7.<br>
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -2828,7 +2739,7 @@ AI Website is built for instant replies, 24×7.<br>
             text: salesFAQs[action],
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -2974,7 +2885,7 @@ AI Website is built for instant replies, 24×7.<br>
           text: action, 
           timestamp: new Date() 
         };
-        setCurrentChatHistory([userMessage]); // Direct set, not append
+        addMessageToTab(currentTab, userMessage);
         
         setIsTyping(true);
         setTimeout(() => {
@@ -2983,7 +2894,7 @@ AI Website is built for instant replies, 24×7.<br>
             text: marketingFAQs[action],
             timestamp: new Date()
           };
-          setCurrentChatHistory((prev) => [...prev, botMessage]);
+          addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
         }, 500);
       }, 50);
@@ -3009,13 +2920,19 @@ AI Website is built for instant replies, 24×7.<br>
     console.log('Bot suggestion clicked:', suggestion);
     setShowWelcome(false);
     
+    // Get current tab for route-based storage
+    const currentTab = getCurrentTab();
+    console.log('🎯 Bot suggestion clicked for tab:', currentTab);
+    
     // Handle conversational flow suggestions
     if (typeof suggestion === 'object' && suggestion.action) {
+      console.log('🎯 Processing conversational flow action:', suggestion.action);
       // Handle conversational flow actions for all services
       if (suggestion.action.startsWith('telegram-') || suggestion.action.startsWith('back-to-telegram') ||
           suggestion.action.startsWith('whatsapp-') || suggestion.action.startsWith('back-to-whatsapp') ||
           suggestion.action.startsWith('calling-') || suggestion.action.startsWith('back-to-calling') ||
           suggestion.action.startsWith('websites-') || suggestion.action.startsWith('back-to-websites')) {
+        console.log('✅ Action matches conversational flow pattern');
         // Import the conversational flow data from WelcomeSection
         const telegramConversationalFlow = {
           "telegram-overview": {
@@ -3586,12 +3503,17 @@ AI Website is built for instant replies, 24×7.<br>
           const message = flowData.initialMessage || flowData.message;
           const suggestions = flowData.suggestions || [];
           
-          // Add user message
+          console.log('🔄 Found flow data for action:', suggestion.action);
+          console.log('📝 Message:', message);
+          console.log('🔘 Suggestions:', suggestions);
+          
+          // Add user message to current tab
           const userMessage = {
             sender: "user",
             text: suggestion.text,
             timestamp: new Date()
           };
+          addMessageToTab(currentTab, userMessage);
           
         // Add bot message with conversational content
         const botMessage = {
@@ -3600,8 +3522,7 @@ AI Website is built for instant replies, 24×7.<br>
           timestamp: new Date(),
           suggestions: suggestions
         };
-        
-        setCurrentChatHistory(prev => [...prev, userMessage, botMessage]);
+        addMessageToTab(currentTab, botMessage);
         
         // Force scroll to bottom after messages are added
         const scrollToBottom = () => {
@@ -3636,7 +3557,7 @@ AI Website is built for instant replies, 24×7.<br>
       // Handle regular text suggestions
       handleSendMessage(suggestion);
     }
-  }, [handleSendMessage]);
+  }, [handleSendMessage, getCurrentTab, addMessageToTab, handleTabNavigation]);
 
   // Voice recording handlers
   const handleMicClick = () => {
@@ -3726,37 +3647,7 @@ AI Website is built for instant replies, 24×7.<br>
     setSidebarOpen(false);
   }, []);
 
-  const handlePageChange = useCallback((pageId) => {
-    if (pageId === 'new-chat') {
-      handleBackToWelcome();
-      return;
-    }
-
-    // Stop audio from current tab
-    stopAudio();
-
-    // Check if the new tab has chat history
-    const newTabHistory = chatHistories[pageId] || [];
-
-    // Change the active page
-    setActivePage(pageId);
-
-    // Show welcome screen only if the tab is empty
-    if (newTabHistory.length === 0) {
-      setShowWelcome(true);
-      greetingAddedRef.current = false;
-      setFinalGreetingReady(false);
-    } else {
-      setShowWelcome(false);
-      greetingAddedRef.current = true;
-      setFinalGreetingReady(true);
-    }
-
-    // Clear audio-related refs
-    lastGeneratedGreeting.current = null;
-    greetingAutoPlayed.current = false;
-    pendingGreetingAudio.current = null;
-  }, [handleBackToWelcome, stopAudio, chatHistories]);
+  // Removed handlePageChange - now using React Router navigation
 
   // Social media feed handlers
   const handleSocialMediaClick = useCallback((platform) => {
@@ -3771,38 +3662,9 @@ AI Website is built for instant replies, 24×7.<br>
 
   // Handle page change for social media
   const handlePageChangeWithSocial = useCallback((pageId) => {
-    // CRITICAL: Stop any audio playing from the current tab
-    stopAudio();
-
-    // NOTE: We do NOT stop streaming when switching tabs
-    // The streaming will continue in the background and update the message
-    // When user returns to the tab, they'll see the completed/in-progress response
-    // This prevents losing the backend response when switching tabs
-
-    // We also do NOT reset typing state or clean up streaming messages
-    // because the streaming is still active and will complete
-    // The per-tab state management ensures each tab shows its correct state
-
-    // Check if the new tab has chat history BEFORE changing activePage
-    const newTabHistory = chatHistories[pageId] || [];
-
-    // Change to new tab
     setActivePage(pageId);
-
-    // Show welcome screen only if the tab is empty
-    if (newTabHistory.length === 0) {
-      setShowWelcome(true);
-      // Reset greeting flags for empty tabs
-      greetingAddedRef.current = false;
-      setFinalGreetingReady(false);
-    } else {
-      // Tab has messages, don't show welcome screen
-      setShowWelcome(false);
-      // Mark greeting as already added to prevent greeting useEffect from triggering
-      greetingAddedRef.current = true;
-      setFinalGreetingReady(true);
-    }
-
+    // Always show welcome section when changing pages
+    setShowWelcome(true);
     if (pageId === 'social-media') {
       // Show social media options
       setSocialFeedOpen(false);
@@ -3811,7 +3673,7 @@ AI Website is built for instant replies, 24×7.<br>
       setSocialFeedOpen(false);
       setSelectedPlatform(null);
     }
-  }, [chatHistories, activePage, stopAudio]);
+  }, []);
 
   // Listen for social media clicks from suggestion cards
   useEffect(() => {
@@ -3854,8 +3716,8 @@ AI Website is built for instant replies, 24×7.<br>
           <Sidebar
             isOpen={sidebarOpen}
             onClose={handleSidebarClose}
-            activePage={activePage}
-            onPageChange={handlePageChangeWithSocial}
+            onSocialMediaClick={handleSocialMediaClick}
+            onTabNavigation={handleTabNavigation}
           />
 
           {/* Main Content Area */}
@@ -3876,7 +3738,7 @@ AI Website is built for instant replies, 24×7.<br>
         {showWelcome && (
             <WelcomeSection 
               onSuggestionClick={handleSuggestionClick} 
-              activePage={activePage}
+              activePage={getCurrentTab()}
               socialFeedOpen={socialFeedOpen}
               selectedPlatform={selectedPlatform}
               onSocialFeedClose={handleSocialFeedClose}
@@ -3891,36 +3753,19 @@ AI Website is built for instant replies, 24×7.<br>
                   <MessagesInnerContainer>
                     {chatHistory.map((msg, idx) => (
                       <React.Fragment key={idx}>
-                        {msg.isStreaming ? (
-                          // Use StreamingMessage component for streaming messages
-                          <StreamingMessage
-                            text={msg.text}
-                            isStreaming={true}
-                            audioPlaying={msg.audioPlaying || false}
-                            error={streamingChat?.error}
-                            metrics={msg.metrics}
-                            isDarkMode={isDarkMode}
-                            showCursor={true}
-                            onRetry={streamingChat?.retry}
-                          />
-                        ) : (
-                          // Use regular MessageBubble for non-streaming messages
-                          <MessageBubbleComponent
-                            message={{
-                              ...msg,
-                              suggestions: chatHistory.length >= 6 ? [] : msg.suggestions
-                            }}
-                            index={idx}
-                            isUser={msg.sender === "user"}
-                            isTyping={msg.wasStreamed ? false : isTyping}
-                            animatedMessageIdx={msg.wasStreamed ? null : animatedMessageIdx}
-                            chatHistoryLength={chatHistory.length}
-                            currentlyPlaying={currentlyPlaying}
-                            playAudio={playAudio}
-                            setAnimatedMessageIdx={setAnimatedMessageIdx}
-                            onSuggestionClick={handleBotSuggestionClick}
-                          />
-                        )}
+                        <MessageBubbleComponent
+                          message={{
+                            ...msg,
+                            suggestions: chatHistory.length >= 6 ? [] : msg.suggestions
+                          }}
+                          index={idx}
+                          isUser={msg.sender === "user"}
+                          isTyping={isTyping}
+                          chatHistoryLength={chatHistory.length}
+                          currentlyPlaying={currentlyPlaying}
+                          playAudio={playAudio}
+                          onSuggestionClick={handleBotSuggestionClick}
+                        />
                         {msg.showServiceButtons && showServiceSelection && (
                           <ServiceSelectionButtons
                             isVisible={true}
@@ -3930,35 +3775,51 @@ AI Website is built for instant replies, 24×7.<br>
                       </React.Fragment>
                     ))}
 
-                    {/* Typing indicator removed - streaming has built-in cursor animation */}
+                    {/* Streaming Message - Show as bot message bubble only when we have content */}
+                    {currentStreamingMessageId && isStreaming && streamingResponse && (
+                      <MessageBubbleComponent
+                        message={{
+                          sender: "bot",
+                          text: streamingResponse,
+                          timestamp: new Date()
+                        }}
+                        index={chatHistory.length}
+                        isUser={false}
+                        isTyping={false}
+                        chatHistoryLength={chatHistory.length + 1}
+                        currentlyPlaying={currentlyPlaying}
+                        playAudio={playAudio}
+                        onSuggestionClick={handleBotSuggestionClick}
+                      />
+                    )}
 
-                    {/* WhatsApp OTP Authentication Components */}
-                    <InlineAuth
-                      showInlineAuthInput={showInlineAuthInput}
-                      authMethod={authMethod}
-                      email={email}
-                      setEmail={setEmail}
-                      phone={phone}
-                      setPhone={setPhone}
-                      isPhoneValid={isPhoneValid}
-                      setIsPhoneValid={setIsPhoneValid}
-                      handleSendOtp={handleSendOtp}
-                      loadingOtp={loadingOtp}
-                      resendTimeout={resendTimeout}
-                    />
+                    {/* Authentication Components */}
+                    {showInlineAuth && showInlineAuthInput && (
+                      <InlineAuth
+                        theme={isDarkMode ? 'dark' : 'light'}
+                        onSendOtp={handleSendOtpNew}
+                        loading={authLoading}
+                        error={authError}
+                      />
+                    )}
 
-                    <OtpVerification
-                      showOtpInput={showOtpInput}
-                      authMethod={authMethod}
-                      email={email}
-                      phone={phone}
-                      otp={otp}
-                      setOtp={setOtp}
-                      handleVerifyOtp={handleVerifyOtp}
-                      loadingVerify={loadingVerify}
-                      resendTimeout={resendTimeout}
-                      handleSendOtp={handleSendOtp}
-                    />
+                    {showInlineAuth && showOtpInput && (
+                      <OtpVerification
+                        theme={isDarkMode ? 'dark' : 'light'}
+                        onVerifyOtp={handleVerifyOtpNew}
+                        onResendOtp={handleResendOtpNew}
+                        loading={authLoading}
+                        error={authError}
+                        success={null}
+                        resendCooldown={resendCooldown}
+                      />
+                    )}
+
+                    {/* Show typing indicator when typing but streaming hasn't started with content yet */}
+                    {isTyping && !(isStreaming && streamingResponse) && (
+                      <TypingIndicator isTyping={true} />
+                    )}
+
 
                     <div ref={endOfMessagesRef} />
                   </MessagesInnerContainer>

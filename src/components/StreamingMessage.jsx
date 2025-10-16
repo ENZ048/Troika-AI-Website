@@ -1,283 +1,161 @@
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
-import ReactMarkdown from 'react-markdown';
+import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
 
-// Animations
-const blink = keyframes`
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
-
-const pulse = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-`;
-
-// Styled components
-const StreamingMessageContainer = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  margin: 10px 0;
-  animation: ${fadeIn} 0.3s ease-in;
-`;
-
-const MessageBubble = styled.div`
-  max-width: 75%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  background: ${props => props.$isDarkMode
-    ? 'linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%)'
-    : 'linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%)'};
-  color: ${props => props.$isDarkMode ? '#e0e0e0' : '#333'};
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
+const StreamingContainer = styled.div`
+  background: ${props => props.theme === 'dark' ? '#1f2937' : '#ffffff'};
+  border: 2px solid ${props => props.theme === 'dark' ? '#374151' : '#e5e7eb'};
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
 const StreamingText = styled.div`
-  font-size: 14px;
-  line-height: 1.5;
-  word-wrap: break-word;
+  color: ${props => props.theme === 'dark' ? '#f9fafb' : '#111827'};
+  font-size: 1rem;
+  line-height: 1.6;
   white-space: pre-wrap;
-
-  /* Markdown styling */
-  p {
-    margin: 0 0 8px 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  code {
-    background: ${props => props.$isDarkMode ? '#1e1e1e' : '#f5f5f5'};
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-  }
-
-  pre {
-    background: ${props => props.$isDarkMode ? '#1e1e1e' : '#f5f5f5'};
-    padding: 12px;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 8px 0;
-
-    code {
-      background: transparent;
-      padding: 0;
-    }
-  }
-
-  ul, ol {
-    margin: 8px 0;
-    padding-left: 20px;
-  }
-
-  li {
-    margin: 4px 0;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  em {
-    font-style: italic;
-  }
-
-  a {
-    color: ${props => props.$isDarkMode ? '#60a5fa' : '#3b82f6'};
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+  word-wrap: break-word;
+  min-height: 20px;
 `;
 
 const StreamingCursor = styled.span`
   display: inline-block;
   width: 2px;
-  height: 1em;
-  background-color: ${props => props.$isDarkMode ? '#60a5fa' : '#3b82f6'};
+  height: 1.2em;
+  background: ${props => props.theme === 'dark' ? '#3b82f6' : '#1d4ed8'};
   margin-left: 2px;
-  animation: ${blink} 1s infinite;
-  vertical-align: text-bottom;
-`;
-
-const AudioIndicator = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-  padding: 6px 10px;
-  background: ${props => props.$isDarkMode ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'};
-  border-radius: 12px;
-  font-size: 12px;
-  color: ${props => props.$isDarkMode ? '#60a5fa' : '#3b82f6'};
-`;
-
-const AudioIcon = styled.span`
-  margin-right: 6px;
-  animation: ${pulse} 1.5s ease-in-out infinite;
-`;
-
-const LoadingDots = styled.span`
-  &::after {
-    content: '';
-    animation: ${keyframes`
-      0%, 20% { content: ''; }
-      40% { content: '.'; }
-      60% { content: '..'; }
-      80%, 100% { content: '...'; }
-    `} 1.5s infinite;
+  animation: blink 1s infinite;
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
   }
 `;
 
-const ErrorContainer = styled.div`
-  padding: 8px 12px;
-  margin-top: 8px;
-  background: ${props => props.$isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
-  border-radius: 8px;
-  color: ${props => props.$isDarkMode ? '#ef4444' : '#dc2626'};
-  font-size: 12px;
+const StreamingStatus = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: ${props => props.theme === 'dark' ? '#9ca3af' : '#6b7280'};
 `;
 
-const RetryButton = styled.button`
-  margin-top: 6px;
-  padding: 4px 12px;
-  background: ${props => props.$isDarkMode ? '#ef4444' : '#dc2626'};
+const StatusDot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: ${props => {
+    switch (props.status) {
+      case 'connecting': return '#f59e0b';
+      case 'streaming': return '#10b981';
+      case 'error': return '#ef4444';
+      default: return '#6b7280';
+    }
+  }};
+  animation: ${props => props.status === 'streaming' ? 'pulse 2s infinite' : 'none'};
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+`;
+
+const StopButton = styled.button`
+  padding: 6px 12px;
+  background: #ef4444;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all 0.2s ease;
+  
   &:hover {
-    background: ${props => props.$isDarkMode ? '#dc2626' : '#b91c1c'};
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
+    background: #dc2626;
   }
 `;
 
-const MetricsContainer = styled.div`
-  margin-top: 8px;
-  padding: 6px 10px;
-  background: ${props => props.$isDarkMode ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.05)'};
-  border-radius: 8px;
-  font-size: 11px;
-  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-`;
-
-const MetricItem = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-/**
- * StreamingMessage Component
- * Displays a streaming message with text animation, audio indicator, and metrics
- */
 const StreamingMessage = ({
-  text = '',
-  isStreaming = false,
-  audioPlaying = false,
-  error = null,
-  metrics = null,
-  isDarkMode = false,
-  showCursor = true,
-  onRetry = null,
+  theme,
+  message,
+  isStreaming,
+  onStopStreaming,
+  audioPlaying = false
 }) => {
-  // Ensure text is always a string
-  const displayText = typeof text === 'string' ? text : String(text || '');
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef(null);
 
-  // Ensure error is always a string
-  const errorMessage = error
-    ? (typeof error === 'string' ? error : error.message || String(error))
-    : null;
+  useEffect(() => {
+    if (isStreaming && message) {
+      // Start typewriter effect
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex(prev => {
+          if (prev < message.length) {
+            setDisplayText(message.substring(0, prev + 1));
+            return prev + 1;
+          } else {
+            clearInterval(intervalRef.current);
+            return prev;
+          }
+        });
+      }, 30); // Adjust speed as needed
+    } else {
+      // Clear interval and show full text
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      setDisplayText(message || '');
+      setCurrentIndex(message?.length || 0);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [message, isStreaming]);
+
+  const handleStopStreaming = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    onStopStreaming();
+  };
 
   return (
-    <StreamingMessageContainer>
-      <MessageBubble $isDarkMode={isDarkMode}>
-        <StreamingText $isDarkMode={isDarkMode}>
-          {displayText ? (
-            <>
-              <ReactMarkdown
-                components={{
-                  p: ({ node, ...props }) => (
-                    <p style={{ margin: "0.4rem 0", padding: "0" }} {...props} />
-                  ),
-                  ol: ({ node, ...props }) => (
-                    <ol style={{ margin: "0.5rem 0", paddingLeft: "1.5rem" }} {...props} />
-                  ),
-                  ul: ({ node, ...props }) => (
-                    <ul style={{ margin: "0.5rem 0", paddingLeft: "1.5rem" }} {...props} />
-                  ),
-                  li: ({ node, ...props }) => (
-                    <li style={{ margin: "0.3rem 0", lineHeight: "1.5" }} {...props} />
-                  ),
-                  strong: ({ node, ...props }) => (
-                    <strong style={{ fontWeight: "600" }} {...props} />
-                  ),
-                }}
-              >
-                {displayText}
-              </ReactMarkdown>
-              {isStreaming && showCursor && <StreamingCursor $isDarkMode={isDarkMode} />}
-            </>
-          ) : (
-            <span>
-              Thinking<LoadingDots />
-            </span>
-          )}
-        </StreamingText>
-
-        {/* Audio indicator removed - audio plays automatically without visual indicator */}
-
-        {errorMessage && (
-          <ErrorContainer $isDarkMode={isDarkMode}>
-            <div>{errorMessage}</div>
-            {onRetry && (
-              <RetryButton $isDarkMode={isDarkMode} onClick={onRetry}>
-                Retry
-              </RetryButton>
-            )}
-          </ErrorContainer>
-        )}
-
-        {metrics && !isStreaming && typeof metrics === 'object' && (
-          <MetricsContainer $isDarkMode={isDarkMode}>
-            {metrics.duration && (
-              <MetricItem>
-                ⏱️ {(metrics.duration / 1000).toFixed(2)}s
-              </MetricItem>
-            )}
-            {metrics.firstTokenLatency && (
-              <MetricItem>
-                ⚡ First token: {metrics.firstTokenLatency}ms
-              </MetricItem>
-            )}
-            {metrics.wordCount && (
-              <MetricItem>
-                📝 {metrics.wordCount} words
-              </MetricItem>
-            )}
-          </MetricsContainer>
-        )}
-      </MessageBubble>
-    </StreamingMessageContainer>
+    <StreamingContainer theme={theme}>
+      <StreamingText theme={theme}>
+        {displayText}
+        {isStreaming && <StreamingCursor theme={theme} />}
+      </StreamingText>
+      
+      {isStreaming && (
+        <StreamingStatus theme={theme}>
+          <StatusDot status="streaming" />
+          <span>
+            {audioPlaying ? 'Streaming with audio...' : 'Streaming response...'}
+          </span>
+          <StopButton onClick={handleStopStreaming}>
+            Stop
+          </StopButton>
+        </StreamingStatus>
+      )}
+    </StreamingContainer>
   );
 };
 

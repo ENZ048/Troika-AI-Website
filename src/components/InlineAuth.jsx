@@ -1,305 +1,156 @@
-import React from "react";
-import styled from "styled-components";
-import { ClipLoader } from "react-spinners";
-import { IoSend } from "react-icons/io5";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
-const MessageWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-  position: relative;
-  margin: 0.625rem 0;
-  justify-content: flex-start;
-  padding: 0 0 0 12px;
-  overflow: visible;
+const AuthContainer = styled.div`
+  background: ${props => props.theme === 'dark' ? '#1f2937' : '#ffffff'};
+  border: 2px solid ${props => props.theme === 'dark' ? '#374151' : '#e5e7eb'};
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
-const MessageBubble = styled.div`
-  padding: 0.79rem 1.05rem; /* Increased by 5% from 0.75rem 1rem for greeting message */
-  border-radius: 18px;
-  font-size: 1.33rem; /* Increased by additional 10% from 1.21rem for better readability */
-  line-height: 1.5; /* Improved line height */
+const AuthTitle = styled.h3`
+  color: ${props => props.theme === 'dark' ? '#f9fafb' : '#111827'};
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-align: center;
+`;
 
-  /* Desktop-specific font size decrease by 15% */
-  @media (min-width: 1201px) {
-    font-size: 1.13rem; /* Decreased by 15% from 1.33rem for desktop */
-  }
-  word-wrap: break-word;
-  max-width: 80%;
-  position: relative;
-  margin: 0.5rem 0;
-  width: fit-content;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f8f9fa;
-  color: #000;
-  align-self: flex-start;
+const AuthSubtitle = styled.p`
+  color: ${props => props.theme === 'dark' ? '#9ca3af' : '#6b7280'};
+  font-size: 0.875rem;
+  margin: 0 0 20px 0;
+  text-align: center;
+`;
 
-  /* Enhanced mobile responsiveness for auth input with improved font scaling */
-  @media (max-width: 1200px) {
-    font-size: 1.19rem; /* Match bot message styling */
-    line-height: 1.45;
-    max-width: 79%;
-  }
+const InputContainer = styled.div`
+  margin-bottom: 20px;
+`;
 
-  @media (max-width: 1024px) {
-    font-size: 1.16rem; /* Match bot message styling */
-    line-height: 1.42;
-    max-width: 80%;
-  }
+const InputLabel = styled.label`
+  display: block;
+  color: ${props => props.theme === 'dark' ? '#d1d5db' : '#374151'};
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+`;
 
-  @media (max-width: 900px) {
-    font-size: 1.14rem; /* Match bot message styling */
-    line-height: 1.4;
-    max-width: 81%;
+const Input = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid ${props => props.theme === 'dark' ? '#374151' : '#e5e7eb'};
+  border-radius: 8px;
+  background: ${props => props.theme === 'dark' ? '#1f2937' : '#ffffff'};
+  color: ${props => props.theme === 'dark' ? '#f9fafb' : '#111827'};
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
   }
+  
+  &::placeholder {
+    color: ${props => props.theme === 'dark' ? '#9ca3af' : '#9ca3af'};
+  }
+`;
 
-  @media (max-width: 768px) {
-    font-size: 1.12rem; /* Match bot message styling */
-    line-height: 1.38;
-    max-width: 82%;
+const SendButton = styled.button`
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-1px);
   }
+  
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
 
-  @media (max-width: 640px) {
-    font-size: 1.08rem; /* Match bot message styling */
-    line-height: 1.36;
-    max-width: 83%;
-  }
-
-  @media (max-width: 600px) {
-    font-size: 1.06rem; /* Match bot message styling */
-    line-height: 1.34;
-    max-width: 84%;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.04rem; /* Match bot message styling */
-    line-height: 1.32;
-    max-width: 85%;
-  }
-
-  @media (max-width: 414px) {
-    font-size: 1.02rem; /* Match bot message styling */
-    line-height: 1.3;
-    max-width: 86%;
-  }
-
-  @media (max-width: 390px) {
-    font-size: 1rem; /* Match bot message styling */
-    line-height: 1.28;
-    max-width: 87%;
-  }
-
-  @media (max-width: 375px) {
-    font-size: 0.98rem; /* Match bot message styling */
-    line-height: 1.26;
-    max-width: 88%;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.96rem; /* Match bot message styling */
-    line-height: 1.24;
-    max-width: 89%;
-  }
-
-  @media (max-width: 320px) {
-    font-size: 0.94rem; /* Match bot message styling */
-    line-height: 1.22;
-    max-width: 90%;
-  }
+const ErrorMessage = styled.div`
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 8px;
+  text-align: center;
 `;
 
 const InlineAuth = ({
-  showInlineAuthInput,
-  authMethod,
-  email,
-  setEmail,
-  phone,
-  setPhone,
-  isPhoneValid,
-  setIsPhoneValid,
-  handleSendOtp,
-  loadingOtp,
-  resendTimeout
+  theme,
+  onSendOtp,
+  loading,
+  error
 }) => {
-  if (!showInlineAuthInput) return null;
+  const [phone, setPhone] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSendOtp(phone);
+  };
+
+  const isValidInput = () => {
+    return phone.length >= 10;
+  };
 
   return (
-    <MessageWrapper $isUser={false}>
-      <div>
-        <MessageBubble $isUser={false}>
-          <div style={{ marginBottom: "12px" }}>
-            Share your WhatsApp number so we can keep the conversation going if we get disconnected.
-          </div>
+    <AuthContainer theme={theme}>
+      <AuthTitle theme={theme}>Verify Your Identity</AuthTitle>
+      <AuthSubtitle theme={theme}>
+        Please verify your WhatsApp number to continue chatting
+      </AuthSubtitle>
 
-          {authMethod === "email" ? (
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                alignItems: "center",
-              }}
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value.trim())
-                }
-                style={{
-                  flex: 1,
-                  padding: "10px 12px",
-                  border: "1px solid #dee2e6",
-                  borderRadius: "8px",
-                  fontSize: "16px", /* Increased for better mobile readability */
-                  outline: "none",
-                  background: "white",
-                  color: "#000",
-                  lineHeight: "1.4", /* Added line height for better readability */
-                }}
-                className="auth-input"
-              />
-              <button
-                onClick={handleSendOtp}
-                disabled={
-                  loadingOtp || !email || resendTimeout > 0
-                }
-                style={{
-                  padding: "10px 16px",
-                  background:
-                    loadingOtp || !email || resendTimeout > 0
-                      ? "#ccc"
-                      : "linear-gradient(135deg, #8a2be2, #14b8a6)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontSize: "16px", /* Increased for better mobile readability */
-                  fontWeight: "600",
-                  cursor:
-                    loadingOtp || !email || resendTimeout > 0
-                      ? "not-allowed"
-                      : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {loadingOtp ? (
-                  <>
-                    <ClipLoader size={12} color="#fff" />
-                    Sending...
-                  </>
-                ) : resendTimeout > 0 ? (
-                  `Resend in ${resendTimeout}s`
-                ) : (
-                  <IoSend size={16} />
-                )}
-              </button>
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                alignItems: "center",
-                flexWrap: "wrap",
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  flex: "1",
-                  minWidth: "0",
-                }}
-              >
-                <span
-                  style={{ 
-                    fontSize: "16px", /* Increased for better mobile readability */
-                    color: "#666",
-                    flexShrink: "0",
-                  }}
-                >
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  placeholder="Enter WhatsApp number"
-                  value={phone}
-                  onChange={(e) => {
-                    const inputPhone = e.target.value.replace(
-                      /\D/g,
-                      ""
-                    );
-                    setPhone(inputPhone);
-                    setIsPhoneValid(
-                      /^[6-9]\d{9}$/.test(inputPhone)
-                    );
-                  }}
-                  style={{
-                    flex: "1",
-                    minWidth: "120px",
-                    padding: "10px 12px",
-                    border: "1px solid #dee2e6",
-                    borderRadius: "8px",
-                    fontSize: "16px", /* Increased for better mobile readability */
-                    outline: "none",
-                    background: "white",
-                    color: "#000",
-                    lineHeight: "1.4", /* Added line height for better readability */
-                  }}
-                  className="auth-input"
-                />
-              </div>
-              <button
-                onClick={handleSendOtp}
-                disabled={
-                  loadingOtp ||
-                  !isPhoneValid ||
-                  resendTimeout > 0
-                }
-                style={{
-                  padding: "10px 12px",
-                  background:
-                    loadingOtp ||
-                    !isPhoneValid ||
-                    resendTimeout > 0
-                      ? "#ccc"
-                      : "linear-gradient(135deg, #8a2be2, #14b8a6)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontSize: "16px", /* Increased for better mobile readability */
-                  fontWeight: "600",
-                  cursor:
-                    loadingOtp ||
-                    !isPhoneValid ||
-                    resendTimeout > 0
-                      ? "not-allowed"
-                      : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  flexShrink: "0",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {loadingOtp ? (
-                  <>
-                    <ClipLoader size={12} color="#fff" />
-                  </>
-                ) : resendTimeout > 0 ? (
-                  `Resend in ${resendTimeout}s`
-                ) : (
-                  <IoSend size={16} />
-                )}
-              </button>
-            </div>
-          )}
-        </MessageBubble>
-      </div>
-    </MessageWrapper>
+      <form onSubmit={handleSubmit}>
+        <InputContainer>
+          <InputLabel theme={theme}>
+            Phone Number
+          </InputLabel>
+          <Input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+1234567890"
+            theme={theme}
+            required
+          />
+        </InputContainer>
+
+        <SendButton
+          type="submit"
+          disabled={!isValidInput() || loading}
+        >
+          {loading ? 'Sending...' : 'Send OTP via WhatsApp'}
+        </SendButton>
+
+        {error && (
+          <ErrorMessage>{error}</ErrorMessage>
+        )}
+      </form>
+    </AuthContainer>
   );
 };
 

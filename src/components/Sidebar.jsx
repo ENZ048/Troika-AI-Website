@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useTheme } from "../contexts/ThemeContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaHome,
   FaGlobe,
@@ -15,8 +16,12 @@ import {
   FaHeadset,
   FaPlus,
   FaShareAlt,
+  FaPaperPlane,
+  FaComment,
   FaChevronDown,
-  FaTimes
+  FaTimes,
+  FaBrain,
+  FaPhoneAlt
 } from "react-icons/fa";
 
 const SidebarContainer = styled.div`
@@ -212,8 +217,10 @@ const MobileOverlay = styled.div`
   }
 `;
 
-const Sidebar = ({ isOpen, onClose, activePage, onPageChange, onSocialMediaClick }) => {
+const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
   const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
@@ -227,20 +234,32 @@ const Sidebar = ({ isOpen, onClose, activePage, onPageChange, onSocialMediaClick
   }, []);
 
   const navigationItems = [
-    { id: 'home', label: 'Home', icon: FaHome },
-    { id: 'ai-websites', label: 'AI Websites', icon: FaGlobe },
-    { id: 'ai-calling', label: 'AI Calling Agents', icon: FaPhone },
-    { id: 'ai-whatsapp', label: 'AI WhatsApp Agent', icon: FaWhatsapp },
-    { id: 'ai-telegram', label: 'AI Telegram Agent', icon: FaShareAlt },
-    { id: 'industry-use-cases', label: 'Use Cases Industry-Wise', icon: FaChartLine },
-    { id: 'social-media', label: 'Social Media', icon: FaShareAlt }
+    { id: 'home', label: 'Home', icon: FaHome, path: '/home', color: '#10a37f' },
+    { id: 'ai-websites', label: 'AI Websites', icon: FaBrain, path: '/ai-websites', color: '#3b82f6' },
+    { id: 'ai-calling', label: 'AI Calling Agents', icon: FaPhoneAlt, path: '/ai-calling', color: '#dc2626' },
+    { id: 'ai-whatsapp', label: 'AI WhatsApp Agent', icon: FaWhatsapp, path: '/ai-whatsapp', color: '#128c7e' },
+    { id: 'ai-telegram', label: 'AI Telegram Agent', icon: FaPaperPlane, path: '/ai-telegram', color: '#0088cc' },
+    { id: 'industry-use-cases', label: 'Use Cases Industry-Wise', icon: FaChartLine, path: '/industry-use-cases', color: '#f59e0b' },
+    { id: 'social-media', label: 'Social Media', icon: FaShareAlt, path: '/social-media', color: '#8b5cf6' }
   ];
 
-  const handlePageChange = (pageId) => {
-    onPageChange(pageId);
+  const handlePageChange = (pageId, path) => {
+    console.log('🔄 Navigating to:', path);
+    
+    // Use the navigation handler if provided, otherwise use direct navigation
+    if (onTabNavigation) {
+      onTabNavigation(pageId);
+    } else {
+      navigate(path);
+    }
+    
     if (window.innerWidth <= 768) {
       onClose();
     }
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path;
   };
 
   return (
@@ -279,8 +298,8 @@ const Sidebar = ({ isOpen, onClose, activePage, onPageChange, onSocialMediaClick
           <Section>
             <NavItem 
               $isDarkMode={isDarkMode}
-              onClick={() => handlePageChange('new-chat')}
-              className={activePage === 'new-chat' ? 'active' : ''}
+              onClick={() => handlePageChange('new-chat', '/')}
+              className={location.pathname === '/' ? 'active' : ''}
             >
               <NavIcon><FaPlus /></NavIcon>
               <NavText>New chat</NavText>
@@ -288,17 +307,19 @@ const Sidebar = ({ isOpen, onClose, activePage, onPageChange, onSocialMediaClick
           </Section>
 
           <Section>
-            <SectionTitle $isDarkMode={isDarkMode}>Navigation</SectionTitle>
+            <SectionTitle $isDarkMode={isDarkMode}>Services</SectionTitle>
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               return (
                 <NavItem
                   key={item.id}
                   $isDarkMode={isDarkMode}
-                  onClick={() => handlePageChange(item.id)}
-                  className={`nav-item ${activePage === item.id ? 'active' : ''}`}
+                  onClick={() => handlePageChange(item.id, item.path)}
+                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
                 >
-                  <NavIcon><IconComponent /></NavIcon>
+                  <NavIcon style={{ color: item.color || 'inherit' }}>
+                    <IconComponent />
+                  </NavIcon>
                   <NavText>{item.label}</NavText>
                 </NavItem>
               );

@@ -879,7 +879,7 @@ const InputArea = ({
   currentlyPlaying
 }) => {
   const { isDarkMode } = useTheme();
-  const shouldDisable = isTyping || (needsAuth && !verified); // Disable when typing or auth needed
+  const shouldDisable = isTyping; // Simplified - only disable when typing
 
   return (
     <InputContainer $isDarkMode={isDarkMode}>
@@ -890,9 +890,7 @@ const InputArea = ({
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder={
-            needsAuth && !verified
-              ? "Please verify your WhatsApp number to continue..."
-              : isTyping
+            isTyping
               ? "Thinking..."
               : "Ask me anything..."
           }

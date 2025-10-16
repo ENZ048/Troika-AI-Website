@@ -896,7 +896,7 @@ const GreetingText = styled.h1`
   font-weight: 600;
   color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
 
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
 
   position: relative;
 
@@ -917,7 +917,7 @@ const GreetingText = styled.h1`
 
     font-size: 2rem;
 
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
   }
 
 
@@ -925,7 +925,7 @@ const GreetingText = styled.h1`
   @media (max-width: 480px) {
 
     font-size: 1.8rem;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
   }
 
 
@@ -933,7 +933,7 @@ const GreetingText = styled.h1`
   @media (max-width: 375px) {
 
     font-size: 1.6rem;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
   }
 
 
@@ -941,7 +941,7 @@ const GreetingText = styled.h1`
   @media (max-width: 320px) {
 
     font-size: 1.4rem;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
   }
 
 `;
@@ -954,7 +954,7 @@ const SubText = styled.p`
 
   color: ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
 
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem 0;
 
   position: relative;
 
@@ -982,7 +982,7 @@ const SubText = styled.p`
 
     font-size: 0.9rem;
 
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1rem 0;
 
   }
 
@@ -992,7 +992,7 @@ const SubText = styled.p`
 
     font-size: 0.85rem;
 
-    margin: 0 0 1.25rem 0;
+    margin: 0 0 1rem 0;
 
   }
 
@@ -1024,7 +1024,7 @@ const SuggestionsContainer = styled.div`
 
   z-index: 2;
 
-  margin: 0 auto;
+  margin: 0.5rem auto 0 auto;
 
   
 
@@ -1040,10 +1040,10 @@ const SuggestionsContainer = styled.div`
 
   @media (max-width: 768px) {
 
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
 
-    gap: 0.5rem;
-    max-width: 400px;
+    gap: 0.4rem;
+    max-width: 100%;
 
   }
 
@@ -1051,9 +1051,9 @@ const SuggestionsContainer = styled.div`
 
   @media (max-width: 480px) {
 
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
 
-    gap: 0.4rem;
+    gap: 0.3rem;
     max-width: 100%;
 
     padding: 0 0.5rem;
@@ -1084,68 +1084,91 @@ const SuggestionsContainer = styled.div`
 
 const SuggestionCard = styled.button`
 
-  background: ${props => props.$isDarkMode ? '#2d2d2d' : '#f8f9fa'};
-  border: 1px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
+  background: ${props => props.$isDarkMode 
+    ? 'linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%)' 
+    : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'};
+  border: 2px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
 
-  border-radius: 8px;
-  padding: 0.75rem;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
   display: flex;
 
   align-items: center;
 
-  gap: 0.5rem;
+  gap: 0.75rem;
   cursor: pointer;
 
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   text-align: left;
 
-  box-shadow: none;
+  box-shadow: ${props => props.$isDarkMode 
+    ? '0 4px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)'};
   width: 100%;
 
-  min-height: 48px;
+  min-height: 56px;
+  position: relative;
+  overflow: hidden;
 
-
-  &:hover {
-
-    background: ${props => props.$isDarkMode ? '#3d3d3d' : '#f1f3f4'};
-    border-color: ${props => props.$isDarkMode ? '#555' : '#d1d5db'};
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: ${props => props.$isDarkMode 
+      ? 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)' 
+      : 'linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent)'};
+    transition: left 0.5s ease;
   }
 
-
+  &:hover {
+    background: ${props => props.$isDarkMode 
+      ? 'linear-gradient(135deg, #3d3d3d 0%, #4a4a4a 100%)' 
+      : 'linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)'};
+    border-color: ${props => props.$isDarkMode ? '#6366f1' : '#8b5cf6'};
+    transform: translateY(-2px);
+    box-shadow: ${props => props.$isDarkMode 
+      ? '0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)' 
+      : '0 8px 32px rgba(139, 92, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1)'};
+    
+    &::before {
+      left: 100%;
+    }
+  }
 
   &:active {
-
-    transform: scale(0.98);
+    transform: translateY(-1px) scale(0.98);
   }
 
 
 
   @media (max-width: 480px) {
 
-    padding: 0.6rem;
-
-    gap: 0.4rem;
-
-    min-height: 44px;
+    padding: 0.875rem 1rem;
+    gap: 0.6rem;
+    min-height: 52px;
+    border-radius: 14px;
   }
 
 
 
   @media (max-width: 375px) {
-    padding: 0.5rem;
-
-    gap: 0.3rem;
-
-    min-height: 40px;
+    padding: 0.75rem 0.875rem;
+    gap: 0.5rem;
+    min-height: 48px;
+    border-radius: 12px;
 
   }
 
 
   @media (max-width: 320px) {
-    padding: 0.4rem;
-    gap: 0.25rem;
-    min-height: 36px;
+    padding: 0.625rem 0.75rem;
+    gap: 0.4rem;
+    min-height: 44px;
+    border-radius: 10px;
   }
 `;
 
@@ -1153,32 +1176,21 @@ const SuggestionCard = styled.button`
 
 const SuggestionIcon = styled.div`
 
-  font-size: 1.5rem;
-
+  font-size: 1.75rem;
   flex-shrink: 0;
-
-
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 
   @media (max-width: 480px) {
-
-    font-size: 1.25rem;
-
+    font-size: 1.5rem;
   }
-
-
 
   @media (max-width: 375px) {
-
-    font-size: 1.1rem;
-
+    font-size: 1.375rem;
   }
 
-
-
   @media (max-width: 320px) {
-
-    font-size: 1rem;
-
+    font-size: 1.25rem;
   }
 
 `;
@@ -1187,43 +1199,28 @@ const SuggestionIcon = styled.div`
 
 const SuggestionText = styled.span`
 
-  font-size: 0.95rem;
-
-  font-weight: 500;
-
-  color: ${props => props.$isDarkMode ? '#e5e7eb' : '#374151'};
-
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${props => props.$isDarkMode ? '#f1f5f9' : '#1e293b'};
   flex: 1;
-
-  transition: color 0.3s ease;
-
+  transition: all 0.3s ease;
   word-wrap: break-word;
-
   overflow-wrap: break-word;
-
   hyphens: auto;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
 
 
   @media (max-width: 480px) {
-
-    font-size: 0.85rem;
-
+    font-size: 0.9rem;
   }
-
-
 
   @media (max-width: 375px) {
-
-    font-size: 0.8rem;
-
+    font-size: 0.85rem;
   }
 
-
-
   @media (max-width: 320px) {
-
-    font-size: 0.75rem;
+    font-size: 0.8rem;
 
   }
 
@@ -1289,19 +1286,23 @@ const FeatureTags = styled.div`
 
   @media (max-width: 768px) {
 
-    gap: 1rem;
+    gap: 0.8rem;
 
     margin-top: 2.5rem;
 
     margin-bottom: 2rem;
 
-    flex-direction: column;
+    flex-direction: row;
+
+    flex-wrap: nowrap;
 
     align-items: center;
 
+    justify-content: center;
+
     width: 100%;
 
-    max-width: 300px;
+    max-width: 100%;
 
     margin-left: auto;
 
@@ -1313,7 +1314,7 @@ const FeatureTags = styled.div`
 
   @media (max-width: 480px) {
 
-    gap: 0.75rem;
+    gap: 0.6rem;
 
     margin-top: 2rem;
 
@@ -1323,13 +1324,19 @@ const FeatureTags = styled.div`
 
     padding: 0 0.5rem;
 
+    flex-direction: row;
+
+    flex-wrap: nowrap;
+
+    justify-content: center;
+
   }
 
 
 
   @media (max-width: 375px) {
 
-    gap: 0.6rem;
+    gap: 0.5rem;
 
     margin-top: 1.5rem;
 
@@ -1337,19 +1344,31 @@ const FeatureTags = styled.div`
 
     padding: 0 0.25rem;
 
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
   }
 
 
 
   @media (max-width: 320px) {
 
-    gap: 0.5rem;
+    gap: 0.4rem;
 
     margin-top: 1.25rem;
 
     margin-bottom: 1rem;
 
     padding: 0 0.1rem;
+
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
 
   }
 
@@ -1561,53 +1580,81 @@ const ScrollIndicator = styled.div`
 
 // =======================================================
 
-const FeatureTag = styled.div`
+const SocialMediaGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1rem;
 
-  background: white;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
 
-  color: #374151;
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    padding: 0 0.25rem;
+  }
+`;
 
-  padding: 0.75rem 1.5rem;
-
-  border-radius: 50px;
-
-  font-size: 0.9rem;
-
-  font-weight: 600;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.5rem;
-
-  border: none;
-
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-
+const SocialMediaContainer = styled.div`
+  background: ${props => props.$isDarkMode ? '#1a1a1a' : '#ffffff'};
+  border: 2px solid ${props => props.$borderColor};
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: ${props => props.$boxShadow};
+  height: 440px;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
 
-  width: fit-content;
+  @media (max-width: 768px) {
+    height: 450px;
+    margin-bottom: 0.5rem;
+  }
 
-  max-width: 100%;
-
-  justify-content: center;
-
-  box-sizing: border-box;
-
-  white-space: nowrap;
-
-  overflow: visible;
-
-
+  @media (max-width: 480px) {
+    height: 440px;
+    margin-bottom: 0.25rem;
+  }
 
   &:hover {
-
     transform: translateY(-2px);
-
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-
+    box-shadow: ${props => props.$hoverShadow};
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const FeatureTag = styled.div`
+
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #374151;
+  padding: 0.875rem 1.75rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  max-width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: visible;
+  position: relative;
 
 
 
@@ -2003,6 +2050,20 @@ const FeatureTag = styled.div`
 
   }
 
+  
+
+  /* Hide third button and beyond on mobile */
+
+  &.mobile-hidden {
+
+    @media (max-width: 768px) {
+
+      display: none;
+
+    }
+
+  }
+
 `;
 
 
@@ -2034,8 +2095,14 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
         suggestion.action === 'ai-telegram' ||
         suggestion.action === 'industry-use-cases' ||
         suggestion.action === 'social-media') {
-      // Trigger page change event
-      window.dispatchEvent(new CustomEvent('navigateToPage', { detail: suggestion.action }));
+      // Use onSuggestionClick to trigger navigation
+      if (onSuggestionClick) {
+        onSuggestionClick({
+          type: 'navigation',
+          action: suggestion.action,
+          text: suggestion.text
+        });
+      }
       return;
     }
     
@@ -2263,7 +2330,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       action: "ai-calling"
     },
     {
-      icon: "💬",
+      icon: "🤖",
       text: "AI WhatsApp Agent",
       action: "ai-whatsapp"
     },
@@ -2294,13 +2361,13 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
   const aiCallingSuggestions = [
     {
       icon: "📞",
-      text: "INBOUND CALLING AGENT",
+      text: "Inbound calling agent",
       action: "calling-inbound",
       isConversational: true
     },
     {
       icon: "📱",
-      text: "OUTBOUND CALLING AGENT",
+      text: "Outbound calling agent",
       action: "calling-outbound",
       isConversational: true
     }
@@ -2316,7 +2383,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
     },
     {
       icon: "💰",
-      text: "PRICING STRUCTURE",
+      text: "Pricing structure",
       action: "whatsapp-pricing",
       isConversational: true
     }
@@ -2332,7 +2399,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
     },
     {
       icon: "💰",
-      text: "PRICING STRUCTURE",
+      text: "Pricing structure",
       action: "telegram-pricing",
       isConversational: true
     }
@@ -2899,25 +2966,25 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
   const industryUseCasesSuggestions = [
     {
       icon: "🏆",
-      text: "OVERALL ADVANTAGES",
+      text: "Overall advantages",
       action: "industry-overall",
       staticContent: "<div style='text-align: left; line-height: 1.6; color: #374151; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;'><div style='font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: #1f2937; text-align: center; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>💎 OVERALL ADVANTAGES FOR ALL BUSINESSES</div><div style='background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 5px solid #3b82f6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='display: grid; gap: 1.5rem;'><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #3b82f6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 0.75rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🚀</span>1. 24×7 Digital Salesperson</div><div style='color: #4b5563; font-size: 1rem; line-height: 1.6;'>Your AI Website works non-stop  greeting visitors, answering FAQs, sharing information, and capturing leads even while you sleep.</div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 0.75rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>💬</span>2. Instant Communication</div><div style='color: #4b5563; font-size: 1rem; line-height: 1.6;'>Integrated Supa Agent Chat replies instantly on WhatsApp, Telegram, and your website  no missed inquiries.</div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 0.75rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>📊</span>3. Data-Driven Growth</div><div style='color: #4b5563; font-size: 1rem; line-height: 1.6;'>Every visitor, chat, and click is tracked  giving insights into who's visiting, what they want, and how to convert them.</div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 0.75rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🌐</span>4. Multilingual Reach</div><div style='color: #4b5563; font-size: 1rem; line-height: 1.6;'>Talk to your customers in their own language  Hindi, English, Marathi, Gujarati, Tamil, or even Arabic.</div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 0.75rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>💰</span>5. High ROI & Low Maintenance</div><div style='color: #4b5563; font-size: 1rem; line-height: 1.6;'>No recurring ad spend  your AI Website becomes a long-term marketing asset that grows with your business.</div></div></div></div></div>"
     },
     {
       icon: "🏢",
-      text: "B2B INDUSTRY ADVANTAGES",
+      text: "B2B industry advantages",
       action: "industry-b2b",
       staticContent: "<div style='text-align: left; line-height: 1.6; color: #374151; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;'><div style='font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: #1f2937; text-align: center; background: linear-gradient(135deg, #059669, #047857); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>🏢 B2B INDUSTRY ADVANTAGES & USE CASES</div><div style='background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 5px solid #059669; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='display: grid; gap: 2rem;'><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #3b82f6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🧱</span>1. Manufacturing & Industrial Companies</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Clients request catalogs, pricing, or quotations over and over again.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Displays interactive product catalogs</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Shares technical specs via chat instantly</div><div style='color: #065f46; font-size: 0.95rem;'>• Captures distributor/dealer inquiries automatically</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Faster conversions, fewer manual follow-ups, and global reach.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>💊</span>2. Pharmaceutical & Healthcare Equipment</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Dealers and hospitals need quick information about formulations, licenses, and delivery times.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI chat assists with product information and compliance queries</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Collects dealer requests and forwards to sales instantly</div><div style='color: #065f46; font-size: 0.95rem;'>• Integrates with CRM and WhatsApp</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>24×7 professional response system that never misses a lead.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🏗️</span>3. Construction, Architecture & Civil Engineering</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Projects and portfolios are hard to present in an interactive way.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Showcases galleries, 3D renders, and project walkthroughs</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Chatbot schedules site visits or consultation calls</div><div style='color: #065f46; font-size: 0.95rem;'>• Generates quote requests instantly</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Stronger first impression and faster decision cycles.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>📈</span>4. IT, SaaS & Consultancy</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Complex services are difficult to explain to new clients.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI chatbot explains services in simple terms</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Collects project briefs and automates appointment booking</div><div style='color: #065f46; font-size: 0.95rem;'>• Provides demo scheduling and proposal generation</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Higher engagement and reduced dependency on sales staff.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🏭</span>5. Traders, Distributors & Wholesalers</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Inquiries come from multiple channels  WhatsApp, email, phone  and get lost.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Centralizes all leads through website chat</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Sends automated price lists, catalogs, or PDFs</div><div style='color: #065f46; font-size: 0.95rem;'>• Tracks inquiry sources for reporting</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Organized, measurable sales pipeline with zero leakage.</div></div></div></div></div></div>"
     },
     {
       icon: "🛍️",
-      text: "B2C INDUSTRY ADVANTAGES",
+      text: "B2C industry advantages",
       action: "industry-b2c",
       staticContent: "<div style='text-align: left; line-height: 1.6; color: #374151; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;'><div style='font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: #1f2937; text-align: center; background: linear-gradient(135deg, #dc2626, #b91c1c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>🏪 B2C INDUSTRY ADVANTAGES & USE CASES</div><div style='background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 5px solid #dc2626; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='display: grid; gap: 2rem;'><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🩺</span>1. Doctors, Clinics & Hospitals</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Missed appointment calls, repetitive FAQs, and poor patient follow-up.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Patients can book appointments via chat or calendar</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Shares treatment details, timings, and directions automatically</div><div style='color: #065f46; font-size: 0.95rem;'>• AI sends follow-up reminders and feedback forms</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>More appointments, smoother patient experience, zero missed calls.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>⚖️</span>2. Lawyers & Legal Consultants</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Clients hesitate to call or ask initial questions.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Confidential AI chat to pre-qualify clients</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Shares services, case types, consultation fees, and slots</div><div style='color: #065f46; font-size: 0.95rem;'>• Collects client details securely</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Builds trust, captures quality leads, saves time on unqualified inquiries.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>📊</span>3. Chartered Accountants & Financial Advisors</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Constant queries on tax, GST, or filing timelines.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI chatbot answers basic financial questions</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Books consultation calls</div><div style='color: #065f46; font-size: 0.95rem;'>• Sends reminders for due dates and new compliance updates</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Reduces repetitive work, improves client engagement, positions firm as tech-savvy.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #3b82f6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🏫</span>4. Education & Coaching Institutes</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Admission queries and course info overwhelm staff.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI explains courses, fees, and admission process</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Collects student data and sends it to CRM</div><div style='color: #065f46; font-size: 0.95rem;'>• Handles multilingual parent queries</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Increased enrollments and professional digital impression.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🛍️</span>5. Retail, Fashion & E-Commerce</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Shoppers ask about products, stock, and delivery.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Displays catalog, takes orders, and processes payments</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI chat gives instant shipping updates</div><div style='color: #065f46; font-size: 0.95rem;'>• Suggests related products for upselling</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Faster checkouts and repeat purchases.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🧘</span>6. Salons, Gyms & Fitness Centers</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Missed inquiries for memberships or bookings.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• 24×7 booking assistant</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Shares offers, schedules, and trainer info</div><div style='color: #065f46; font-size: 0.95rem;'>• Sends reminders or re-engagement messages</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Higher bookings and retention.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🏡</span>7. Real Estate Developers & Agents</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>High competition and slow manual response to leads.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Chatbot shares floor plans, pricing, and videos</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Schedules site visits automatically</div><div style='color: #065f46; font-size: 0.95rem;'>• Tracks lead status and interest levels</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>Faster lead conversion and stronger customer trust.</div></div></div><div style='background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-weight: 700; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; font-size: 1.1rem;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>✈️</span>8. Travel & Hospitality</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Visitors ask for quotes, packages, and availability.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI shares destination info, itineraries, and pricing</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Books inquiries instantly</div><div style='color: #065f46; font-size: 0.95rem;'>• Integrates with WhatsApp and Google Calendar</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem;'>More bookings, fewer calls, smoother workflow.</div></div></div><div style='background: linear-gradient(135deg, #1f2937, #374151); padding: 2rem; border-radius: 12px; margin-top: 2rem; color: white; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);'><div style='font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #fbbf24; display: flex; align-items: center;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>🗳️</span>9. Politicians, Election Campaigns & Political Consultants</div><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><div style='font-weight: 600; color: #92400e; margin-bottom: 0.5rem;'>Problem:</div><div style='color: #92400e; font-size: 0.95rem;'>Hard to manage large-scale voter communication, feedback, and volunteer coordination.</div></div><div style='background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #10b981;'><div style='font-weight: 600; color: #065f46; margin-bottom: 0.5rem;'>AI Website Solution:</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• AI-powered website engages citizens 24×7 in multiple languages</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Collects voter data, feedback, and opinions through chat</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Shares candidate manifesto, achievements, and event schedules</div><div style='color: #065f46; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Integrated WhatsApp & Telegram chatbots for regional voter engagement</div><div style='color: #065f46; font-size: 0.95rem;'>• Analytics dashboard tracks public sentiment and reach</div></div><div style='background: #dbeafe; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 3px solid #3b82f6;'><div style='font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;'>Result:</div><div style='color: #1e40af; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Real-time voter engagement</div><div style='color: #1e40af; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Stronger public image</div><div style='color: #1e40af; font-size: 0.95rem; margin-bottom: 0.5rem;'>• Automated data collection for campaign planning</div><div style='color: #1e40af; font-size: 0.95rem;'>• Direct, personalized communication with supporters</div></div><div style='background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'><div style='font-weight: 600; color: #fbbf24; margin-bottom: 0.5rem;'>Perfect For:</div><div style='color: #d1d5db; font-size: 0.95rem; margin-bottom: 0.5rem;'>✅ Political parties</div><div style='color: #d1d5db; font-size: 0.95rem; margin-bottom: 0.5rem;'>✅ Independent candidates</div><div style='color: #d1d5db; font-size: 0.95rem; margin-bottom: 0.5rem;'>✅ Campaign managers</div><div style='color: #d1d5db; font-size: 0.95rem;'>✅ PR and communication agencies</div></div><div style='background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 8px; text-align: center; border-left: 4px solid #fbbf24;'><div style='font-style: italic; color: #fbbf24; font-size: 1rem;'>\"AI Websites turn election campaigns into data-driven movements  building trust, connection, and recall.\"</div></div></div></div></div></div>"
     },
     {
       icon: "🎯",
-      text: "FINAL RESULT",
+      text: "Final result",
       action: "industry-final",
       staticContent: "<div style='text-align: left; line-height: 1.6; color: #374151; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;'><div style='font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: #1f2937; text-align: center; background: linear-gradient(135deg, #7c3aed, #5b21b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>🎯 FINAL RESULT</div><div style='background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 5px solid #7c3aed; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);'><div style='font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #1f2937; text-align: center; display: flex; align-items: center; justify-content: center;'><span style='margin-right: 0.75rem; font-size: 1.4rem;'>💡</span>WHY THIS WORKS FOR ALL INDUSTRIES</div><div style='overflow-x: auto;'><table style='width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);'><thead><tr style='background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white;'><th style='padding: 0.75rem; text-align: left; font-weight: 600; border: none;'>Feature</th><th style='padding: 0.75rem; text-align: left; font-weight: 600; border: none;'>Advantage</th></tr></thead><tbody><tr style='border-bottom: 1px solid #e5e7eb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>AI Chat & Lead Capture</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Converts curiosity into action instantly</td></tr><tr style='background: #f9fafb; border-bottom: 1px solid #e5e7eb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>Multilingual Support</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Expands regional & global reach</td></tr><tr style='border-bottom: 1px solid #e5e7eb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>Analytics Dashboard</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Tracks every visitor & campaign</td></tr><tr style='background: #f9fafb; border-bottom: 1px solid #e5e7eb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>Smart Follow-ups</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Converts 2nd chances into sales</td></tr><tr style='border-bottom: 1px solid #e5e7eb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>Seamless Integrations</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Connects website, WhatsApp, and CRM</td></tr><tr style='background: #f9fafb;'><td style='padding: 0.75rem; border: none; color: #1f2937; font-weight: 600;'>Managed by Troika</td><td style='padding: 0.75rem; border: none; color: #4b5563;'>Zero technical stress for business owners</td></tr></tbody></table></div></div><div style='background: linear-gradient(135deg, #1f2937, #374151); padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; color: white; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);'><div style='font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #fbbf24; text-align: center; display: flex; align-items: center; justify-content: center;'><span style='margin-right: 0.5rem; font-size: 2rem;'>🎯</span>FINAL RESULT</div><div style='background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; border-left: 5px solid #fbbf24; margin-bottom: 1.5rem;'><div style='font-size: 1.1rem; color: #d1d5db; line-height: 1.7; margin-bottom: 1rem;'>Whether you're a doctor scheduling patients, a manufacturer handling bulk orders, or a lawyer managing new case leads </div><div style='font-size: 1.2rem; font-weight: 600; color: #fbbf24; line-height: 1.6;'>your AI Website becomes the most reliable, intelligent, and cost-effective employee you've ever had.</div></div><div style='background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; border-left: 5px solid #fbbf24; text-align: center;'><div style='font-size: 1.2rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.5rem; font-style: italic;'>\"Troika AI Websites don't just represent your business  they run it smarter.\"</div></div></div></div>"
     }
@@ -3146,7 +3213,8 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
           margin: '0 auto',
           fontWeight: '400'
         }}>
-          {activePage === 'ai-websites' ? 'AI Created. Human Perfected.' : 
+          {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites, automated calling agents, WhatsApp automation, and Telegram bots - all designed to help your business grow 24/7.' : 
+           activePage === 'ai-websites' ? 'AI Created. Human Perfected.' : 
            activePage === 'ai-calling' ? 'Our AI-Powered Calling Agent is a human-sounding voice assistant that can attend and make calls automatically 24×7, in multiple languages, without needing a human team.' : 
            activePage === 'ai-whatsapp' ? 'Automate Chats. Capture Leads. Convert Instantly.' : 
            activePage === 'ai-telegram' ? 'Smart, Secure & Scalable Business Conversations on Telegram' : 
@@ -3159,7 +3227,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             fontSize: '1.1rem',
             fontWeight: '500',
             color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '1rem',
+            marginTop: '0.5rem',
             fontStyle: 'italic',
             maxWidth: '600px',
             lineHeight: '1.6'
@@ -3173,7 +3241,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             fontSize: '1.1rem',
             fontWeight: '500',
             color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '1rem',
+            marginTop: '0.5rem',
             maxWidth: '600px',
             lineHeight: '1.6',
             textAlign: 'center'
@@ -3190,7 +3258,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             fontSize: '1.1rem',
             fontWeight: '500',
             color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '1rem',
+            marginTop: '0.5rem',
             maxWidth: '600px',
             lineHeight: '1.6',
             textAlign: 'center'
@@ -3204,7 +3272,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             fontSize: '1.1rem',
             fontWeight: '500',
             color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '1rem',
+            marginTop: '0.5rem',
             maxWidth: '600px',
             lineHeight: '1.6',
             textAlign: 'center'
@@ -3218,7 +3286,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             fontSize: '1.1rem',
             fontWeight: '500',
             color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '1rem',
+            marginTop: '0.5rem',
             maxWidth: '700px',
             lineHeight: '1.6',
             textAlign: 'center'
@@ -3230,41 +3298,14 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
         )}
 
         {activePage === 'social-media' ? (
-          <div 
-            className="social-media-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '0.75rem',
-              width: '100%',
-              maxWidth: '700px',
-              margin: '0 auto',
-              padding: '0 1rem'
-            }}
-          >
+          <SocialMediaGrid>
             {/* Instagram Feed - Top Left */}
-            <div 
-              style={{
-                background: isDarkMode ? '#1a1a1a' : '#ffffff',
-                border: '2px solid #E4405F',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(228, 64, 95, 0.2)',
-                height: '320px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer'
-              }}
+            <SocialMediaContainer
+              $isDarkMode={isDarkMode}
+              $borderColor="#E4405F"
+              $boxShadow="0 4px 12px rgba(228, 64, 95, 0.2)"
+              $hoverShadow="0 8px 25px rgba(228, 64, 95, 0.3)"
               onClick={() => handleFeedClick('instagram')}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 25px rgba(228, 64, 95, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(228, 64, 95, 0.2)';
-              }}
             >
               <div style={{
                 padding: '0.75rem 1rem',
@@ -3290,7 +3331,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                   width="100%"
                   height="100%"
                   frameBorder="0"
-                  scrolling="yes"
+                  scrolling="no"
                   allowTransparency="true"
                   style={{ 
                     border: 'none', 
@@ -3305,31 +3346,15 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                   title="Instagram Feed"
                 />
               </div>
-            </div>
+            </SocialMediaContainer>
 
             {/* Facebook Feed - Top Right */}
-            <div 
-              style={{
-                background: isDarkMode ? '#1a1a1a' : '#ffffff',
-                border: '2px solid #1877F2',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(24, 119, 242, 0.2)',
-                height: '320px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer'
-              }}
+            <SocialMediaContainer
+              $isDarkMode={isDarkMode}
+              $borderColor="#1877F2"
+              $boxShadow="0 4px 12px rgba(24, 119, 242, 0.2)"
+              $hoverShadow="0 8px 25px rgba(24, 119, 242, 0.3)"
               onClick={() => handleFeedClick('facebook')}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 25px rgba(24, 119, 242, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(24, 119, 242, 0.2)';
-              }}
             >
               <div style={{
                 padding: '0.75rem 1rem',
@@ -3351,7 +3376,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                 position: 'relative'
               }}>
                 <iframe
-                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftroikatechservices&tabs=timeline&width=350&height=280&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&appId"
+                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftroikatechservices&tabs=timeline&width=350&height=400&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&appId"
                   width="100%"
                   height="100%"
                   style={{ 
@@ -3363,40 +3388,24 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    minHeight: '200px'
+                    minHeight: '350px'
                   }}
-                  scrolling="yes"
+                  scrolling="no"
                   frameBorder="0"
                   allowTransparency="true"
                   allow="encrypted-media"
                   title="Facebook Page"
                 />
               </div>
-            </div>
+            </SocialMediaContainer>
 
             {/* YouTube Feed - Bottom Left */}
-            <div 
-              style={{
-                background: isDarkMode ? '#1a1a1a' : '#ffffff',
-                border: '2px solid #FF0000',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(255, 0, 0, 0.2)',
-                height: '320px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer'
-              }}
+            <SocialMediaContainer
+              $isDarkMode={isDarkMode}
+              $borderColor="#FF0000"
+              $boxShadow="0 4px 12px rgba(255, 0, 0, 0.2)"
+              $hoverShadow="0 8px 25px rgba(255, 0, 0, 0.3)"
               onClick={() => handleFeedClick('youtube')}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 25px rgba(255, 0, 0, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(255, 0, 0, 0.2)';
-              }}
             >
               <div style={{
                 padding: '0.75rem 1rem',
@@ -3460,31 +3469,15 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                    </button>
                  </div>
               </div>
-            </div>
+            </SocialMediaContainer>
 
             {/* Twitter Feed - Bottom Right */}
-            <div 
-              style={{
-                background: isDarkMode ? '#1a1a1a' : '#ffffff',
-                border: '2px solid #000000',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                height: '320px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer'
-              }}
+            <SocialMediaContainer
+              $isDarkMode={isDarkMode}
+              $borderColor="#000000"
+              $boxShadow="0 4px 12px rgba(0, 0, 0, 0.2)"
+              $hoverShadow="0 8px 25px rgba(0, 0, 0, 0.3)"
               onClick={() => handleFeedClick('twitter')}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
-              }}
             >
               <div style={{
                 padding: '0.75rem 1rem',
@@ -3548,9 +3541,9 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        ) : (
+            </SocialMediaContainer>
+          </SocialMediaGrid>
+        ) : activePage !== 'new-chat' ? (
           <SuggestionsContainer>
 
             {suggestions.map((suggestion, index) => (
@@ -3573,34 +3566,35 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             ))}
 
           </SuggestionsContainer>
-        )}
+        ) : null}
         
+        {activePage !== 'new-chat' && (
+          <FeatureTags>
 
-        <FeatureTags>
+            {features.map((feature, index) => {
 
-          {features.map((feature, index) => {
+              const IconComponent = feature.icon;
 
-            const IconComponent = feature.icon;
+              return (
 
-            return (
+                <FeatureTag key={index} className={index >= 2 ? 'mobile-hidden' : ''}>
 
-              <FeatureTag key={index}>
+                  <div className="feature-icon" style={{ color: feature.color }}>
 
-                <div className="feature-icon" style={{ color: feature.color }}>
+                    <IconComponent />
 
-                  <IconComponent />
+                  </div>
 
-                </div>
+                  <span className="feature-text">{feature.text}</span>
 
-                <span className="feature-text">{feature.text}</span>
+                </FeatureTag>
 
-              </FeatureTag>
+              );
 
-            );
+            })}
 
-          })}
-
-        </FeatureTags>
+          </FeatureTags>
+        )}
 
 
         {/* Social Media Feed Area */}

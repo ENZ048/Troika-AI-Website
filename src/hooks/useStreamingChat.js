@@ -331,7 +331,7 @@ export function useStreamingChat(options) {
         onError?.({ message: error.message, code: 'STREAM_START_ERROR' });
       }
     },
-    [apiBase, chatbotId, sessionId, enableTTS, isStreaming, onComplete, onError]
+    [apiBase, chatbotId, sessionId, enableTTS, isMuted, isStreaming, onComplete, onError]
   );
 
   /**
@@ -413,3 +413,5 @@ export function useStreamingChat(options) {
     getAudioState,
   };
 }
+
+export default useStreamingChat;

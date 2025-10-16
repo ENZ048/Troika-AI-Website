@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import TypewriterMarkdown from "./TypewriterMarkdown";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
@@ -310,11 +309,9 @@ const MessageBubbleComponent = ({
   index,
   isUser,
   isTyping,
-  animatedMessageIdx,
   chatHistoryLength,
   currentlyPlaying,
   playAudio,
-  setAnimatedMessageIdx,
   onSuggestionClick
 }) => {
   const { isDarkMode } = useTheme();
@@ -385,76 +382,67 @@ const MessageBubbleComponent = ({
         ) : (
           <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
             <MessageContent $isUser={isUser} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
-              {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
-              {!isUser &&
-              index === chatHistoryLength - 1 &&
-              !isTyping &&
-              animatedMessageIdx !== index &&
-              !message.wasStreamed ? (
-                <TypewriterMarkdown
-                  text={message.text}
-                  onComplete={() => setAnimatedMessageIdx(index)}
-                  speed={15}
-                />
-              ) : (
-                <ReactMarkdown
-                  rehypePlugins={[rehypeRaw]}
-                  components={{
-                    a: ({ node, ...props }) => (
-                      <a
-                        {...props}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          padding: "0",
-                          color: "#1e90ff",
-                          textDecoration: "none",
-                          transition: "all 0.2s ease-in-out",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.textDecoration = "underline";
-                          e.target.style.color = "#0f62fe";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.textDecoration = "none";
-                          e.target.style.color = "#1e90ff";
-                        }}
-                      />
-                    ),
-                    p: ({ node, ...props }) => (
-                      <p style={{ margin: "0", padding: "0" }} {...props} />
-                    ),
-                    div: ({ node, ...props }) => (
-                      <div {...props} />
-                    ),
-                    h2: ({ node, ...props }) => (
-                      <h2 {...props} />
-                    ),
-                    h3: ({ node, ...props }) => (
-                      <h3 {...props} />
-                    ),
-                  }}
-                >
-                  {message.text}
-                </ReactMarkdown>
-              )}
+              {/* Render message with markdown support - no typewriter animation */}
+              <ReactMarkdown
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a
+                      {...props}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: "0",
+                        color: "#1e90ff",
+                        textDecoration: "none",
+                        transition: "all 0.2s ease-in-out",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.textDecoration = "underline";
+                        e.target.style.color = "#0f62fe";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.textDecoration = "none";
+                        e.target.style.color = "#1e90ff";
+                      }}
+                    />
+                  ),
+                  p: ({ node, ...props }) => (
+                    <p style={{ margin: "0", padding: "0" }} {...props} />
+                  ),
+                  div: ({ node, ...props }) => (
+                    <div {...props} />
+                  ),
+                  h2: ({ node, ...props }) => (
+                    <h2 {...props} />
+                  ),
+                  h3: ({ node, ...props }) => (
+                    <h3 {...props} />
+                  ),
+                }}
+              >
+                {message.text}
+              </ReactMarkdown>
             </MessageContent>
 
             {/* Timestamp inside message bubble */}
             <Timestamp $isDarkMode={isDarkMode} $isUser={isUser}>
-              {message.timestamp ? message.timestamp.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              }) : new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {message.timestamp && message.timestamp instanceof Date && !isNaN(message.timestamp.getTime()) 
+                ? message.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+              }
             </Timestamp>
           </MessageBubble>
         )}
 
-        {/* Audio play button outside bubble - hidden for streamed messages as they handle audio via WebAudioPlayer */}
-        {!isUser && message.audio && !message.wasStreamed && (
+        {/* Audio play button outside bubble */}
+        {!isUser && message.audio && (
           <AudioButtonWrapper>
             <PlayButton
               $isDarkMode={isDarkMode}

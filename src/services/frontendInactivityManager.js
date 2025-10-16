@@ -1,17 +1,13 @@
-// Frontend inactivity manager for automatic conversation transcript sending
-// Tracks user activity and sends transcript after 30 seconds of inactivity
-
 import conversationTranscriptService from './conversationTranscriptService';
 
 class FrontendInactivityManager {
   constructor() {
-    this.activeTimers = new Map(); // sessionId -> timer
-    this.inactivityTimeout = 30000; // 30 seconds
-    this.isEnabled = true;
+    this.activeTimers = new Map();
+    this.INACTIVITY_TIMEOUT = 30000; // 30 seconds
   }
 
   /**
-   * Start or reset inactivity timer for a conversation
+   * Start inactivity timer for a session
    * @param {String} sessionId - Session ID
    * @param {String} phone - User phone number
    * @param {String} chatbotId - Chatbot ID
@@ -20,40 +16,23 @@ class FrontendInactivityManager {
    */
   startInactivityTimer(sessionId, phone, chatbotId, chatHistory, apiBase) {
     // Clear existing timer if any
-    this.clearInactivityTimer(sessionId);
-
-    if (!this.isEnabled || !sessionId || !phone || !chatbotId) {
-      return;
+    if (this.activeTimers.has(sessionId)) {
+      clearTimeout(this.activeTimers.get(sessionId));
     }
 
-    console.log(`⏰ Starting 30s inactivity timer for session: ${sessionId}`);
+    console.log(`⏰ Starting inactivity timer for session: ${sessionId}`);
 
-    const timer = setTimeout(async () => {
-      try {
-        await this.handleInactivity(sessionId, phone, chatbotId, chatHistory, apiBase);
-      } catch (error) {
-        console.error('Error handling inactivity:', error);
-      }
-    }, this.inactivityTimeout);
-
-    this.activeTimers.set(sessionId, timer);
-  }
-
-  /**
-   * Clear inactivity timer for a session
-   * @param {String} sessionId - Session ID
-   */
-  clearInactivityTimer(sessionId) {
-    const timer = this.activeTimers.get(sessionId);
-    if (timer) {
-      clearTimeout(timer);
+    // Set new timer
+    const timerId = setTimeout(() => {
+      this.handleInactivity(sessionId, phone, chatbotId, chatHistory, apiBase);
       this.activeTimers.delete(sessionId);
-      console.log(`⏰ Cleared inactivity timer for session: ${sessionId}`);
-    }
+    }, this.INACTIVITY_TIMEOUT);
+
+    this.activeTimers.set(sessionId, timerId);
   }
 
   /**
-   * Reset timer when user interacts
+   * Reset inactivity timer (clear and restart)
    * @param {String} sessionId - Session ID
    * @param {String} phone - User phone number
    * @param {String} chatbotId - Chatbot ID
@@ -107,39 +86,43 @@ class FrontendInactivityManager {
    * @param {Boolean} enabled - Whether to enable the manager
    */
   setEnabled(enabled) {
-    this.isEnabled = enabled;
-    if (!enabled) {
-      this.clearAllTimers();
+    this.enabled = enabled;
+    console.log(`Inactivity manager ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  /**
+   * Clear inactivity timer for a session
+   * @param {String} sessionId - Session ID
+   */
+  clearInactivityTimer(sessionId) {
+    if (this.activeTimers.has(sessionId)) {
+      clearTimeout(this.activeTimers.get(sessionId));
+      this.activeTimers.delete(sessionId);
+      console.log(`⏰ Cleared inactivity timer for session: ${sessionId}`);
     }
   }
 
   /**
-   * Get active timer count (for monitoring)
+   * Clear all active timers
+   */
+  clearAllTimers() {
+    this.activeTimers.forEach((timerId) => {
+      clearTimeout(timerId);
+    });
+    this.activeTimers.clear();
+    console.log('🧹 Cleared all inactivity timers');
+  }
+
+  /**
+   * Get count of active timers
+   * @returns {Number} Number of active timers
    */
   getActiveTimerCount() {
     return this.activeTimers.size;
-  }
-
-  /**
-   * Clear all timers (for cleanup)
-   */
-  clearAllTimers() {
-    for (const [sessionId, timer] of this.activeTimers) {
-      clearTimeout(timer);
-      console.log(`⏰ Cleared timer for session: ${sessionId}`);
-    }
-    this.activeTimers.clear();
-  }
-
-  /**
-   * Check if timer is active for a session
-   * @param {String} sessionId - Session ID
-   */
-  hasActiveTimer(sessionId) {
-    return this.activeTimers.has(sessionId);
   }
 }
 
 // Create and export singleton instance
 const frontendInactivityManager = new FrontendInactivityManager();
+export { FrontendInactivityManager };
 export default frontendInactivityManager;
