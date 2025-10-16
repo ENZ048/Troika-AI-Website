@@ -6,16 +6,15 @@ import { useTheme } from "../contexts/ThemeContext";
 
 const InputContainer = styled.div`
   flex-shrink: 0;
-  padding: 1rem 2rem 0rem 2rem;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
   border-top: 1px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
-  background: ${props => props.$isDarkMode ? 'rgba(31, 31, 31, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
+  background: ${props => props.$isDarkMode ? '#171717' : '#ffffff'};
   position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: background 0.3s ease, border-top 0.3s ease;
-  padding-bottom: 1.5rem;
   z-index: 10;
   margin-top: 0;
   min-height: 100px;
@@ -36,32 +35,32 @@ const InputContainer = styled.div`
   right: 0 !important;
 
   @media (max-width: 768px) {
-    padding: 1.25rem 1.5rem 1.25rem 1.5rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
   }
 
   @media (max-width: 640px) {
-    padding: 1.5rem 1.25rem 1.5rem 1.25rem;
+    padding: 1rem 1.25rem 1.5rem 1.25rem;
   }
 
   @media (max-width: 480px) {
-    padding: 1.75rem 1rem 1.75rem 1rem;
+    padding: 1rem 1rem 1.5rem 1rem;
   }
 
   @media (max-width: 375px) {
-    padding: 2rem 0.75rem 2rem 0.75rem;
+    padding: 1rem 0.75rem 1.5rem 0.75rem;
   }
 `;
 
 const ChatInput = styled.input`
-  padding: 1rem 200px 1rem 1rem;
+  padding: 0.75rem 3rem 0.75rem 1rem;
   border: 1px solid ${props => props.$isDarkMode ? '#4a4a4a' : '#e5e7eb'};
-  border-radius: 25px;
-  font-size: 1.125rem;
+  border-radius: 12px;
+  font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
   outline: none;
   transition: all 0.3s;
-  background: ${props => props.$isDarkMode ? 'rgba(45, 45, 45, 0.8)' : 'rgba(248, 249, 250, 0.8)'};
+  background: ${props => props.$isDarkMode ? '#2d2d2d' : '#f8f9fa'};
   color: ${props => props.$isDarkMode ? '#ffffff' : '#000'};
   line-height: 1.4;
 
@@ -168,7 +167,7 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 800px;
+  max-width: 700px;
   overflow: hidden;
 `;
 
@@ -880,7 +879,7 @@ const InputArea = ({
   currentlyPlaying
 }) => {
   const { isDarkMode } = useTheme();
-  const shouldDisable = isTyping; // Simplified - only disable when typing
+  const shouldDisable = isTyping || (needsAuth && !verified); // Disable when typing or auth needed
 
   return (
     <InputContainer $isDarkMode={isDarkMode}>
@@ -891,14 +890,16 @@ const InputArea = ({
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder={
-            isTyping
+            needsAuth && !verified
+              ? "Please verify your WhatsApp number to continue..."
+              : isTyping
               ? "Thinking..."
               : "Ask me anything..."
           }
           disabled={shouldDisable}
           style={{
             opacity: shouldDisable ? 0.6 : 1,
-            cursor: shouldDisable ? "not-allowed" : "text",
+            cursor: shouldDisable ? "not-allowed" : "text"
           }}
         />
         <InputButtons>

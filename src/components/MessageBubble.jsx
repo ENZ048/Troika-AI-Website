@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import TypewriterMarkdown from "./TypewriterMarkdown";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
 import SuggestionButtons from "./SuggestionButtons";
@@ -27,28 +28,29 @@ const MessageWrapper = styled.div`
 `;
 
 const MessageContainer = styled.div`
-  max-width: 75%;
+  max-width: ${(props) => (props.$isPricing || props.$isSales ? "100%" : "75%")};
   display: flex;
   flex-direction: column;
   order: ${(props) => (props.$isUser ? "2" : "1")};
 `;
 
 const MessageBubble = styled.div`
-  padding: 0.875rem 1rem;
+  padding: ${(props) => (props.$isPricing || props.$isSales ? "0" : "0.875rem 1rem")};
   border-radius: 24px;
   font-size: 1rem;
   line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  white-space: ${(props) => (props.$isUser ? "nowrap" : "pre-wrap")};
+  white-space: ${(props) => (props.$isUser ? "nowrap" : "normal")};
   hyphens: auto;
   word-break: break-word;
   position: relative;
   margin: ${(props) => (props.$isUser ? "0.5rem 0" : "0.25rem 0")};
-  width: ${(props) => (props.$isUser ? "auto" : "fit-content")};
+  width: ${(props) => (props.$isUser ? "auto" : "100%")};
+  max-width: 100%;
   min-width: ${(props) => (props.$isUser ? "200px" : "60px")};
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: ${(props) => (props.$isPricing || props.$isSales ? 'none' : '0 10px 40px rgba(0, 0, 0, 0.15)')};
   transform: scale(1);
   transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
 
@@ -82,8 +84,16 @@ const MessageBubble = styled.div`
     padding: 0.625rem 0.75rem;
   }
 
-  ${({ $isUser, $isDarkMode }) =>
-    $isUser
+  ${({ $isUser, $isDarkMode, $isPricing }) =>
+    $isPricing
+      ? `
+    background: transparent;
+    color: inherit;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  `
+      : $isUser
       ? `
     background: linear-gradient(to right, #3b82f6, #8b5cf6);
     color: #ffffff;
@@ -103,8 +113,18 @@ const MessageContent = styled.div`
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
+  white-space: normal;
+  width: 100%;
+  max-width: 100%;
   /* Prevent pre-wrap from forcing line breaks inside lists */
   ol, ul, li { white-space: normal; }
+  
+  /* For pricing and sales messages, allow full width and remove any constraints */
+  ${(props) => (props.$isPricing || props.$isSales) && `
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  `}
   
   p {
     margin: 0 0 0.4rem 0;
@@ -112,7 +132,10 @@ const MessageContent = styled.div`
     word-wrap: break-word;
     overflow-wrap: break-word;
     word-break: break-word;
+    white-space: normal;
     line-height: 1.45;
+    width: 100%;
+    max-width: 100%;
     
     &:last-child {
       margin-bottom: 0;
@@ -249,7 +272,7 @@ const BotAvatar = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: linear-gradient(to bottom right, #8b5cf6, #ec4899);
+  // background: linear-gradient(to bottom right, #8b5cf6, #ec4899);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,8 +282,8 @@ const BotAvatar = styled.div`
 `;
 
 const BotAvatarImage = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   object-fit: cover;
   border-radius: 10px;
 `;
@@ -296,85 +319,142 @@ const MessageBubbleComponent = ({
 }) => {
   const { isDarkMode } = useTheme();
 
+  // Check if this is a pricing or sales message that needs HTML rendering
+  const isPricingMessage = !isUser && message.text && (
+    message.text.includes('<div style=') || 
+    message.text.includes('Choose Your Perfect Plan') ||
+    message.text.includes('AI Website Pricing Plans')
+  );
+  
+  const isSalesMessage = !isUser && message.text && (
+    message.text.includes('Special Offer Package') ||
+    message.text.includes('Bonuses for Closing Deals') ||
+    message.text.includes('Discount Information') ||
+    message.text.includes('🎯 Special Offer Package') ||
+    message.text.includes('🎁 Bonuses for Closing Deals') ||
+    message.text.includes('💸 Discount Information') ||
+    (message.text.includes('<div style=') && 
+     !message.text.includes('Choose Your Perfect Plan') && 
+     !message.text.includes('AI Website Pricing Plans') &&
+     !message.text.includes('AI Marketing Revolution') &&
+     !message.text.includes('Follow Us on Social Media'))
+  );
+  
+  const isMarketingMessage = !isUser && message.text && (
+    message.text.includes('AI Marketing Revolution') ||
+    message.text.includes('Follow Us on Social Media') ||
+    message.text.includes('Marketing')
+  );
+  
+  const isHTMLMessage = isPricingMessage || isSalesMessage || isMarketingMessage || message.isHTML;
+
   return (
     <MessageWrapper $isUser={isUser}>
-      <MessageContainer $isUser={isUser}>
+      <MessageContainer $isUser={isUser} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
         {/* Show AI Assistant header OUTSIDE bubble for bot messages */}
         {!isUser && (
           <BotHeader>
             <BotAvatar>
-              <BotAvatarImage
-                src="https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png"
-                alt="AI"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+                <BotAvatarImage
+                  src="/logo.png"
+                  alt="AI"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
             </BotAvatar>
             <BotName $isDarkMode={isDarkMode}>AI Assistant</BotName>
           </BotHeader>
         )}
 
-        <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode}>
-          <MessageContent $isUser={isUser}>
-            {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
-            {!isUser &&
-            index === chatHistoryLength - 1 &&
-            !isTyping &&
-            animatedMessageIdx !== index ? (
-              <TypewriterMarkdown
-                text={message.text}
-                onComplete={() => setAnimatedMessageIdx(index)}
-                speed={15}
-              />
-            ) : (
-              <ReactMarkdown
-                components={{
-                  a: ({ node, ...props }) => (
-                    <a
-                      {...props}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        padding: "0",
-                        color: "#1e90ff",
-                        textDecoration: "none",
-                        transition: "all 0.2s ease-in-out",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.textDecoration = "underline";
-                        e.target.style.color = "#0f62fe";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.textDecoration = "none";
-                        e.target.style.color = "#1e90ff";
-                      }}
-                    />
-                  ),
-                  p: ({ node, ...props }) => (
-                    <p style={{ margin: "0", padding: "0" }} {...props} />
-                  ),
-                }}
-              >
-                {message.text}
-              </ReactMarkdown>
-            )}
-          </MessageContent>
+        {isHTMLMessage ? (
+          <div 
+            dangerouslySetInnerHTML={{ __html: message.text }} 
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              overflow: 'visible',
+              background: 'transparent',
+              border: 'none',
+              padding: '0',
+              margin: '0',
+              fontSize: '14px',
+              lineHeight: '1.4'
+            }}
+          />
+        ) : (
+          <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
+            <MessageContent $isUser={isUser} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
+              {/* Conditional rendering for typewriter effect with markdown support - ONLY for bot messages */}
+              {!isUser &&
+              index === chatHistoryLength - 1 &&
+              !isTyping &&
+              animatedMessageIdx !== index &&
+              !message.wasStreamed ? (
+                <TypewriterMarkdown
+                  text={message.text}
+                  onComplete={() => setAnimatedMessageIdx(index)}
+                  speed={15}
+                />
+              ) : (
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    a: ({ node, ...props }) => (
+                      <a
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          padding: "0",
+                          color: "#1e90ff",
+                          textDecoration: "none",
+                          transition: "all 0.2s ease-in-out",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.textDecoration = "underline";
+                          e.target.style.color = "#0f62fe";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.textDecoration = "none";
+                          e.target.style.color = "#1e90ff";
+                        }}
+                      />
+                    ),
+                    p: ({ node, ...props }) => (
+                      <p style={{ margin: "0", padding: "0" }} {...props} />
+                    ),
+                    div: ({ node, ...props }) => (
+                      <div {...props} />
+                    ),
+                    h2: ({ node, ...props }) => (
+                      <h2 {...props} />
+                    ),
+                    h3: ({ node, ...props }) => (
+                      <h3 {...props} />
+                    ),
+                  }}
+                >
+                  {message.text}
+                </ReactMarkdown>
+              )}
+            </MessageContent>
 
-          {/* Timestamp inside message bubble */}
-          <Timestamp $isDarkMode={isDarkMode} $isUser={isUser}>
-            {message.timestamp ? message.timestamp.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }) : new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Timestamp>
-        </MessageBubble>
+            {/* Timestamp inside message bubble */}
+            <Timestamp $isDarkMode={isDarkMode} $isUser={isUser}>
+              {message.timestamp ? message.timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }) : new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Timestamp>
+          </MessageBubble>
+        )}
 
-        {/* Audio play button outside bubble */}
-        {!isUser && message.audio && (
+        {/* Audio play button outside bubble - hidden for streamed messages as they handle audio via WebAudioPlayer */}
+        {!isUser && message.audio && !message.wasStreamed && (
           <AudioButtonWrapper>
             <PlayButton
               $isDarkMode={isDarkMode}

@@ -215,19 +215,25 @@ const SuggestionButtons = ({ suggestions, onSuggestionClick, isDarkMode }) => {
 
   return (
     <SuggestionContainer>
-      {suggestions.map((suggestion, index) => (
-        <SuggestionButton
-          key={index}
-          $isDarkMode={isDarkMode}
-          $delay={`${index * 0.1}s`}
-          onClick={() => onSuggestionClick(suggestion)}
-          title={suggestion}
-        >
-          <ButtonContent>
-            <TextContainer>{suggestion}</TextContainer>
-          </ButtonContent>
-        </SuggestionButton>
-      ))}
+      {suggestions.map((suggestion, index) => {
+        // Handle both string suggestions and object suggestions
+        const suggestionText = typeof suggestion === 'string' ? suggestion : suggestion.text;
+        const suggestionTitle = typeof suggestion === 'string' ? suggestion : suggestion.text;
+        
+        return (
+          <SuggestionButton
+            key={index}
+            $isDarkMode={isDarkMode}
+            $delay={`${index * 0.1}s`}
+            onClick={() => onSuggestionClick(suggestion)}
+            title={suggestionTitle}
+          >
+            <ButtonContent>
+              <TextContainer>{suggestionText}</TextContainer>
+            </ButtonContent>
+          </SuggestionButton>
+        );
+      })}
     </SuggestionContainer>
   );
 };

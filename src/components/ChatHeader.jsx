@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
-import { FiZap, FiUsers, FiMoon, FiSun, FiSettings, FiArrowLeft } from "react-icons/fi";
+import { FiZap, FiUsers, FiMoon, FiSun, FiSettings, FiArrowLeft, FiMenu, FiRefreshCw } from "react-icons/fi";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Header = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1.5rem 2rem;
-  border-bottom: none;
-  background: ${props => props.$isDarkMode
-    ? 'linear-gradient(135deg, #6b46c1 0%, #be185d 50%, #b45309 100%)'
-    : 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%)'};
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid ${props => props.$isDarkMode ? '#2f2f2f' : '#e5e5e5'};
+  background: ${props => props.$isDarkMode ? '#171717' : '#ffffff'};
   flex-shrink: 0;
   border-radius: 0;
   position: relative;
-  min-height: 80px;
+  min-height: 60px;
   width: 100%;
   transition: background 0.3s ease;
   
@@ -53,8 +51,9 @@ const Header = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 0.875rem 1rem;
-    min-height: 65px;
+    padding: 0.75rem 1rem;
+    min-height: 60px;
+    justify-content: space-between;
   }
 
   @media (max-width: 640px) {
@@ -103,23 +102,19 @@ const HeaderInner = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1000px;
   gap: 1rem;
 
   /* Tablet responsive design */
   @media (max-width: 1024px) {
     gap: 0.875rem;
-    max-width: 900px;
   }
 
   @media (max-width: 900px) {
     gap: 0.75rem;
-    max-width: 800px;
   }
 
   @media (max-width: 768px) {
     gap: 0.625rem;
-    max-width: 100%;
     padding: 0 0.5rem;
   }
 
@@ -308,10 +303,10 @@ const Circle = styled.div`
 `;
 
 const Avatar = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   object-fit: cover; /* fill circle exactly */
-  border-radius: 50%;
+  border-radius: 0%;
   display: block;
 `;
 
@@ -374,7 +369,7 @@ const StatusBlock = styled.div`
 
 const BotName = styled.div`
   font-weight: 700;
-  color: #ffffff;
+  color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
   font-size: 1.4rem;
   text-align: left;
   line-height: 1.1;
@@ -461,7 +456,7 @@ const BotName = styled.div`
 
 const Status = styled.div`
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: ${props => props.$isDarkMode ? 'rgba(255, 255, 255, 0.9)' : '#6b7280'};
   text-align: left;
   font-weight: 400;
   margin: 0;
@@ -583,7 +578,7 @@ const OnlineIndicator = styled.span`
 `;
 
 const StatusDivider = styled.span`
-  color: rgba(255, 255, 255, 0.6);
+  color: ${props => props.$isDarkMode ? 'rgba(255, 255, 255, 0.6)' : '#9ca3af'};
   font-weight: 300;
 `;
 
@@ -783,7 +778,7 @@ const HeaderRight = styled.div`
 const HeaderButton = styled.button`
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: ${props => props.$isDarkMode ? '#ffffff' : '#374151'};
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 8px;
@@ -796,7 +791,7 @@ const HeaderButton = styled.button`
   gap: 0.25rem;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: ${props => props.$isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
   }
 
   &:focus {
@@ -979,14 +974,15 @@ const ChatHeader = ({
   chatbotLogo,
   isMuted,
   toggleMute,
-  onBackClick
+  onSidebarToggle,
+  sidebarOpen
 }) => {
   const { isDarkMode, toggleTheme } = useTheme();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 900);
+      setIsSmallScreen(window.innerWidth <= 768);
     };
 
     checkScreenSize();
@@ -996,73 +992,78 @@ const ChatHeader = ({
 
   return (
     <Header $isDarkMode={isDarkMode}>
-      <HeaderInner>
-        <HeaderLeft>
-          {onBackClick && (
+      {/* Mobile Layout */}
+      {isSmallScreen ? (
+        <>
+          {/* Left: Hamburger Menu */}
+          <HeaderButton
+            $isDarkMode={isDarkMode}
+            title="Menu"
+            onClick={onSidebarToggle}
+            className="mobile-menu-btn"
+          >
+            <FiMenu />
+          </HeaderButton>
+          
+          {/* Right: Refresh Button */}
+          <HeaderButton
+            $isDarkMode={isDarkMode}
+            title="Refresh"
+            className="mobile-refresh-btn"
+          >
+            <FiRefreshCw />
+          </HeaderButton>
+        </>
+      ) : (
+        /* Desktop Layout */
+        <HeaderInner>
+          <HeaderLeft>
+            <Circle $size={50}>
+                <Avatar
+                  src="/logo.png"
+                  alt="Troika Tech Logo"
+                  onError={(e) => {
+                    e.target.src = "/logo.png";
+                  }}
+                />
+            </Circle>
+            <StatusBlock>
+              <BotName $isDarkMode={isDarkMode}>Troika Tech</BotName>
+              <Status $isDarkMode={isDarkMode}>
+                <OnlineIndicator />
+                <span>Online</span>
+                <StatusDivider $isDarkMode={isDarkMode} className="hide-on-mobile">•</StatusDivider>
+                <span className="hide-on-mobile">Avg Response: 2s</span>
+              </Status>
+            </StatusBlock>
+          </HeaderLeft>
+          <HeaderRight>
+            <HeaderButton $isDarkMode={isDarkMode} title="Streak" className="hide-text-mobile">
+              <FiZap /><span>0</span>
+            </HeaderButton>
+            <HeaderButton $isDarkMode={isDarkMode} title="Users" className="hide-text-mobile">
+              <FiUsers /><span>0/5</span>
+            </HeaderButton>
             <HeaderButton
-              title="Go back to main menu"
-              onClick={onBackClick}
-              className="back-button"
+              $isDarkMode={isDarkMode}
+              title={isMuted ? "Unmute" : "Mute"}
+              onClick={toggleMute}
             >
-              <FiArrowLeft />
-              <span className="back-text">Go back to Main Menu</span>
+              {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
             </HeaderButton>
-          )}
-          <Circle $size={50}>
-            <Avatar
-              src={chatbotLogo}
-              alt="avatar"
-              onError={(e) => {
-                e.target.src =
-                  "https://raw.githubusercontent.com/troika-tech/Asset/refs/heads/main/Supa%20Agent%20new.png";
-              }}
-            />
-          </Circle>
-          <StatusBlock>
-            <BotName>Supa Agent</BotName>
-            <Status>
-              <OnlineIndicator />
-              <span>Online</span>
-              <StatusDivider className="hide-on-mobile">•</StatusDivider>
-              <span className="hide-on-mobile">Avg Response: 2s</span>
-            </Status>
-          </StatusBlock>
-        </HeaderLeft>
-        <HeaderRight>
-          <HeaderButton title="Streak" className="hide-text-mobile">
-            <FiZap /><span>0</span>
-          </HeaderButton>
-          <HeaderButton title="Users" className="hide-text-mobile">
-            <FiUsers /><span>0/5</span>
-          </HeaderButton>
-          <HeaderButton
-            title={isMuted ? "Unmute" : "Mute"}
-            onClick={toggleMute}
-          >
-            {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
-          </HeaderButton>
-          <HeaderButton
-            title={isDarkMode ? "Light Mode" : "Dark Mode"}
-            onClick={toggleTheme}
-          >
-            {isDarkMode ? <FiSun /> : <FiMoon />}
-          </HeaderButton>
-          {/* Show back button on small screens, settings on large screens */}
-          {isSmallScreen && onBackClick ? (
-            <HeaderButton 
-              title="Go back to main menu"
-              onClick={onBackClick}
-              className="back-button-inline"
+            <HeaderButton
+              $isDarkMode={isDarkMode}
+              title={isDarkMode ? "Light Mode" : "Dark Mode"}
+              onClick={toggleTheme}
             >
-              <FiArrowLeft />
+              {isDarkMode ? <FiSun /> : <FiMoon />}
             </HeaderButton>
-          ) : !isSmallScreen ? (
-            <HeaderButton title="Settings">
+            <HeaderButton $isDarkMode={isDarkMode} title="Settings">
               <FiSettings />
             </HeaderButton>
-          ) : null}
-        </HeaderRight>
-      </HeaderInner>
+          </HeaderRight>
+        </HeaderInner>
+      )}
     </Header>
   );
 };

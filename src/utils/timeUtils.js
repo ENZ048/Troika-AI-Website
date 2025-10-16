@@ -5,26 +5,26 @@ export function getTimeBasedGreeting() {
 
   // Array of greeting messages for each time period
   const morningGreetings = [
-    "☀️ Good morning! Ready to kickstart your business today?",
-    "Morning! A fresh day = fresh ideas. What can I solve for you?",
-    "Rise & shine—let's make your business smarter today."
+    "☀️ Good morning! Ready to explore ITM Business School's programs?",
+    "Morning! A fresh day = fresh opportunities at ITM. What would you like to know?",
+    "Rise & shinelet's discover your future at ITM Business School today."
   ];
 
   const afternoonGreetings = [
-    "Hey 👋 Hope your day's going well! Need a quick business boost?",
-    "Welcome! Perfect time for a smart solution—shall we start?"
+    "Hey 👋 Hope your day's going well! Ready to learn about ITM's offerings?",
+    "Welcome! Perfect time to explore ITM Business Schoolshall we start?"
   ];
 
   const eveningGreetings = [
-    "Evenings are for smart moves ✨ What's on your mind?",
-    "Hey! Don't worry if it's late—business doesn't sleep, and neither do I.",
-    "Good evening! Ready to make your next big business move?"
+    "Evenings are for planning your future ✨ What interests you about ITM?",
+    "Hey! Don't worry if it's lateI'm here to help you discover ITM's programs.",
+    "Good evening! Ready to explore what ITM Business School has to offer?"
   ];
 
   const lateNightGreetings = [
-    "🌙 Burning the midnight oil? I'm here to help.",
-    "You're up late, and so am I. Let's get things done.",
-    "Insomniac or hustler? Either way—I've got your back."
+    "🌙 Burning the midnight oil? I'm here to help you learn about ITM.",
+    "You're up late, and so am I. Let's explore ITM's opportunities together.",
+    "Night owl or future student? Either wayI've got ITM info for you."
   ];
 
   let selectedGreeting;

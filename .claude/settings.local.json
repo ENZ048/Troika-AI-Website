@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "Read(//c/Users/USER/Desktop/SupaAgent Production/Devendra UI/Exhibition-SupaAgent-4/**)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

@@ -161,7 +161,7 @@ export const Overlay = styled.div`
     : 'linear-gradient(to bottom right, #e0e7ff, #f0f9ff, #fef3c7)'};
   z-index: 9999;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 0;
   overscroll-behavior: contain;
   touch-action: pan-y;
@@ -332,7 +332,7 @@ export const ChatContainer = styled.div`
   min-height: 0;
   position: relative;
   overflow: visible;
-  background: transparent;
+  background: ${props => props.$isDarkMode ? 'transparent' : '#f8f9fa'};
   width: 100%;
   align-items: stretch;
   
@@ -374,7 +374,7 @@ export const MessagesContainer = styled.div`
   flex-direction: column;
   min-height: 0;
   position: relative;
-  background: transparent;
+  background: ${props => props.$isDarkMode ? '#212121' : '#f8f9fa'};
   width: 100%;
 
   /* Responsive padding to match Reference.jsx behavior */
@@ -476,6 +476,21 @@ export const MessagesInnerContainer = styled.div`
 
   @media (max-width: 320px) {
     padding: 0.5rem 0 0 0;
+  }
+`;
+
+export const MainContentArea = styled.div`
+  height: 100vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: ${props => props.$isDarkMode ? '#212121' : '#ffffff'};
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
