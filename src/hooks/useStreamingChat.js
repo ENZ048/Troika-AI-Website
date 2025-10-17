@@ -19,6 +19,7 @@ export function useStreamingChat(options) {
     apiBase,
     chatbotId,
     sessionId,
+    phone,
     enableTTS = true,
     isMuted = false,
     onComplete,
@@ -115,7 +116,7 @@ export function useStreamingChat(options) {
         query,
         sessionId,
         enableTTS,
-        phone: "9999999999", // Default phone for backend requirement
+        phone: phone || "", // Use provided phone or empty string
       };
 
       console.log('Starting streaming request:', { streamUrl, requestData });

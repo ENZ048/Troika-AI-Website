@@ -13,16 +13,19 @@ class ConversationTranscriptService {
    */
   async sendConversationTranscript(phoneNumber, chatHistory, sessionId, chatbotId, apiBase) {
     try {
-      console.log('📱 Sending conversation transcript via backend API...');
-      console.log('Phone:', phoneNumber);
-      console.log('Session ID:', sessionId);
-      console.log('Chatbot ID:', chatbotId);
-      console.log('Message count:', chatHistory.length);
+      console.log('🚀 [TRANSCRIPT DEBUG] Starting sendConversationTranscript call');
+      console.log('📱 [TRANSCRIPT DEBUG] Sending conversation transcript via backend API...');
+      console.log('📞 [TRANSCRIPT DEBUG] Phone:', phoneNumber);
+      console.log('🆔 [TRANSCRIPT DEBUG] Session ID:', sessionId);
+      console.log('🤖 [TRANSCRIPT DEBUG] Chatbot ID:', chatbotId);
+      console.log('📊 [TRANSCRIPT DEBUG] Message count:', chatHistory.length);
+      console.log('🌐 [TRANSCRIPT DEBUG] API Base URL:', apiBase);
 
       // Format messages for backend API
+      // Backend expects 'user' and 'bot' (lowercase) with 'content' field
       const formattedMessages = chatHistory.map(msg => ({
-        sender: msg.sender === 'user' ? 'User' : 'Assistant',
-        text: msg.text,
+        sender: msg.sender === 'user' ? 'user' : 'bot',
+        content: msg.text,  // Backend uses 'content' field, not 'text'
         timestamp: msg.timestamp || new Date().toISOString()
       }));
 
@@ -31,17 +34,22 @@ class ConversationTranscriptService {
         phone: phoneNumber,
         chatbotId: chatbotId,
         customMessage: 'Your conversation transcript has been generated and sent to your WhatsApp!',
-        chatHistory: formattedMessages // Send formatted chat history
+        chatHistory: formattedMessages // Send formatted chat history with 'content' field
       };
 
-      console.log('📤 Sending to backend API:', {
+      console.log('🔍 [TRANSCRIPT DEBUG] Payload chatbotId:', chatbotId);
+      console.log('🔍 [TRANSCRIPT DEBUG] Sample formatted message:', formattedMessages[0]);
+
+      console.log('📤 [TRANSCRIPT DEBUG] Sending to backend API:', {
         sessionId: payload.sessionId,
         phone: payload.phone,
         chatbotId: payload.chatbotId,
         messageCount: payload.chatHistory?.length || 0,
         firstMessage: payload.chatHistory?.[0]?.text?.substring(0, 50) + '...' || 'N/A'
       });
+      console.log('🔗 [TRANSCRIPT DEBUG] Full API URL:', `${apiBase}/conversation-transcript/send`);
 
+      console.log('🌐 [TRANSCRIPT DEBUG] Making fetch request to transcript endpoint...');
       const response = await fetch(`${apiBase}/conversation-transcript/send`, {
         method: 'POST',
         headers: {
@@ -50,12 +58,22 @@ class ConversationTranscriptService {
         body: JSON.stringify(payload)
       });
 
+      console.log('📡 [TRANSCRIPT DEBUG] Fetch response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        url: response.url
+      });
+
       const result = await response.json();
 
-      console.log('📥 Backend API response:', result);
-      console.log('📥 Response status:', response.status);
+      console.log('📥 [TRANSCRIPT DEBUG] Backend API response:', result);
+      console.log('📥 [TRANSCRIPT DEBUG] Response status:', response.status);
 
       if (response.ok && result.success) {
+        console.log('✅ [TRANSCRIPT DEBUG] Success! Transcript sent successfully');
+        console.log('📄 [TRANSCRIPT DEBUG] S3 URL:', result.s3Url);
+        console.log('📊 [TRANSCRIPT DEBUG] Message count processed:', result.messageCount);
         return {
           success: true,
           message: '📱 Conversation transcript sent to your WhatsApp!',
@@ -64,7 +82,8 @@ class ConversationTranscriptService {
           messageCount: result.messageCount
         };
       } else {
-        console.error('❌ API Error:', result);
+        console.error('❌ [TRANSCRIPT DEBUG] API Error:', result);
+        console.error('❌ [TRANSCRIPT DEBUG] Response not OK or success=false');
         return {
           success: false,
           message: result.error || `Failed to send conversation transcript (${response.status})`,
@@ -74,7 +93,12 @@ class ConversationTranscriptService {
       }
 
     } catch (error) {
-      console.error('❌ Conversation transcript error:', error);
+      console.error('❌ [TRANSCRIPT DEBUG] Conversation transcript error:', error);
+      console.error('❌ [TRANSCRIPT DEBUG] Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       return {
         success: false,
         message: 'Failed to send conversation transcript. Please try again.',

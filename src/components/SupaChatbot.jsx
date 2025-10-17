@@ -58,7 +58,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // State management
   const [showChat, setShowChat] = useState(true);
-  const [phone, setPhone] = useState("9999999999"); // Default phone for backend auth requirement
+  const [phone, setPhone] = useState(""); // Phone number will be set during authentication
   const [otpSent, setOtpSent] = useState(false);
   const [isPageRefresh, setIsPageRefresh] = useState(true); // Track if this is a page refresh
   const [otp, setOtp] = useState("");
@@ -160,6 +160,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     apiBase,
     chatbotId,
     sessionId,
+    phone: userInfo?.phone || phone,
     enableTTS: !isMuted,
     isMuted,
     onComplete: (data) => {
@@ -333,25 +334,72 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Auto-send conversation transcript after 30 seconds of inactivity
   useEffect(() => {
+    console.log('🚀 [USEEFFECT DEBUG] Transcript inactivity useEffect triggered');
+    console.log('🔍 [USEEFFECT DEBUG] Checking conditions:', {
+      isAuthenticated,
+      verified,
+      phone: phone ? '***' + phone.slice(-4) : 'null',
+      userInfoPhone: userInfo?.phone ? '***' + userInfo.phone.slice(-4) : 'null',
+      savedPhoneInLS: localStorage.getItem('chatbot_user_phone') ? '***' + localStorage.getItem('chatbot_user_phone').slice(-4) : 'null',
+      sessionId,
+      chatbotId,
+      chatHistoryLength: chatHistory.length,
+      apiBase
+    });
+
+    // Use authenticated phone number if available, otherwise fall back to local phone state
+    const effectivePhone = userInfo?.phone || phone;
+    const isUserVerified = isAuthenticated || verified;
+
     // Only start timer if verified and there's chat history
-    if (verified && phone && sessionId && chatbotId && chatHistory.length > 0) {
-      console.log('⏰ Resetting inactivity timer due to chat update');
+    if (isUserVerified && effectivePhone && sessionId && chatbotId && chatHistory.length > 0) {
+      console.log('✅ [USEEFFECT DEBUG] All conditions met - Resetting inactivity timer due to chat update');
+      console.log('📊 [USEEFFECT DEBUG] Chat history updated with', chatHistory.length, 'messages');
+      console.log('📞 [USEEFFECT DEBUG] Using phone:', effectivePhone ? '***' + effectivePhone.slice(-4) : 'null');
+      console.log('🤖 [USEEFFECT DEBUG] Using chatbotId from App.jsx:', chatbotId);
       frontendInactivityManager.resetInactivityTimer(
         sessionId,
-        phone,
+        effectivePhone,
         chatbotId,
         chatHistory,
         apiBase
       );
+    } else {
+      console.log('❌ [USEEFFECT DEBUG] Conditions not met for timer reset:', {
+        isAuthenticated: !!isAuthenticated,
+        verified: !!verified,
+        hasEffectivePhone: !!effectivePhone,
+        hasSessionId: !!sessionId,
+        hasChatbotId: !!chatbotId,
+        hasChatHistory: chatHistory.length > 0
+      });
     }
 
     // Cleanup timer when component unmounts
     return () => {
+      console.log('🧹 [USEEFFECT DEBUG] Cleanup function called');
       if (sessionId) {
+        console.log('🧹 [USEEFFECT DEBUG] Clearing inactivity timer for session:', sessionId);
         frontendInactivityManager.clearInactivityTimer(sessionId);
+      } else {
+        console.log('ℹ️ [USEEFFECT DEBUG] No sessionId to clear timer');
       }
     };
-  }, [chatHistory, verified, phone, sessionId, chatbotId, apiBase]);
+  }, [chatHistory, isAuthenticated, verified, phone, userInfo, sessionId, chatbotId, apiBase]);
+
+  // Restore phone from localStorage when authenticated but phone state is empty
+  useEffect(() => {
+    if (isAuthenticated && !phone) {
+      console.log('🔍 [PHONE RESTORE] Checking for saved phone in localStorage...');
+      const savedPhone = localStorage.getItem('chatbot_user_phone');
+      if (savedPhone) {
+        console.log('📱 [PHONE RESTORE] Found saved phone, restoring to state:', savedPhone);
+        setPhone(savedPhone);
+      } else {
+        console.log('⚠️ [PHONE RESTORE] No saved phone found in localStorage');
+      }
+    }
+  }, [isAuthenticated, phone]);
 
   // Function to check if user has sent 2 messages and needs auth
   const checkUserMessageCount = useCallback(() => {
@@ -1254,6 +1302,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const handleVerifyOtpNew = async (otpCode) => {
     try {
       await verifyOtp(otpCode, currentAuthValue);
+      // Set phone state for transcript functionality
+      setPhone(currentAuthValue);
+      console.log('📱 [AUTH DEBUG] Phone set in SupaChatbot state:', currentAuthValue);
       setShowOtpInput(false);
       setShowInlineAuth(false);
       toast.success('Authentication successful!');

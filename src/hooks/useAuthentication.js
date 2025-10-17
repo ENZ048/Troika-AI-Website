@@ -10,22 +10,28 @@ const useAuthentication = (apiBase) => {
 
   // Check for existing authentication on mount
   useEffect(() => {
+    console.log('🔍 [AUTH DEBUG] Checking for existing authentication...');
     const savedAuth = localStorage.getItem('chatbot_auth');
     if (savedAuth) {
       try {
         const authData = JSON.parse(savedAuth);
         if (authData.token && authData.expires > Date.now()) {
+          console.log('✅ [AUTH DEBUG] Found valid saved authentication');
+          console.log('👤 [AUTH DEBUG] Saved user info:', authData.userInfo);
           setAuthToken(authData.token);
           setUserInfo(authData.userInfo);
           setIsAuthenticated(true);
         } else {
+          console.log('⏰ [AUTH DEBUG] Saved authentication expired, clearing...');
           // Token expired, clear it
           localStorage.removeItem('chatbot_auth');
         }
       } catch (error) {
-        console.error('Error parsing saved auth:', error);
+        console.error('❌ [AUTH DEBUG] Error parsing saved auth:', error);
         localStorage.removeItem('chatbot_auth');
       }
+    } else {
+      console.log('ℹ️ [AUTH DEBUG] No saved authentication found');
     }
   }, []);
 
@@ -105,9 +111,14 @@ const useAuthentication = (apiBase) => {
 
       const data = await response.json();
       
+      console.log('🔐 [AUTH DEBUG] OTP verification successful');
+      console.log('📞 [AUTH DEBUG] Verified phone:', phone);
+      console.log('👤 [AUTH DEBUG] User info:', data.userInfo);
+      
       if (phone) {
         try {
           localStorage.setItem('chatbot_user_phone', phone);
+          console.log('💾 [AUTH DEBUG] Phone saved to localStorage');
         } catch (storageError) {
           console.warn('Failed to persist verified phone number:', storageError);
         }
@@ -121,10 +132,12 @@ const useAuthentication = (apiBase) => {
       };
       
       localStorage.setItem('chatbot_auth', JSON.stringify(authData));
+      console.log('💾 [AUTH DEBUG] Auth data saved to localStorage');
       
       setAuthToken(data.token);
       setUserInfo(data.userInfo);
       setIsAuthenticated(true);
+      console.log('✅ [AUTH DEBUG] Authentication state updated - isAuthenticated: true');
       
       return data;
     } catch (error) {

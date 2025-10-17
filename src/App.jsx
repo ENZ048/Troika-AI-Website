@@ -4,8 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 // Constants for chatbot configuration
 const CHATBOT_ID = "68da398a0f936d435d7aa19d"
-const API_BASE = "https://api.0804.in/api"
-// const API_BASE = "http://localhost:5000/api"
+// const API_BASE = "https://api.0804.in/api"
+const API_BASE = "http://localhost:5000/api"
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
