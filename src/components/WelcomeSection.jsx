@@ -6,6 +6,8 @@ import { useTheme } from "../contexts/ThemeContext";
 
 import { FaGlobe, FaBolt, FaRobot } from "react-icons/fa";
 
+import InputArea from "./InputArea";
+
 
 
 const WelcomeContainer = styled.div`
@@ -16,12 +18,12 @@ const WelcomeContainer = styled.div`
 
   align-items: center;
 
-  justify-content: flex-start;
+  justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
-  padding: 1rem 1.5rem 2rem 1.5rem;
+  padding: ${props => props.$isSocialMedia ? '2rem 1.5rem 2rem 1.5rem' : '1rem 1.5rem 2rem 1.5rem'};
   text-align: center;
 
-  background: ${props => props.$isDarkMode ? '#212121' : 'transparent'};
+  background: ${props => props.$isDarkMode ? '#000000' : 'transparent'};
   flex: 1 1 auto;
 
   position: relative;
@@ -100,8 +102,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 1024px) {
 
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '1.5rem 1.5rem 1.5rem 1.5rem' : '1rem 1.5rem 1.5rem 1.5rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -109,8 +111,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 900px) {
 
-    padding: 1rem 1.25rem 1.5rem 1.25rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '1.25rem 1.25rem 1.5rem 1.25rem' : '1rem 1.25rem 1.5rem 1.25rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -118,8 +120,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 768px) {
 
-    padding: 0.75rem 1rem 1.25rem 1rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '1rem 1rem 1.25rem 1rem' : '0.75rem 1rem 1.25rem 1rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -127,8 +129,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 640px) {
 
-    padding: 0.5rem 0.75rem 1rem 0.75rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '0.75rem 0.75rem 1rem 0.75rem' : '0.5rem 0.75rem 1rem 0.75rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -136,8 +138,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 600px) {
 
-    padding: 0.5rem 0.5rem 1rem 0.5rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '0.5rem 0.5rem 1rem 0.5rem' : '0.5rem 0.5rem 1rem 0.5rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -145,8 +147,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 480px) {
 
-    padding: 0.5rem 0.4rem 1rem 0.4rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '0.5rem 0.4rem 1rem 0.4rem' : '0.5rem 0.4rem 1rem 0.4rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -154,8 +156,8 @@ const WelcomeContainer = styled.div`
 
   @media (max-width: 414px) {
 
-    padding: 0.5rem 0.3rem 1rem 0.3rem;
-    justify-content: flex-start;
+    padding: ${props => props.$isSocialMedia ? '0.5rem 0.3rem 1rem 0.3rem' : '0.5rem 0.3rem 1rem 0.3rem'};
+    justify-content: ${props => props.$isSocialMedia ? 'flex-start' : 'center'};
 
   }
 
@@ -164,7 +166,7 @@ const WelcomeContainer = styled.div`
   @media (max-width: 390px) {
 
     padding: 0.5rem 0.25rem 1rem 0.25rem;
-    justify-content: flex-start;
+    justify-content: center;
 
   }
 
@@ -173,7 +175,7 @@ const WelcomeContainer = styled.div`
   @media (max-width: 375px) {
 
     padding: 0.5rem 0.2rem 1rem 0.2rem;
-    justify-content: flex-start;
+    justify-content: center;
 
   }
 
@@ -182,7 +184,7 @@ const WelcomeContainer = styled.div`
   @media (max-width: 360px) {
 
     padding: 0.5rem 0.15rem 1rem 0.15rem;
-    justify-content: flex-start;
+    justify-content: center;
 
   }
 
@@ -191,7 +193,7 @@ const WelcomeContainer = styled.div`
   @media (max-width: 320px) {
 
     padding: 0.5rem 0.05rem 1rem 0.05rem;
-    justify-content: flex-start;
+    justify-content: center;
 
   }
 
@@ -205,7 +207,7 @@ const WelcomeContainer = styled.div`
 
     padding-top: 1.75rem; /* Minimal but safe spacing */
 
-    justify-content: flex-start;
+    justify-content: center;
 
   }
 
@@ -219,9 +221,13 @@ const AvatarContainer = styled.div`
 
   z-index: 2;
 
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 
-  margin-top: 1rem; /* Additional top margin for extra safety */
+  margin-top: 1rem;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
 
 
@@ -229,9 +235,9 @@ const AvatarContainer = styled.div`
 
   @media (max-width: 1024px) {
 
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.625rem;
 
-    margin-top: 0.75rem;
+    margin-top: 0.875rem;
 
   }
 
@@ -239,7 +245,7 @@ const AvatarContainer = styled.div`
 
   @media (max-width: 900px) {
 
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 
     margin-top: 0.75rem;
 
@@ -249,9 +255,9 @@ const AvatarContainer = styled.div`
 
   @media (max-width: 768px) {
 
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.5rem;
 
-    margin-top: 0.5rem;
+    margin-top: 0.625rem;
 
   }
 
@@ -259,10 +265,19 @@ const AvatarContainer = styled.div`
 
   @media (max-width: 640px) {
 
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.625rem;
 
+    margin-top: 0.75rem;
+
+  }
+  
+  
+  
+  @media (max-width: 480px) {
+  
+    margin-bottom: 0.5rem;
+    
     margin-top: 0.5rem;
-
   }
 
 
@@ -353,9 +368,9 @@ const AvatarContainer = styled.div`
 
 const AvatarCircle = styled.div`
 
-  width: 120px;
+  width: 80px;
 
-  height: 120px;
+  height: 80px;
 
   border-radius: 50%;
 
@@ -499,9 +514,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 1024px) {
 
-    width: 110px;
+    width: 75px;
 
-    height: 110px;
+    height: 75px;
 
     margin-bottom: 0.875rem;
 
@@ -511,9 +526,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 900px) {
 
-    width: 105px;
+    width: 70px;
 
-    height: 105px;
+    height: 70px;
 
     margin-bottom: 0.75rem;
 
@@ -523,9 +538,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 768px) {
 
-    width: 100px;
+    width: 85px;
 
-    height: 100px;
+    height: 85px;
 
     margin-bottom: 0.625rem;
 
@@ -535,9 +550,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 640px) {
 
-    width: 90px;
+    width: 80px;
 
-    height: 90px;
+    height: 80px;
 
     margin-bottom: 0.5rem;
 
@@ -547,9 +562,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 600px) {
 
-    width: 85px;
+    width: 78px;
 
-    height: 85px;
+    height: 78px;
 
     margin-bottom: 0.4rem;
 
@@ -559,9 +574,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 480px) {
 
-    width: 80px;
+    width: 75px;
 
-    height: 80px;
+    height: 75px;
 
     margin-bottom: 0.35rem;
 
@@ -571,9 +586,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 414px) {
 
-    width: 75px;
+    width: 72px;
 
-    height: 75px;
+    height: 72px;
 
     margin-bottom: 0.3rem;
 
@@ -595,9 +610,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 375px) {
 
-    width: 65px;
+    width: 68px;
 
-    height: 65px;
+    height: 68px;
 
     margin-bottom: 0.2rem;
 
@@ -607,9 +622,9 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 360px) {
 
-    width: 60px;
+    width: 65px;
 
-    height: 60px;
+    height: 65px;
 
     margin-bottom: 0.15rem;
 
@@ -619,11 +634,11 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 320px) {
 
-    width: 70px;
+    width: 42px;
 
-    height: 70px;
+    height: 42px;
 
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
 
     box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25);
 
@@ -635,11 +650,11 @@ const AvatarCircle = styled.div`
 
   @media (max-width: 280px) {
 
-    width: 65px;
+    width: 40px;
 
-    height: 65px;
+    height: 40px;
 
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.1rem;
 
     box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
 
@@ -651,9 +666,9 @@ const AvatarCircle = styled.div`
 
 const AvatarImage = styled.img`
 
-  width: 80px;
+  width: 55px;
 
-  height: 80px;
+  height: 55px;
 
   object-fit: cover;
 
@@ -666,9 +681,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 1024px) {
 
-    width: 70px;
+    width: 50px;
 
-    height: 70px;
+    height: 50px;
 
   }
 
@@ -676,9 +691,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 900px) {
 
-    width: 65px;
+    width: 48px;
 
-    height: 65px;
+    height: 48px;
 
   }
 
@@ -696,6 +711,16 @@ const AvatarImage = styled.img`
 
   @media (max-width: 640px) {
 
+    width: 57px;
+
+    height: 57px;
+
+  }
+
+
+
+  @media (max-width: 600px) {
+
     width: 55px;
 
     height: 55px;
@@ -704,21 +729,11 @@ const AvatarImage = styled.img`
 
 
 
-  @media (max-width: 600px) {
-
-    width: 50px;
-
-    height: 50px;
-
-  }
-
-
-
   @media (max-width: 480px) {
 
-    width: 45px;
+    width: 53px;
 
-    height: 45px;
+    height: 53px;
 
   }
 
@@ -726,9 +741,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 414px) {
 
-    width: 40px;
+    width: 51px;
 
-    height: 40px;
+    height: 51px;
 
   }
 
@@ -736,9 +751,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 390px) {
 
-    width: 38px;
+    width: 49px;
 
-    height: 38px;
+    height: 49px;
 
   }
 
@@ -746,9 +761,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 375px) {
 
-    width: 35px;
+    width: 48px;
 
-    height: 35px;
+    height: 48px;
 
   }
 
@@ -756,9 +771,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 360px) {
 
-    width: 32px;
+    width: 46px;
 
-    height: 32px;
+    height: 46px;
 
   }
 
@@ -766,9 +781,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 320px) {
 
-    width: 50px;
+    width: 44px;
 
-    height: 50px;
+    height: 44px;
 
   }
 
@@ -778,9 +793,9 @@ const AvatarImage = styled.img`
 
   @media (max-width: 280px) {
 
-    width: 45px;
+    width: 42px;
 
-    height: 45px;
+    height: 42px;
 
   }
 
@@ -792,21 +807,21 @@ const OnlineIndicator = styled.div`
 
   position: absolute;
 
-  top: 10px;
+  top: 8px;
 
-  right: 10px;
+  right: 8px;
 
-  width: 16px;
+  width: 10px;
 
-  height: 16px;
+  height: 10px;
 
   background: #10b981;
 
   border-radius: 50%;
 
-  border: 3px solid white;
+  border: 2px solid white;
 
-  box-shadow: 0 0 0 2px #10b981;
+  box-shadow: 0 0 0 1px #10b981;
 
   animation: pulse 2s infinite, float-indicator 3s ease-in-out infinite;
 
@@ -836,9 +851,9 @@ const OnlineIndicator = styled.div`
 
   @media (max-width: 480px) {
 
-    width: 14px;
+    width: 12px;
 
-    height: 14px;
+    height: 12px;
 
     top: 8px;
 
@@ -846,7 +861,7 @@ const OnlineIndicator = styled.div`
 
     border: 2px solid white;
 
-    box-shadow: 0 0 0 1px #10b981;
+    box-shadow: 0 0 0 1.5px #10b981;
 
   }
 
@@ -854,13 +869,13 @@ const OnlineIndicator = styled.div`
 
   @media (max-width: 375px) {
 
-    width: 12px;
+    width: 11px;
 
-    height: 12px;
+    height: 11px;
 
-    top: 6px;
+    top: 7px;
 
-    right: 6px;
+    right: 7px;
 
     border: 2px solid white;
 
@@ -876,11 +891,11 @@ const OnlineIndicator = styled.div`
 
     height: 10px;
 
-    top: 5px;
+    top: 6px;
 
-    right: 5px;
+    right: 6px;
 
-    border: 1px solid white;
+    border: 2px solid white;
 
     box-shadow: 0 0 0 1px #10b981;
 
@@ -892,11 +907,11 @@ const OnlineIndicator = styled.div`
 
 const GreetingText = styled.h1`
 
-  font-size: 2.2rem;
-  font-weight: 600;
+  font-size: 2.0rem !important;
+  font-weight: 500 !important;
   color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
 
-  margin: 0 0 1rem 0;
+  margin: 0.5rem 0 0.75rem 0;
 
   position: relative;
 
@@ -915,32 +930,40 @@ const GreetingText = styled.h1`
 
   @media (max-width: 768px) {
 
-    font-size: 2rem;
+    font-size: 1.5rem !important;
 
-    margin: 0 0 0.75rem 0;
+    margin: 0.375rem 0 0.5rem 0;
   }
 
 
 
   @media (max-width: 480px) {
 
-    font-size: 1.8rem;
-    margin: 0 0 0.75rem 0;
+            font-size: 1.5rem !important;
+        margin: 1.25rem 0 -0.62rem 0;
   }
 
 
 
   @media (max-width: 375px) {
 
-    font-size: 1.6rem;
-    margin: 0 0 0.75rem 0;
+    font-size: 1.2rem !important;
+    margin: 0.5rem 0 0.5rem 0;
+  }
+
+
+
+  @media (max-width: 375px) {
+
+  font-size: 1.5rem !important;
+        margin: 1.25rem 0 -0.62rem 0;
   }
 
 
 
   @media (max-width: 320px) {
 
-    font-size: 1.4rem;
+    font-size: 1.8rem !important;
     margin: 0 0 0.75rem 0;
   }
 
@@ -954,7 +977,7 @@ const SubText = styled.p`
 
   color: ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
 
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 0.75rem 0;
 
   position: relative;
 
@@ -1084,91 +1107,65 @@ const SuggestionsContainer = styled.div`
 
 const SuggestionCard = styled.button`
 
-  background: ${props => props.$isDarkMode 
-    ? 'linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%)' 
-    : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'};
-  border: 2px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
+  background: ${props => props.$isDarkMode ? '#1f2937' : '#ffffff'};
+  border: 1px solid ${props => props.$isDarkMode ? '#374151' : '#e5e7eb'};
 
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  padding: 0.875rem 1.5rem;
   display: flex;
 
   align-items: center;
 
-  gap: 0.75rem;
+  gap: 1rem;
   cursor: pointer;
 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   text-align: left;
 
-  box-shadow: ${props => props.$isDarkMode 
-    ? '0 4px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)' 
-    : '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)'};
+  box-shadow: none;
   width: 100%;
 
-  min-height: 56px;
+  min-height: auto;
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: ${props => props.$isDarkMode 
-      ? 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)' 
-      : 'linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent)'};
-    transition: left 0.5s ease;
-  }
-
   &:hover {
-    background: ${props => props.$isDarkMode 
-      ? 'linear-gradient(135deg, #3d3d3d 0%, #4a4a4a 100%)' 
-      : 'linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)'};
-    border-color: ${props => props.$isDarkMode ? '#6366f1' : '#8b5cf6'};
+    background: ${props => props.$isDarkMode ? '#374151' : '#ffffff'};
+    border-color: #8b5cf6;
     transform: translateY(-2px);
-    box-shadow: ${props => props.$isDarkMode 
-      ? '0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)' 
-      : '0 8px 32px rgba(139, 92, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1)'};
-    
-    &::before {
-      left: 100%;
-    }
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
   }
 
   &:active {
-    transform: translateY(-1px) scale(0.98);
+    transform: translateY(0);
+    background: ${props => props.$isDarkMode ? '#4b5563' : '#f9fafb'};
+    box-shadow: none;
   }
 
 
 
   @media (max-width: 480px) {
 
-    padding: 0.875rem 1rem;
-    gap: 0.6rem;
-    min-height: 52px;
-    border-radius: 14px;
+    padding: 0.75rem 1.25rem;
+    gap: 0.75rem;
+    border-radius: 8px;
   }
 
 
 
   @media (max-width: 375px) {
-    padding: 0.75rem 0.875rem;
-    gap: 0.5rem;
-    min-height: 48px;
-    border-radius: 12px;
+    padding: 0.625rem 1rem;
+    gap: 0.625rem;
+    border-radius: 8px;
 
   }
 
 
   @media (max-width: 320px) {
-    padding: 0.625rem 0.75rem;
-    gap: 0.4rem;
-    min-height: 44px;
-    border-radius: 10px;
+    padding: 0.5rem 0.875rem;
+    gap: 0.5rem;
+    border-radius: 8px;
   }
 `;
 
@@ -1178,8 +1175,12 @@ const SuggestionIcon = styled.div`
 
   font-size: 1.75rem;
   flex-shrink: 0;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  
+  ${SuggestionCard}:hover & {
+    transform: scale(1.05);
+  }
 
   @media (max-width: 480px) {
     font-size: 1.5rem;
@@ -1201,26 +1202,29 @@ const SuggestionText = styled.span`
 
   font-size: 1rem;
   font-weight: 600;
-  color: ${props => props.$isDarkMode ? '#f1f5f9' : '#1e293b'};
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  color: ${props => props.$isDarkMode ? '#f1f5f9' : '#111827'};
   flex: 1;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
-
+  ${SuggestionCard}:hover & {
+    color: ${props => props.$isDarkMode ? '#ffffff' : '#7c3aed'};
+  }
 
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 0.9375rem;
   }
 
   @media (max-width: 375px) {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
 
   @media (max-width: 320px) {
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
 
   }
 
@@ -1488,91 +1492,7 @@ const FeatureTags = styled.div`
 
 
 
-const ScrollIndicator = styled.div`
-
-  position: fixed;
-
-  bottom: 20px;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 0.5rem;
-
-  z-index: 10;
-
-  opacity: ${props => props.$show ? 1 : 0};
-
-  transition: opacity 0.3s ease;
-
-  pointer-events: none;
-
-
-
-  .scroll-text {
-
-    font-size: 0.75rem;
-
-    color: ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
-
-    font-weight: 500;
-
-  }
-
-
-
-  .scroll-arrow {
-
-    width: 20px;
-
-    height: 20px;
-
-    border: 2px solid ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
-
-    border-top: none;
-
-    border-left: none;
-
-    transform: rotate(45deg);
-
-    animation: bounce 2s infinite;
-
-  }
-
-
-
-  @keyframes bounce {
-
-    0%, 20%, 50%, 80%, 100% {
-
-      transform: rotate(45deg) translateY(0);
-
-    }
-
-    40% {
-
-      transform: rotate(45deg) translateY(-5px);
-
-    }
-
-    60% {
-
-      transform: rotate(45deg) translateY(-3px);
-
-    }
-
-  }
-
-`;
-
-
+/* ScrollIndicator styled component removed */
 
 // =======================================================
 
@@ -1602,7 +1522,7 @@ const SocialMediaGrid = styled.div`
 `;
 
 const SocialMediaContainer = styled.div`
-  background: ${props => props.$isDarkMode ? '#1a1a1a' : '#ffffff'};
+  background: ${props => props.$isDarkMode ? '#000000' : '#ffffff'};
   border: 2px solid ${props => props.$borderColor};
   border-radius: 12px;
   overflow: hidden;
@@ -1637,17 +1557,18 @@ const SocialMediaContainer = styled.div`
 
 const FeatureTag = styled.div`
 
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  color: #374151;
-  padding: 0.875rem 1.75rem;
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-weight: 700;
+  background: #ffffff;
+  color: #111827;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  border: 2px solid transparent;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
   width: fit-content;
   max-width: 100%;
   justify-content: center;
@@ -2068,10 +1989,31 @@ const FeatureTag = styled.div`
 
 
 
-const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen = false, selectedPlatform = null, onSocialFeedClose }) => {
+const WelcomeSection = ({ 
+  onSuggestionClick, 
+  activePage = 'home', 
+  socialFeedOpen = false, 
+  selectedPlatform = null, 
+  onSocialFeedClose,
+  // InputArea props
+  message,
+  setMessage,
+  handleKeyPress,
+  isTyping,
+  userMessageCount,
+  verified,
+  needsAuth,
+  isRecording,
+  handleMicClick,
+  handleMicTouchStart,
+  handleMicTouchEnd,
+  handleMicMouseDown,
+  handleMicMouseUp,
+  isMobile,
+  handleSendMessage,
+  currentlyPlaying
+}) => {
   const { isDarkMode } = useTheme();
-
-  const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
 
   // Handle direct window open
   const handleFeedClick = (platform) => {
@@ -2128,12 +2070,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       return;
     }
     if (suggestion.action === 'calling-pricing' && suggestion.staticContent) {
-      if (onSuggestionClick) {
-        onSuggestionClick(suggestion.staticContent);
-      }
-      return;
-    }
-    if (suggestion.action === 'calling-faqs' && suggestion.staticContent) {
       if (onSuggestionClick) {
         onSuggestionClick(suggestion.staticContent);
       }
@@ -2281,12 +2217,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       }
       return;
     }
-    if (suggestion.action === 'whatsapp-faqs' && suggestion.staticContent) {
-      if (onSuggestionClick) {
-        onSuggestionClick(suggestion.staticContent);
-      }
-      return;
-    }
     
     // Handle social media feed clicks
     if (suggestion.action === 'instagram-feed') {
@@ -2317,25 +2247,57 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
     }
   };
 
+  // SVG Icon Component
+  const IconSVG = ({ type, isDarkMode }) => {
+    const iconColor = isDarkMode ? '#a78bfa' : '#8b5cf6';
+    const secondaryColor = isDarkMode ? '#c4b5fd' : '#a78bfa';
+    
+    const icons = {
+      'website': (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill={iconColor}/>
+        </svg>
+      ),
+      'phone': (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" fill={iconColor}/>
+        </svg>
+      ),
+      'whatsapp': (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill={iconColor}/>
+          <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411l.015-.039zm-8.48 18.297h-.004c-1.774 0-3.513-.477-5.031-1.378l-.361-.214-3.741.977 1.001-3.645-.235-.375c-.99-1.572-1.513-3.387-1.516-5.26.003-5.45 4.454-9.884 9.93-9.884 2.65 0 5.14 1.031 7.021 2.906 1.881 1.875 2.914 4.362 2.911 7.012-.003 5.45-4.453 9.884-9.925 9.884l-.05-.023z" fill={iconColor}/>
+        </svg>
+      ),
+      'telegram': (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.67-.52.36-.99.53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.37-.48 1.02-.73 4-1.74 6.68-2.89 8.03-3.45 3.82-1.59 4.62-1.87 5.14-1.88.11 0 .37.03.54.17.14.11.18.26.2.37-.01.06.01.24 0 .38z" fill={iconColor}/>
+        </svg>
+      )
+    };
+    
+    return icons[type] || icons.website;
+  };
+
   // Home suggestions
   const homeSuggestions = [
     {
-      icon: "🌐",
+      icon: "website",
       text: "AI Websites",
       action: "ai-websites"
     },
     {
-      icon: "📞",
+      icon: "phone",
       text: "AI Calling Agents",
       action: "ai-calling"
     },
     {
-      icon: "🤖",
+      icon: "whatsapp",
       text: "AI WhatsApp Agent",
       action: "ai-whatsapp"
     },
     {
-      icon: "📱",
+      icon: "telegram",
       text: "AI Telegram Agent",
       action: "ai-telegram"
     }
@@ -2444,7 +2406,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       message: "⚙️ **How It Works**\n\n**Step 1: Setup**\nWe create your custom Telegram bot and train it on your business data\n\n**Step 2: Integration**\nConnect it to your Telegram channel or group\n\n**Step 3: Automation**\nThe AI automatically responds to messages, moderates groups, and captures leads\n\n**Step 4: Analytics**\nAll data is synced to your dashboard for easy tracking and follow-up\n\n**Ready to transform your Telegram business?**\nGet your AI Telegram Agent up and running in just 48 hours. No technical knowledge required - we handle everything from setup to training.",
       suggestions: [
         { text: "What's the pricing?", action: "telegram-pricing" },
-        { text: "Any FAQs?", action: "telegram-faqs" },
         { text: "Back to overview", action: "telegram-overview" }
       ]
     },
@@ -2582,56 +2543,14 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       message: "⚖️ **Benefits Over Manual Telegram Handling**\n\n| Aspect | Human Operator | AI Telegram Agent |\n|--------|----------------|-------------------|\n| Availability | 8 hours/day | 24×7 |\n| Response Speed | Minutes to hours | Instant |\n| Accuracy | Varies | 100% Consistent |\n| Handling Capacity | 1:1 | 1:Unlimited |\n| Multilingual Support | Limited | 20+ Languages |\n| Reporting | Manual | Automated |\n| Monthly Cost | ₹25k–₹40k | ₹5k + usage |",
       suggestions: [
         { text: "Show ROI", action: "telegram-results" },
-        { text: "Any FAQs?", action: "telegram-faqs" },
         { text: "Back to pricing", action: "telegram-pricing" }
-      ]
-    },
-    "telegram-faqs": {
-      initialMessage: "❓ **AI Telegram Agent - FAQs**\n\nHere are the most frequently asked questions about our AI Telegram Agent. Choose a topic you'd like to know more about:",
-      suggestions: [
-        { text: "What is an AI Telegram Agent?", action: "telegram-faq-general" },
-        { text: "How does it work technically?", action: "telegram-faq-technical" },
-        { text: "What are the costs?", action: "telegram-faq-costs" },
-        { text: "Back to main menu", action: "back-to-telegram-main" }
-      ]
-    },
-    "telegram-faq-general": {
-      message: "🤖 **What is an AI Telegram Agent?**\n\nAn AI Telegram Agent is a custom-built AI bot that chats naturally with users on Telegram. It's designed to:\n\n• Answer customer questions automatically\n• Handle inquiries 24/7\n• Collect leads and customer information\n• Provide instant responses in multiple languages\n• Integrate with your existing business systems\n\n**Is it officially approved by Telegram?**\nYes! It uses the official Telegram Bot API, ensuring full compliance and stability.\n\n**Do I need coding knowledge?**\nNo. Troika handles the complete setup - you get a ready-to-use dashboard.",
-      suggestions: [
-        { text: "How does it work technically?", action: "telegram-faq-technical" },
-        { text: "What are the costs?", action: "telegram-faq-costs" },
-        { text: "Back to FAQs", action: "telegram-faqs" }
-      ]
-    },
-    "telegram-faq-technical": {
-      message: "⚙️ **How does it work technically?**\n\n**Setup Process:**\n\n**Bot Creation**\nWe create your custom Telegram bot\n\n**Data Training**\nTrain it on your business data and FAQs\n\n**Channel Integration**\nConnect it to your Telegram channel/group\n\n**Language Configuration**\nConfigure multilingual support\n\n**Features:**\n\n**Chat Handling**\nHandles both private chats and group messages\n\n**Spam Protection**\nDetects and filters spam automatically\n\n**Media Support**\nSends media, videos, and documents\n\n**Interactive Elements**\nSupports interactive buttons and menus\n\n**Language Switching**\nSwitches between languages automatically\n\n**Integration:**\n\n**CRM Integration**\nWorks with WhatsApp and your CRM\n\n**Broadcasting**\nBroadcasts messages to users\n\n**Lead Management**\nCollects and exports lead data\n\n**Data Sync**\nSyncs with Google Sheets, Zoho, HubSpot",
-      suggestions: [
-        { text: "What are the costs?", action: "telegram-faq-costs" },
-        { text: "Is it secure?", action: "telegram-faq-security" },
-        { text: "Back to FAQs", action: "telegram-faqs" }
-      ]
-    },
-    "telegram-faq-costs": {
-      message: "💰 **What are the costs?**\n\n**Setup Fee: ₹1,00,000 (One-time)**\nIncludes:\n\n**Bot Design & AI Training**\nCustom bot creation and AI model training\n\n**Brand Tone Customization**\nTailored to match your brand voice\n\n**Multilingual Setup**\nConfigure multiple language support\n\n**CRM/API Integration**\nConnect with your existing systems\n\n**Testing and Deployment**\nComplete testing and launch support\n\n**Monthly Costs:**\n\n**Maintenance**\n₹5,000/month per bot\n\n**Usage**\n₹1 per chat (only active conversations)\n\n**Extra Languages**\n₹2,500 each\n\n**What's included in maintenance?**\n\n**Server Hosting & Analytics**\n24/7 hosting and performance tracking\n\n**Version Upgrades & Updates**\nRegular feature updates and improvements\n\n**Telegram API Maintenance**\nAPI monitoring and optimization\n\n**Technical Support**\nOngoing technical assistance\n\n**Is ₹1/chat fixed?**\nYes, but discounted bundles available for higher volumes.",
-      suggestions: [
-        { text: "Is it secure?", action: "telegram-faq-security" },
-        { text: "Why choose Telegram?", action: "telegram-why-telegram" },
-        { text: "Back to FAQs", action: "telegram-faqs" }
-      ]
-    },
-    "telegram-faq-security": {
-      message: "🔒 **Is it secure?**\n\n**100% Secure!**\n\n**Data Encryption**\nAll data and chats are encrypted\n\n**Private Servers**\nStored on private, secure servers\n\n**Compliance**\nComplies with data protection regulations\n\n**No Data Sharing**\nNo data sharing with third parties\n\n**Privacy Features:**\n\n**Customer Data Protection**\nCustomer data is protected\n\n**Confidential Conversations**\nConversations are confidential\n\n**Secure API Connections**\nSecure API connections\n\n**Regular Security Updates**\nRegular security updates\n\n**Why choose Telegram?**\n\n**Business Popularity**\nExtremely popular in business and trading\n\n**Higher Engagement**\nHigher engagement than email/websites\n\n**Easy Connection**\nEasy to connect via QR codes or links\n\n**Lightweight & Fast**\nLightweight and fast\n\n**Perfect for Automation**\nPerfect for automation",
-      suggestions: [
-        { text: "Why choose Telegram?", action: "telegram-why-telegram" },
-        { text: "How to get started?", action: "telegram-get-started" },
-        { text: "Back to FAQs", action: "telegram-faqs" }
       ]
     },
     "telegram-why-telegram": {
       message: "💡 **Why Telegram?**\n\n**Business Popularity**\nExtremely popular in business, trading, crypto, and community spaces\n\n**Higher Engagement Rate**\nHigher engagement rate than email or websites\n\n**Easy Connection**\nEasy to connect via QR codes, links, or website embeds\n\n**Lightweight & Rich Media**\nLightweight, fast, and supports rich media - perfect for automation",
       suggestions: [
         { text: "Show results", action: "telegram-results" },
-        { text: "Back to FAQs", action: "telegram-faqs" }
+        { text: "Back to main menu", action: "back-to-telegram-main" }
       ]
     },
     "telegram-results": {
@@ -2661,7 +2580,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       suggestions: [
         { text: "Overview", action: "telegram-overview" },
         { text: "Pricing", action: "telegram-pricing" },
-        { text: "FAQs", action: "telegram-faqs" },
         { text: "Results", action: "telegram-results" }
       ]
     }
@@ -2706,7 +2624,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       message: "⚙️ **How It Works**\n\n**Step 1: Setup**\nWe create your custom WhatsApp bot and train it on your business data\n\n**Step 2: Integration**\nConnect it to your WhatsApp Business API\n\n**Step 3: Automation**\nThe AI automatically responds to messages, captures leads, and handles inquiries\n\n**Step 4: Analytics**\nAll data is synced to your dashboard for easy tracking and follow-up\n\n**Ready to transform your WhatsApp business?**\nGet your AI WhatsApp Agent up and running in just 48 hours. No technical knowledge required - we handle everything from setup to training.",
       suggestions: [
         { text: "What's the pricing?", action: "whatsapp-pricing" },
-        { text: "Any FAQs?", action: "whatsapp-faqs" },
         { text: "Back to overview", action: "whatsapp-overview" }
       ]
     },
@@ -2760,20 +2677,11 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
         { text: "Back to overview", action: "whatsapp-overview" }
       ]
     },
-    "whatsapp-faqs": {
-      message: "❓ **Frequently Asked Questions**\n\n**What is an AI WhatsApp Agent?**\nAn AI-powered chatbot that handles customer conversations on WhatsApp automatically.\n\n**Do I need coding knowledge?**\nNo. We handle everything from setup to training.\n\n**Can it handle multiple languages?**\nYes, supports 20+ languages including Hindi, English, Marathi, Gujarati.\n\n**Is it officially approved by WhatsApp?**\nYes, uses official WhatsApp Business API.\n\n**How accurate are the responses?**\n100% accurate as it's trained on your specific business data.\n\n**Can I integrate it with my CRM?**\nYes, integrates with Google Sheets, Zoho, HubSpot, and custom CRMs.",
-      suggestions: [
-        { text: "How does it work?", action: "whatsapp-how-it-works" },
-        { text: "What's the pricing?", action: "whatsapp-pricing" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
     "back-to-whatsapp-main": {
       message: "📱 **AI WhatsApp Agent**\n\nChoose what you'd like to know more about:",
       suggestions: [
         { text: "Overview", action: "whatsapp-overview" },
         { text: "Pricing", action: "whatsapp-pricing" },
-        { text: "FAQs", action: "whatsapp-faqs" },
         { text: "Results", action: "whatsapp-results" }
       ]
     }
@@ -2852,8 +2760,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       suggestions: [
         { text: "Inbound Calling Agent", action: "calling-inbound" },
         { text: "Outbound Calling Agent", action: "calling-outbound" },
-        { text: "Pricing", action: "calling-pricing" },
-        { text: "FAQs", action: "calling-faqs" }
+        { text: "Pricing", action: "calling-pricing" }
       ]
     }
   };
@@ -2897,7 +2804,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       message: "⚙️ **How AI Websites Work**\n\n**Step 1: Design**\nWe create a beautiful, responsive website for your business\n\n**Step 2: AI Integration**\nWe integrate AI chatbot and engagement features\n\n**Step 3: Training**\nAI is trained on your business data and offerings\n\n**Step 4: Launch**\nYour AI website goes live and starts engaging visitors\n\n**Step 5: Analytics**\nTrack performance and optimize for better results\n\n**Ready to transform your online presence?**\nGet your AI Website up and running in just 48 hours.",
       suggestions: [
         { text: "What's the pricing?", action: "websites-pricing" },
-        { text: "Any FAQs?", action: "websites-faqs" },
         { text: "Back to overview", action: "websites-overview" }
       ]
     },
@@ -2956,7 +2862,6 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
       suggestions: [
         { text: "Overview", action: "websites-overview" },
         { text: "Pricing", action: "websites-pricing" },
-        { text: "FAQs", action: "websites-faqs" },
         { text: "Results", action: "websites-results" }
       ]
     }
@@ -3137,33 +3042,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                    activePage === 'ai-websites' ? aiWebsitesFeatures :
                    homeFeatures;
 
-  // Check if content overflows and show scroll indicator
-
-  React.useEffect(() => {
-
-    const checkScrollable = () => {
-
-      const container = document.querySelector('[data-welcome-container]');
-
-      if (container) {
-
-        const isScrollable = container.scrollHeight > container.clientHeight;
-
-        setShowScrollIndicator(isScrollable);
-
-      }
-
-    };
-
-
-
-    checkScrollable();
-
-    window.addEventListener('resize', checkScrollable);
-
-    return () => window.removeEventListener('resize', checkScrollable);
-
-  }, []);
+  // Scroll indicator removed
 
 
 
@@ -3171,7 +3050,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
 
     <>
 
-      <WelcomeContainer data-welcome-container $isDarkMode={isDarkMode}>
+      <WelcomeContainer $isDarkMode={isDarkMode} $isSocialMedia={activePage === 'social-media'}>
         {activePage !== 'social-media' && (
         <AvatarContainer>
 
@@ -3199,11 +3078,16 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
         {activePage !== 'social-media' && (
           <>
         <GreetingText $isDarkMode={isDarkMode}>
-          {activePage === 'ai-websites' ? 'TROIKA TECH – AI WEBSITES' : 
-           activePage === 'ai-calling' ? 'TROIKA TECH – AI CALLING AGENT' : 
-           activePage === 'ai-whatsapp' ? 'TROIKA TECH – AI WHATSAPP AGENT' : 
-           activePage === 'ai-telegram' ? 'TROIKA TECH – AI TELEGRAM AGENT' : 
-           activePage === 'industry-use-cases' ? 'AI WEBSITES BY TROIKA TECH' : 
+          {activePage === 'who-is-troika' ? 'Explore Troika Tech AI' :
+           activePage === 'what-is-ai-agent' ? 'Understanding AI Agents' :
+           activePage === 'how-it-works' ? 'How AI Agents Work' :
+           activePage === 'use-case-for-me' ? 'AI Agent Use Cases' :
+           activePage === 'pricing-setup' ? 'Troika Tech Setup & Pricing' :
+           activePage === 'ai-websites' ? 'Troika Tech – AI Websites' : 
+           activePage === 'ai-calling' ? 'Troika Tech – AI Calling Agent' : 
+           activePage === 'ai-whatsapp' ? 'Troika Tech – AI Whatsapp Agent' : 
+           activePage === 'ai-telegram' ? 'Troika Tech – AI Telegram Agent' : 
+           activePage === 'industry-use-cases' ? 'AI Websites By Troika Tech' : 
            'Hi! This is Troika Tech 👋'}
         </GreetingText>
         <SubText $isDarkMode={isDarkMode} style={{
@@ -3214,86 +3098,39 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
           fontWeight: '400'
         }}>
           {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites, automated calling agents, WhatsApp automation, and Telegram bots - all designed to help your business grow 24/7.' : 
-           activePage === 'ai-websites' ? 'AI Created. Human Perfected.' : 
-           activePage === 'ai-calling' ? 'Our AI-Powered Calling Agent is a human-sounding voice assistant that can attend and make calls automatically 24×7, in multiple languages, without needing a human team.' : 
-           activePage === 'ai-whatsapp' ? 'Automate Chats. Capture Leads. Convert Instantly.' : 
-           activePage === 'ai-telegram' ? 'Smart, Secure & Scalable Business Conversations on Telegram' : 
-           activePage === 'industry-use-cases' ? 'One Website. Endless Possibilities.' : 
-           'AI Websites give every business a voice, system, and intelligence that grows their brand.'}
+           activePage === 'ai-websites' ? '' : 
+           activePage === 'ai-calling' ? '' : 
+           activePage === 'ai-whatsapp' ? '' : 
+           activePage === 'ai-telegram' ? '' : 
+           activePage === 'industry-use-cases' ? '' : 
+           ''}
         </SubText>
         
-        {activePage === 'home' && (
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '0.5rem',
-            fontStyle: 'italic',
-            maxWidth: '600px',
-            lineHeight: '1.6'
-          }}>
-            'AI Websites don't just inform - they influence, interact, and inspire.'
-          </div>
-        )}
-
-        {activePage === 'ai-websites' && (
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '0.5rem',
-            maxWidth: '600px',
-            lineHeight: '1.6',
-            textAlign: 'center'
-          }}>
-            More than a website - it's your 24×7 intelligent business partner.
-          </div>
-        )}
-
-       
+        {/* Input Area - integrated into welcome section */}
+        <InputArea
+          message={message}
+          setMessage={setMessage}
+          handleKeyPress={handleKeyPress}
+          isTyping={isTyping}
+          userMessageCount={userMessageCount}
+          verified={verified}
+          needsAuth={needsAuth}
+          isRecording={isRecording}
+          handleMicClick={handleMicClick}
+          handleMicTouchStart={handleMicTouchStart}
+          handleMicTouchEnd={handleMicTouchEnd}
+          handleMicMouseDown={handleMicMouseDown}
+          handleMicMouseUp={handleMicMouseUp}
+          isMobile={isMobile}
+          handleSendMessage={handleSendMessage}
+          isWelcomeMode={true}
+          currentlyPlaying={currentlyPlaying}
+        />
 
 
-        {activePage === 'ai-whatsapp' && (
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '0.5rem',
-            maxWidth: '600px',
-            lineHeight: '1.6',
-            textAlign: 'center'
-          }}>
-            AI that chats like a human, works 24×7, and sells smarter than your best salesperson.
-          </div>
-        )}
+        {/* AI WhatsApp description removed */}
 
-        {activePage === 'ai-telegram' && (
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '0.5rem',
-            maxWidth: '600px',
-            lineHeight: '1.6',
-            textAlign: 'center'
-          }}>
-            Your business deserves an agent that never sleeps  and never forgets a lead.
-          </div>
-        )}
-
-        {activePage === 'industry-use-cases' && (
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            color: isDarkMode ? '#e5e7eb' : '#374151',
-            marginTop: '0.5rem',
-            maxWidth: '700px',
-            lineHeight: '1.6',
-            textAlign: 'center'
-          }}>
-            From doctors to developers, from corporates to factories, schools to startups  your AI Website becomes your smartest employee.
-          </div>
-        )}
+        {/* AI Telegram and Industry Use Cases descriptions removed */}
           </>
         )}
 
@@ -3425,12 +3262,12 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                 flex: 1,
                 overflow: 'hidden',
                 position: 'relative',
-                background: isDarkMode ? '#1a1a1a' : '#ffffff'
+                background: isDarkMode ? '#000000' : '#ffffff'
               }}>
                  <div style={{
                    width: '100%',
                    height: '100%',
-                   background: isDarkMode ? '#1a1a1a' : '#ffffff',
+                   background: isDarkMode ? '#000000' : '#ffffff',
                    display: 'flex',
                    flexDirection: 'column',
                    alignItems: 'center',
@@ -3497,12 +3334,12 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
                 flex: 1,
                 overflow: 'hidden',
                 position: 'relative',
-                background: isDarkMode ? '#1a1a1a' : '#ffffff'
+                background: isDarkMode ? '#000000' : '#ffffff'
               }}>
                 <div style={{
                   width: '100%',
                   height: '100%',
-                  background: isDarkMode ? '#1a1a1a' : '#ffffff',
+                  background: isDarkMode ? '#000000' : '#ffffff',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -3543,32 +3380,10 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
               </div>
             </SocialMediaContainer>
           </SocialMediaGrid>
-        ) : activePage !== 'new-chat' ? (
-          <SuggestionsContainer>
-
-            {suggestions.map((suggestion, index) => (
-
-              <SuggestionCard
-
-                key={index}
-
-                $isDarkMode={isDarkMode}
-
-                onClick={() => handleStaticResponse(suggestion)}
-              >
-
-                <SuggestionIcon>{suggestion.icon}</SuggestionIcon>
-
-                <SuggestionText $isDarkMode={isDarkMode}>{suggestion.text}</SuggestionText>
-
-              </SuggestionCard>
-
-            ))}
-
-          </SuggestionsContainer>
         ) : null}
         
-        {activePage !== 'new-chat' && (
+        {/* Feature Tags - DISABLED */}
+        {/* {activePage !== 'new-chat' && (
           <FeatureTags>
 
             {features.map((feature, index) => {
@@ -3594,7 +3409,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
             })}
 
           </FeatureTags>
-        )}
+        )} */}
 
 
         {/* Social Media Feed Area */}
@@ -3769,13 +3584,7 @@ const WelcomeSection = ({ onSuggestionClick, activePage = 'home', socialFeedOpen
 
 
 
-      <ScrollIndicator $show={showScrollIndicator} $isDarkMode={isDarkMode}>
-
-        <div className="scroll-text">Scroll to view all content</div>
-
-        <div className="scroll-arrow"></div>
-
-      </ScrollIndicator>
+      {/* ScrollIndicator removed */}
 
     </>
 

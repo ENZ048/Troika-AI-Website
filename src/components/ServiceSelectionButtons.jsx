@@ -51,25 +51,20 @@ const ServiceButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  color: #495057;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  color: #111827;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
   flex-shrink: 0;
-
-  /* Gradient border effect */
-  border: 2px solid transparent;
-  background-image: 
-    linear-gradient(#ffffff, #ffffff),
-    linear-gradient(90deg, #20E3B2, #8B5CF6);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
 
   /* Animation properties */
   opacity: 0;
@@ -90,20 +85,21 @@ const ServiceButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background-image: 
-      linear-gradient(#f8f9fa, #f8f9fa),
-      linear-gradient(90deg, #20E3B2, #8B5CF6);
+    background: #ffffff;
+    border-color: #8b5cf6;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
+    color: #7c3aed;
   }
 
   &:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+    background: #f9fafb;
+    box-shadow: none;
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   }
 
   @media (max-width: 1024px) {

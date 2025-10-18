@@ -157,7 +157,7 @@ export const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
   background: ${props => props.$isDarkMode
-    ? 'linear-gradient(to bottom right, #111827, #1f2937, #111827)'
+    ? 'linear-gradient(to bottom right, #000000, #000000, #000000)'
     : 'linear-gradient(to bottom right, #e0e7ff, #f0f9ff, #fef3c7)'};
   z-index: 9999;
   display: flex;
@@ -374,7 +374,7 @@ export const MessagesContainer = styled.div`
   flex-direction: column;
   min-height: 0;
   position: relative;
-  background: ${props => props.$isDarkMode ? '#212121' : '#f8f9fa'};
+  background: ${props => props.$isDarkMode ? '#000000' : '#f8f9fa'};
   width: 100%;
 
   /* Responsive padding to match Reference.jsx behavior */

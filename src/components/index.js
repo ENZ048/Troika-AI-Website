@@ -8,8 +8,9 @@ export { default as MessageBubbleComponent } from './MessageBubble';
 export { default as TypingIndicator } from './TypingIndicator';
 export { default as VoiceInputIndicatorComponent } from './VoiceInputIndicator';
 export { default as InputArea } from './InputArea';
-export { default as SuggestionButtons } from './SuggestionButtons';
 export { default as ServiceSelectionButtons } from './ServiceSelectionButtons';
+export { default as ServiceSuggestions } from './ServiceSuggestions';
+export { default as AutoSuggestions } from './AutoSuggestions';
 
 // Auth Components
 export { default as InlineAuth } from './InlineAuth';

@@ -27,8 +27,8 @@ import {
 const SidebarContainer = styled.div`
   width: 260px;
   height: 100vh;
-  background: ${props => props.$isDarkMode ? '#171717' : '#f9f9f9'};
-  border-right: 1px solid ${props => props.$isDarkMode ? '#2f2f2f' : '#e5e5e5'};
+  background: ${props => props.$isDarkMode ? '#000000' : '#f9f9f9'};
+  border-right: 1px solid ${props => props.$isDarkMode ? '#1f1f1f' : '#e5e5e5'};
   display: flex;
   flex-direction: column;
   position: relative;
@@ -105,7 +105,7 @@ const SidebarHeader = styled.div`
 const Logo = styled.div`
   width: 32px;
   height: 32px;
-  background: ${props => props.$isDarkMode ? '#40414f' : '#e5e5e5'};
+  background: transparent;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -234,12 +234,12 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
   }, []);
 
   const navigationItems = [
-    { id: 'home', label: 'Home', icon: FaHome, path: '/home', color: '#10a37f' },
-    { id: 'ai-websites', label: 'AI Websites', icon: FaBrain, path: '/ai-websites', color: '#3b82f6' },
-    { id: 'ai-calling', label: 'AI Calling Agents', icon: FaPhoneAlt, path: '/ai-calling', color: '#dc2626' },
-    { id: 'ai-whatsapp', label: 'AI WhatsApp Agent', icon: FaWhatsapp, path: '/ai-whatsapp', color: '#128c7e' },
-    { id: 'ai-telegram', label: 'AI Telegram Agent', icon: FaPaperPlane, path: '/ai-telegram', color: '#0088cc' },
-    { id: 'industry-use-cases', label: 'Use Cases Industry-Wise', icon: FaChartLine, path: '/industry-use-cases', color: '#f59e0b' },
+    { id: 'home', label: 'Home', icon: FaHome, path: '/', color: '#10a37f' },
+    { id: 'who-is-troika', label: 'Who is Troika?', icon: FaInfoCircle, path: '/who-is-troika', color: '#10a37f' },
+    { id: 'what-is-ai-agent', label: 'What is AI agent?', icon: FaBrain, path: '/what-is-ai-agent', color: '#3b82f6' },
+    { id: 'how-it-works', label: 'How it works?', icon: FaBolt, path: '/how-it-works', color: '#f59e0b' },
+    { id: 'use-case-for-me', label: 'Use Case For Me?', icon: FaChartLine, path: '/use-case-for-me', color: '#8b5cf6' },
+    { id: 'pricing-setup', label: 'Pricing & SetUp', icon: FaRupeeSign, path: '/pricing-setup', color: '#dc2626' },
     { id: 'social-media', label: 'Social Media', icon: FaShareAlt, path: '/social-media', color: '#8b5cf6' }
   ];
 
@@ -299,7 +299,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             <NavItem 
               $isDarkMode={isDarkMode}
               onClick={() => handlePageChange('new-chat', '/')}
-              className={location.pathname === '/' ? 'active' : ''}
+              className=""
             >
               <NavIcon><FaPlus /></NavIcon>
               <NavText>New chat</NavText>
@@ -327,6 +327,46 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
           </Section>
 
         </SidebarContent>
+
+        {/* Powered by Troika Tech - Branding */}
+        <div style={{
+          padding: "1rem",
+          borderTop: `1px solid ${isDarkMode ? '#1f1f1f' : '#e5e5e5'}`,
+          marginTop: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.5rem",
+          color: isDarkMode ? "#9ca3af" : "#6b7280",
+          fontSize: "0.875rem",
+          fontWeight: "500"
+        }}>
+          <span>Powered by</span>
+          <img
+            src="/logo.png"
+            alt="Troika Tech"
+            style={{
+              height: "14px",
+              width: "auto",
+              filter: isDarkMode ? "brightness(0.8)" : "none"
+            }}
+          />
+          <a
+            href="https://troikatech.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+              transition: "color 0.2s ease",
+              fontWeight: "600"
+            }}
+            onMouseEnter={(e) => e.target.style.color = "#8b5cf6"}
+            onMouseLeave={(e) => e.target.style.color = isDarkMode ? "#9ca3af" : "#6b7280"}
+          >
+            Troika Tech
+          </a>
+        </div>
 
       </SidebarContainer>
     </>

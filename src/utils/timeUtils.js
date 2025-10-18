@@ -5,26 +5,26 @@ export function getTimeBasedGreeting() {
 
   // Array of greeting messages for each time period
   const morningGreetings = [
-    "☀️ Good morning! Ready to explore ITM Business School's programs?",
-    "Morning! A fresh day = fresh opportunities at ITM. What would you like to know?",
-    "Rise & shinelet's discover your future at ITM Business School today."
+    "☀️ Good morning! How can I help you grow your business with AI today?",
+    "Morning! Ready to explore AI-powered solutions for your business?",
+    "Good morning! Let's discover how AI can transform your business."
   ];
 
   const afternoonGreetings = [
-    "Hey 👋 Hope your day's going well! Ready to learn about ITM's offerings?",
-    "Welcome! Perfect time to explore ITM Business Schoolshall we start?"
+    "Hey 👋 Hope your day's going well! How can I assist you?",
+    "Welcome! Let's explore AI solutions for your business."
   ];
 
   const eveningGreetings = [
-    "Evenings are for planning your future ✨ What interests you about ITM?",
-    "Hey! Don't worry if it's lateI'm here to help you discover ITM's programs.",
-    "Good evening! Ready to explore what ITM Business School has to offer?"
+    "Good evening! How can I help you with AI solutions today?",
+    "Hey! I'm here to help you discover AI-powered tools for your business.",
+    "Good evening! Ready to explore what Troika Tech has to offer?"
   ];
 
   const lateNightGreetings = [
-    "🌙 Burning the midnight oil? I'm here to help you learn about ITM.",
-    "You're up late, and so am I. Let's explore ITM's opportunities together.",
-    "Night owl or future student? Either wayI've got ITM info for you."
+    "🌙 Working late? I'm here to help you with AI solutions.",
+    "You're up late, and so am I. Let's explore AI opportunities together.",
+    "Still working? Let me help you discover how AI can grow your business."
   ];
 
   let selectedGreeting;

@@ -9,8 +9,8 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid ${props => props.$isDarkMode ? '#2f2f2f' : '#e5e5e5'};
-  background: ${props => props.$isDarkMode ? '#171717' : '#ffffff'};
+  border-bottom: 1px solid ${props => props.$isDarkMode ? '#1f1f1f' : '#e5e5e5'};
+  background: ${props => props.$isDarkMode ? '#000000' : '#ffffff'};
   flex-shrink: 0;
   border-radius: 0;
   position: relative;
@@ -233,13 +233,13 @@ const Circle = styled.div`
   width: ${(props) => props.$size || 63}px; /* Increased by additional 15% from 55px */
   height: ${(props) => props.$size || 63}px; /* Increased by additional 15% from 55px */
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: none;
+  border: none;
   padding: 0;
   text-align: center;
   flex-shrink: 0;
@@ -1005,13 +1005,14 @@ const ChatHeader = ({
             <FiMenu />
           </HeaderButton>
           
-          {/* Right: Refresh Button */}
+          {/* Right: Theme Toggle Button */}
           <HeaderButton
             $isDarkMode={isDarkMode}
-            title="Refresh"
-            className="mobile-refresh-btn"
+            title={isDarkMode ? "Light Mode" : "Dark Mode"}
+            onClick={toggleTheme}
+            className="mobile-theme-btn"
           >
-            <FiRefreshCw />
+            {isDarkMode ? <FiSun /> : <FiMoon />}
           </HeaderButton>
         </>
       ) : (
@@ -1038,12 +1039,6 @@ const ChatHeader = ({
             </StatusBlock>
           </HeaderLeft>
           <HeaderRight>
-            <HeaderButton $isDarkMode={isDarkMode} title="Streak" className="hide-text-mobile">
-              <FiZap /><span>0</span>
-            </HeaderButton>
-            <HeaderButton $isDarkMode={isDarkMode} title="Users" className="hide-text-mobile">
-              <FiUsers /><span>0/5</span>
-            </HeaderButton>
             <HeaderButton
               $isDarkMode={isDarkMode}
               title={isMuted ? "Unmute" : "Mute"}
@@ -1057,9 +1052,6 @@ const ChatHeader = ({
               onClick={toggleTheme}
             >
               {isDarkMode ? <FiSun /> : <FiMoon />}
-            </HeaderButton>
-            <HeaderButton $isDarkMode={isDarkMode} title="Settings">
-              <FiSettings />
             </HeaderButton>
           </HeaderRight>
         </HeaderInner>

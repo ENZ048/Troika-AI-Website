@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FiArrowUp, FiMic, FiSquare, FiVolume2, FiVolumeX, FiSend } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
 import { useTheme } from "../contexts/ThemeContext";
+import ServiceSuggestions from "./ServiceSuggestions";
+import AutoSuggestions from "./AutoSuggestions";
 
 const InputContainer = styled.div`
   flex-shrink: 0;
   padding: 1rem 1.5rem 1.5rem 1.5rem;
-  border-top: 1px solid ${props => props.$isDarkMode ? '#404040' : '#e5e7eb'};
-  background: ${props => props.$isDarkMode ? '#171717' : '#ffffff'};
+  border-top: ${props => props.$isWelcomeMode ? 'none' : `1px solid ${props.$isDarkMode ? '#404040' : '#e5e7eb'}`};
+  background: ${props => props.$isDarkMode ? '#000000' : '#ffffff'};
   position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: background 0.3s ease, border-top 0.3s ease;
+  transition: all 0.3s ease;
   z-index: 10;
   margin-top: 0;
   min-height: 100px;
@@ -25,55 +27,86 @@ const InputContainer = styled.div`
   opacity: 1 !important;
   display: flex !important;
   
-  /* Debug background to ensure visibility */
-  background: ${props => props.$isDarkMode ? 'rgba(31, 31, 31, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
+  /* Background styling */
+  background: ${props => props.$isWelcomeMode ? 'transparent' : props.$isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
   
-  /* Force positioning */
-  position: sticky !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
+  /* Conditional positioning based on welcome mode */
+  ${props => props.$isWelcomeMode ? `
+    /* Welcome mode: natural flow, not absolute */
+    position: relative !important;
+    margin-top: 0.5rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  ` : `
+    /* Chat mode: sticky at bottom */
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+  `}
 
+  /* Mobile responsive styling */
   @media (max-width: 768px) {
     padding: 1rem 1.5rem 1.5rem 1.5rem;
+    background: ${props => props.$isWelcomeMode ? 'transparent' : props.$isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
   }
 
   @media (max-width: 640px) {
     padding: 1rem 1.25rem 1.5rem 1.25rem;
+    background: ${props => props.$isWelcomeMode ? 'transparent' : props.$isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
   }
 
   @media (max-width: 480px) {
     padding: 1rem 1rem 1.5rem 1rem;
+    background: ${props => props.$isWelcomeMode ? 'transparent' : props.$isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
   }
 
   @media (max-width: 375px) {
     padding: 1rem 0.75rem 1.5rem 0.75rem;
+    background: ${props => props.$isWelcomeMode ? 'transparent' : props.$isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
   }
 `;
 
 const ChatInput = styled.input`
-  padding: 0.75rem 3rem 0.75rem 1rem;
-  border: 1px solid ${props => props.$isDarkMode ? '#4a4a4a' : '#e5e7eb'};
-  border-radius: 12px;
+  padding: 1rem 3rem 1rem 1.25rem;
+  border: 2px solid ${props => props.$isDarkMode ? '#3f3f46' : '#e5e7eb'};
+  border-radius: 16px;
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
   outline: none;
-  transition: all 0.3s;
-  background: ${props => props.$isDarkMode ? '#2d2d2d' : '#f8f9fa'};
-  color: ${props => props.$isDarkMode ? '#ffffff' : '#000'};
-  line-height: 1.4;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: ${props => props.$isDarkMode ? '#111111' : '#ffffff'};
+  color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
+  line-height: 1.5;
+  font-weight: 400;
+  box-shadow: ${props => props.$isDarkMode 
+    ? '0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)' 
+    : '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'};
 
   /* Force visibility in all modes */
   &::placeholder {
-    color: ${props => props.$isDarkMode ? '#999' : '#666'};
+    color: ${props => props.$isDarkMode ? '#a1a1aa' : '#9ca3af'};
+    font-weight: 400;
+  }
+
+  &:hover {
+    border-color: ${props => props.$isDarkMode ? '#52525b' : '#d1d5db'};
+    box-shadow: ${props => props.$isDarkMode 
+      ? '0 2px 4px rgba(0, 0, 0, 0.4), 0 2px 3px rgba(0, 0, 0, 0.3)' 
+      : '0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 3px rgba(0, 0, 0, 0.06)'};
   }
 
   &:focus {
     border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: ${props => props.$isDarkMode ? 'rgba(45, 45, 45, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
-    color: ${props => props.$isDarkMode ? '#ffffff' : '#000'};
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12), 
+                ${props => props.$isDarkMode 
+                  ? '0 4px 6px rgba(0, 0, 0, 0.4)' 
+                  : '0 4px 6px rgba(0, 0, 0, 0.1)'};
+    background: ${props => props.$isDarkMode ? '#111111' : '#ffffff'};
+    color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
+    transform: translateY(-1px);
   }
 
   /* Enhanced mobile responsiveness - Better mobile input layout with improved font scaling */
@@ -168,7 +201,7 @@ const InputWrapper = styled.div`
   align-items: center;
   width: 100%;
   max-width: 700px;
-  overflow: hidden;
+  overflow: visible;
 `;
 
 const InputButtons = styled.div`
@@ -243,28 +276,33 @@ const InputButtons = styled.div`
 `;
 
 const ActionButton = styled.button`
-  background: ${props => props.$variant === 'primary' ? 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' : 'white'};
-  border: ${props => props.$variant === 'primary' ? 'none' : '1px solid #e5e7eb'};
-  border-radius: 12px;
-  width: 40px;
-  height: 40px;
+  background: ${props => props.$variant === 'primary' ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #ec4899 100%)' : '#ffffff'};
+  border: ${props => props.$variant === 'primary' ? 'none' : '2px solid #e5e7eb'};
+  border-radius: 14px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: ${props => props.$variant === 'primary' ? 'white' : '#6b7280'};
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   padding: 0;
-  box-shadow: ${props => props.$variant === 'primary' ? '0 2px 8px rgba(139, 92, 246, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.1)'};
+  box-shadow: ${props => props.$variant === 'primary' 
+    ? '0 4px 12px rgba(139, 92, 246, 0.35), 0 2px 4px rgba(139, 92, 246, 0.2)' 
+    : '0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'};
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: ${props => props.$variant === 'primary' ? '0 4px 12px rgba(139, 92, 246, 0.4)' : '0 2px 6px rgba(0, 0, 0, 0.15)'};
+    transform: translateY(-2px);
+    box-shadow: ${props => props.$variant === 'primary' 
+      ? '0 6px 16px rgba(139, 92, 246, 0.45), 0 3px 6px rgba(139, 92, 246, 0.3)' 
+      : '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)'};
+    border-color: ${props => props.$variant === 'primary' ? 'transparent' : '#d1d5db'};
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
   }
 
   svg {
@@ -321,20 +359,20 @@ const ActionButton = styled.button`
 `;
 
 const SendButton = styled.button`
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #ec4899 100%);
   border: none;
-  border-radius: 12px;
-  width: 40px;
-  height: 40px;
+  border-radius: 14px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: white;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35), 0 2px 4px rgba(139, 92, 246, 0.2);
 
   svg {
     color: inherit;
@@ -347,16 +385,20 @@ const SendButton = styled.button`
   }
 
   &:hover:not(:disabled) {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #8b5cf6 100%);
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #ec4899 100%);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.45), 0 3px 6px rgba(139, 92, 246, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    background: #9ca3af;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
     box-shadow: none;
   }
 
@@ -417,12 +459,12 @@ const SendButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    width: 37px; /* Increased by 15% from 32px */
-    height: 37px; /* Increased by 15% from 32px */
-    min-width: 37px; /* Increased by 15% from 32px */
-    min-height: 37px; /* Increased by 15% from 32px */
-    max-width: 37px; /* Increased by 15% from 32px */
-    max-height: 37px; /* Increased by 15% from 32px */
+    width: 40px; /* Increased by 15% from 32px */
+    height: 40px; /* Increased by 15% from 32px */
+    min-width: 40px; /* Increased by 15% from 32px */
+    min-height: 40px; /* Increased by 15% from 32px */
+    max-width: 40px; /* Increased by 15% from 32px */
+    max-height: 40px; /* Increased by 15% from 32px */
 
     svg {
       font-size: 17px; /* Increased by 15% from 15px */
@@ -432,12 +474,12 @@ const SendButton = styled.button`
   }
 
   @media (max-width: 480px) {
-    width: 35px; /* Increased by 15% from 30px */
-    height: 35px; /* Increased by 15% from 30px */
-    min-width: 35px; /* Increased by 15% from 30px */
-    min-height: 35px; /* Increased by 15% from 30px */
-    max-width: 35px; /* Increased by 15% from 30px */
-    max-height: 35px; /* Increased by 15% from 30px */
+    width: 40px; /* Increased by 15% from 30px */
+    height: 40px; /* Increased by 15% from 30px */
+    min-width: 40px; /* Increased by 15% from 30px */
+    min-height: 40px; /* Increased by 15% from 30px */
+    max-width: 40px; /* Increased by 15% from 30px */
+    max-height: 40px; /* Increased by 15% from 30px */
 
     svg {
       font-size: 16px; /* Increased by 15% from 14px */
@@ -447,12 +489,12 @@ const SendButton = styled.button`
   }
 
   @media (max-width: 414px) {
-    width: 32px; /* Increased by 15% from 28px */
-    height: 32px; /* Increased by 15% from 28px */
-    min-width: 32px; /* Increased by 15% from 28px */
-    min-height: 32px; /* Increased by 15% from 28px */
-    max-width: 32px; /* Increased by 15% from 28px */
-    max-height: 32px; /* Increased by 15% from 28px */
+    width: 40px; /* Increased by 15% from 28px */
+    height: 40px; /* Increased by 15% from 28px */
+    min-width: 40px; /* Increased by 15% from 28px */
+    min-height: 40px; /* Increased by 15% from 28px */
+    max-width: 40px; /* Increased by 15% from 28px */
+    max-height: 40px; /* Increased by 15% from 28px */
 
     svg {
       font-size: 15px; /* Increased by 15% from 13px */
@@ -462,12 +504,12 @@ const SendButton = styled.button`
   }
 
   @media (max-width: 390px) {
-    width: 30px; /* Increased by 15% from 26px */
-    height: 30px; /* Increased by 15% from 26px */
-    min-width: 30px; /* Increased by 15% from 26px */
-    min-height: 30px; /* Increased by 15% from 26px */
-    max-width: 30px; /* Increased by 15% from 26px */
-    max-height: 30px; /* Increased by 15% from 26px */
+    width: 40px; /* Increased by 15% from 26px */
+    height: 40px; /* Increased by 15% from 26px */
+    min-width: 40px; /* Increased by 15% from 26px */
+    min-height: 40px; /* Increased by 15% from 26px */
+    max-width: 40px; /* Increased by 15% from 26px */
+    max-height: 40px; /* Increased by 15% from 26px */
 
     svg {
       font-size: 14px; /* Increased by 15% from 12px */
@@ -492,12 +534,12 @@ const SendButton = styled.button`
   }
 
   @media (max-width: 360px) {
-    width: 25px; /* Increased by 15% from 22px */
-    height: 25px; /* Increased by 15% from 22px */
-    min-width: 25px; /* Increased by 15% from 22px */
-    min-height: 25px; /* Increased by 15% from 22px */
-    max-width: 25px; /* Increased by 15% from 22px */
-    max-height: 25px; /* Increased by 15% from 22px */
+    width: 40px; /* Increased by 15% from 22px */
+    height: 40px; /* Increased by 15% from 22px */
+    min-width: 40px; /* Increased by 15% from 22px */
+    min-height: 40px; /* Increased by 15% from 22px */
+    max-width: 40px; /* Increased by 15% from 22px */
+    max-height: 40px; /* Increased by 15% from 22px */
 
     svg {
       font-size: 12px; /* Increased by 15% from 10px */
@@ -607,10 +649,10 @@ const MuteButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    width: 32px; /* Increased by 15% from 28px */
-    height: 32px; /* Increased by 15% from 28px */
-    min-width: 32px; /* Increased by 15% from 28px */
-    min-height: 32px; /* Increased by 15% from 28px */
+    width: 40px; /* Increased by 15% from 28px */
+    height: 40px; /* Increased by 15% from 28px */
+    min-width: 40px; /* Increased by 15% from 28px */
+    min-height: 40px; /* Increased by 15% from 28px */
 
     svg {
       font-size: 20px; /* Increased by 15% from 17px */
@@ -618,10 +660,10 @@ const MuteButton = styled.button`
   }
 
   @media (max-width: 480px) {
-    width: 30px; /* Increased by 15% from 26px */
-    height: 30px; /* Increased by 15% from 26px */
-    min-width: 30px; /* Increased by 15% from 26px */
-    min-height: 30px; /* Increased by 15% from 26px */
+    width: 40px; /* Increased by 15% from 26px */
+    height: 40px; /* Increased by 15% from 26px */
+    min-width: 40px; /* Increased by 15% from 26px */
+    min-height: 40px; /* Increased by 15% from 26px */
 
     svg {
       font-size: 18px; /* Increased by 15% from 16px */
@@ -629,10 +671,10 @@ const MuteButton = styled.button`
   }
 
   @media (max-width: 414px) {
-    width: 28px; /* Increased by 15% from 24px */
-    height: 28px; /* Increased by 15% from 24px */
-    min-width: 28px; /* Increased by 15% from 24px */
-    min-height: 28px; /* Increased by 15% from 24px */
+    width: 40px; /* Increased by 15% from 24px */
+    height: 40px; /* Increased by 15% from 24px */
+    min-width: 40px; /* Increased by 15% from 24px */
+    min-height: 40px; /* Increased by 15% from 24px */
 
     svg {
       font-size: 17px; /* Increased by 15% from 15px */
@@ -876,19 +918,51 @@ const InputArea = ({
   handleMicMouseUp,
   isMobile,
   handleSendMessage,
-  currentlyPlaying
+  currentlyPlaying,
+  isWelcomeMode = false
 }) => {
   const { isDarkMode } = useTheme();
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const shouldDisable = isTyping; // Simplified - only disable when typing
 
+  const handleQuestionClick = (question) => {
+    setMessage(question);
+  };
+
+  const handleAutoSuggestionClick = (suggestion) => {
+    setMessage(suggestion);
+    setShowSuggestions(false);
+  };
+
   return (
-    <InputContainer $isDarkMode={isDarkMode}>
+    <InputContainer $isDarkMode={isDarkMode} $isWelcomeMode={isWelcomeMode}>
       <InputWrapper>
+        {/* Auto Suggestions - Works in both welcome and chat mode */}
+        {showSuggestions && !isTyping && (
+          <AutoSuggestions
+            inputValue={message}
+            onSuggestionClick={handleAutoSuggestionClick}
+            isWelcomeMode={isWelcomeMode}
+            showBelow={userMessageCount === 0}
+          />
+        )}
+
         <ChatInput
           $isDarkMode={isDarkMode}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            setMessage(newValue);
+            // Show suggestions when user starts typing (1+ characters)
+            if (newValue.trim().length > 0) {
+              setShowSuggestions(true);
+            } else {
+              setShowSuggestions(false);
+            }
+          }}
           onKeyDown={handleKeyPress}
+          onFocus={() => setShowSuggestions(false)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder={
             isTyping
               ? "Thinking..."
@@ -928,59 +1002,14 @@ const InputArea = ({
         </InputButtons>
       </InputWrapper>
 
+      {/* Service Suggestions - only visible in welcome mode */}
+      <ServiceSuggestions 
+        isWelcomeMode={isWelcomeMode}
+        onQuestionClick={handleQuestionClick}
+      />
+
       {/* Feature highlights */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "1.5rem",
-          marginTop: "0.5rem",
-          flexWrap: "wrap",
-          width: "100%",
-          maxWidth: "800px",
-          position: "relative",
-          zIndex: 10,
-          minHeight: "2rem",
-        }}
-      >
-        <div style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "0.5rem", 
-          color: isDarkMode ? "#ffffff" : "#374151", 
-          fontSize: "0.95rem",
-          fontWeight: "600",
-          padding: "0.5rem 0",
-          visibility: "visible",
-          opacity: 1
-        }}>
-          <span>Powered by</span>
-          <img
-            src="/logo.png"
-            alt="Troika Tech"
-            style={{
-              height: "14px",
-              width: "auto",
-              filter: isDarkMode ? "brightness(0.8)" : "none"
-            }}
-          />
-          <a
-            href="https://troikatech.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              transition: "color 0.2s ease"
-            }}
-            onMouseEnter={(e) => e.target.style.color = "#8b5cf6"}
-            onMouseLeave={(e) => e.target.style.color = "inherit"}
-          >
-            Troika Tech
-          </a>
-        </div>
-      </div>
+      {/* Powered by branding moved to sidebar */}
     </InputContainer>
   );
 };

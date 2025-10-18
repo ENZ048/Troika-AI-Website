@@ -27,7 +27,6 @@ import InlineAuth from "./InlineAuth";
 import OtpVerification from "./OtpVerification";
 import StreamingMessage from "./StreamingMessage";
 import InputArea from "./InputArea";
-// Removed SuggestionButtons import - no longer needed
 
 // Import styles
 import { Wrapper, Overlay, AnimatedBlob, Chatbox, ChatContainer, MessagesContainer, MessagesInnerContainer, MainContentArea } from "../styles/MainStyles";
@@ -142,6 +141,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // State for tracking the currently streaming message
   const [currentStreamingMessageId, setCurrentStreamingMessageId] = useState(null);
+  
+  // State for tracking which tab the user sent the message from
+  const [messageOriginTab, setMessageOriginTab] = useState(null);
 
   // Streaming hook with proper options
   const {
@@ -167,17 +169,25 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       console.log('🎉 Streaming complete:', data);
 
       // Add the final message to chat history
-      const currentTab = getCurrentTab();
+      const targetTab = messageOriginTab || getCurrentTab();
+      console.log('🎉 STREAMING COMPLETE - Adding bot response to tab:', targetTab);
+      console.log('🎉 messageOriginTab:', messageOriginTab);
+      console.log('🎉 currentTab:', getCurrentTab());
+      console.log('🎉 isStreaming:', isStreaming);
+      console.log('🎉 isTyping:', isTyping);
+      
       const botMessage = {
         sender: "bot",
         text: data.fullAnswer,
         timestamp: new Date(),
-        suggestions: data.suggestions || [],
       };
 
-      addMessageToTab(currentTab, botMessage);
+      addMessageToTab(targetTab, botMessage);
       setCurrentStreamingMessageId(null);
       setIsTyping(false);
+      
+      // Clear the message origin tab after bot response
+      setMessageOriginTab(null);
 
       // Scroll to bottom after message is added
       setTimeout(() => {
@@ -318,11 +328,95 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
   // Handle navigation between tabs (not refresh)
   const handleTabNavigation = useCallback((tabId) => {
-    console.log('🔄 Tab navigation to:', tabId);
+    console.log('🔄 TAB NAVIGATION to:', tabId);
+    console.log('🔄 Current messageOriginTab:', messageOriginTab);
+    console.log('🔄 Current isStreaming:', isStreaming);
+    console.log('🔄 Current isTyping:', isTyping);
+    
     setIsPageRefresh(false); // This is navigation, not refresh
     sessionStorage.setItem('hasNavigated', 'true'); // Mark as navigation
+    
+    // Clear message origin tab when navigating (but only if not currently streaming)
+    if (!isStreaming && !isTyping) {
+      console.log('🔄 Clearing messageOriginTab (not streaming/typing)');
+      setMessageOriginTab(null);
+    } else {
+      console.log('🔄 Keeping messageOriginTab (streaming/typing in progress)');
+    }
+    
+    // If currently streaming/typing, stop the response when navigating away
+    if (isStreaming || isTyping) {
+      console.log('🛑 Stopping streaming response due to tab navigation');
+      
+      // Save the current streaming response to the origin tab before stopping
+      if (messageOriginTab && streamingResponse && streamingResponse.trim()) {
+        console.log('💾 Saving partial response to origin tab:', messageOriginTab);
+        const partialBotMessage = {
+          sender: "bot",
+          text: streamingResponse,
+          timestamp: new Date(),
+        };
+        addMessageToTab(messageOriginTab, partialBotMessage);
+      }
+      
+      if (isStreaming) {
+        stopStreaming();
+      }
+      setIsTyping(false);
+      setCurrentStreamingMessageId(null);
+      setMessageOriginTab(null);
+    }
+    
+    // Special handling for "new-chat" - clear all history and go to home
+    if (tabId === 'new-chat') {
+      console.log('🆕 New chat requested - clearing all history');
+      
+      // Stop any ongoing audio/TTS immediately
+      stopAudio();
+      
+      // Stop streaming audio specifically
+      pauseAudio();
+      
+      // Stop any streaming response
+      if (isStreaming) {
+        stopStreaming();
+      }
+      
+      // Clear all states
+      setIsTyping(false);
+      setCurrentStreamingMessageId(null);
+      setMessageOriginTab(null);
+      
+      // Clear all chat history
+      setChatHistory([]);
+      setShowWelcome(true);
+      
+      // Clear all tab histories from localStorage
+      clearAllTabHistories();
+      
+      // Clear user message count
+      if (sessionId && chatbotId) {
+        try {
+          const key = `supa_user_message_count:${chatbotId}:${sessionId}`;
+          localStorage.removeItem(key);
+          console.log('Cleared user message count from localStorage');
+        } catch (error) {
+          console.error("Error clearing user message count:", error);
+        }
+      }
+      
+      // Generate new session ID for fresh start
+      const newSessionId = crypto.randomUUID();
+      localStorage.setItem("sessionId", newSessionId);
+      setSessionId(newSessionId);
+      
+      // Navigate to home and replace the current URL
+      navigate('/', { replace: true });
+      return;
+    }
+    
     navigate(`/${tabId}`);
-  }, [navigate]);
+  }, [navigate, sessionId, chatbotId, clearAllTabHistories, messageOriginTab, isStreaming, isTyping, stopStreaming, streamingResponse, addMessageToTab, stopAudio, pauseAudio]);
 
   // Cleanup effect to reset navigation flag on unmount
   useEffect(() => {
@@ -599,25 +693,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
               // Don't reset userMessageCount here - let it be handled by the auth flow
               // Removed setHasShownInterestResponse - no longer needed
               
-              // Only set chat history if it's empty (to avoid overriding existing greeting)
-              setChatHistory(prev => {
-                if (prev.length === 0) {
-                  return [
-                    {
-                      sender: "bot",
-                      text: welcomeMessage,
-                      timestamp: new Date(),
-                    },
-                  ];
-                }
-                return prev;
-              });
+              // Greeting disabled - user doesn't want initial greeting
+              // Keep chat history empty on session restore
               setFinalGreetingReady(true);
-              
-              // Generate TTS for the welcome message
-              if (apiBase) {
-                ensureGreetingTTS(welcomeMessage);
-              }
             } else {
               localStorage.removeItem(storeKey);
               toast.info("Your session has expired. Please sign in again.");
@@ -735,8 +813,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
   }, [userMessageCount, verified]); */
 
-  // Set initial greeting
-  useEffect(() => {
+  // Set initial greeting - DISABLED (user doesn't want initial greeting)
+  /* useEffect(() => {
     // Only add greeting if:
     // 1. Not resetting
     // 2. Not already added (check ref)
@@ -760,11 +838,11 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         ensureGreetingTTS(welcomeMessage);
       }
     }
-  }, [chatbotId, finalGreetingReady, welcomeMessage, apiBase, ensureGreetingTTS, showWelcome, isResetting]);
+  }, [chatbotId, finalGreetingReady, welcomeMessage, apiBase, ensureGreetingTTS, showWelcome, isResetting]); */
 
 
-  // Update welcome message periodically
-  useEffect(() => {
+  // Update welcome message periodically - DISABLED (not needed)
+  /* useEffect(() => {
     const updateWelcomeMessage = () => {
       setWelcomeMessage(getTimeBasedGreeting());
     };
@@ -772,7 +850,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     updateWelcomeMessage();
     const interval = setInterval(updateWelcomeMessage, 60 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); */
 
 
 
@@ -891,48 +969,15 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       // Additional scroll after content is fully rendered
       const timeoutId = setTimeout(scrollToBottom, 100);
       
-      // Extra scroll to ensure final message and suggestions are visible
+      // Extra scroll to ensure final message is visible
       const extraTimeoutId = setTimeout(scrollToBottom, 300);
-      
-      // Final scroll to ensure suggestion buttons are visible
-      const finalTimeoutId = setTimeout(scrollToBottom, 800);
       
       return () => {
         clearTimeout(timeoutId);
         clearTimeout(extraTimeoutId);
-        clearTimeout(finalTimeoutId);
       };
     }
   }, [isTyping, chatHistory.length, showWelcome]);
-
-  // Auto-scroll to show suggestion buttons after messages are rendered
-  useEffect(() => {
-    if (chatHistory.length > 0 && !showWelcome) {
-      const scrollToShowSuggestions = () => {
-        if (endOfMessagesRef.current) {
-          endOfMessagesRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'end' 
-          });
-        } else if (messagesContainerRef.current) {
-          const container = messagesContainerRef.current;
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: 'smooth'
-          });
-        }
-      };
-      
-      // Scroll after a delay to ensure all content including suggestions are rendered
-      const timeoutId = setTimeout(scrollToShowSuggestions, 200);
-      const extraTimeoutId = setTimeout(scrollToShowSuggestions, 600);
-      
-      return () => {
-        clearTimeout(timeoutId);
-        clearTimeout(extraTimeoutId);
-      };
-    }
-  }, [chatHistory.length, showWelcome]);
 
   // Auto-scroll when switching from welcome to chat
   useEffect(() => {
@@ -1369,6 +1414,10 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       // Add message to current tab using route-based system
       const currentTab = getCurrentTab();
       console.log('💬 Adding user message to tab:', currentTab);
+      
+      // Track which tab this message was sent from
+      setMessageOriginTab(currentTab);
+      
       addMessageToTab(currentTab, userMessage);
       setMessage("");
       setIsTyping(true);
@@ -2954,10 +3003,10 @@ AI Website is built for instant replies, 24×7.<br>
     
     // Fallback for other actions
     const suggestionMessages = {
-      'programs': 'What Programs Does ITM Offer?',
-      'placements': 'How Are Placements at ITM Business School?',
-      'global': 'Does ITM Provide Global Study Opportunities?',
-      'campus': 'What Is Campus Life Like at ITM Kharghar?'
+      'services': 'What services does Troika Tech offer?',
+      'pricing': 'What is the pricing for AI services?',
+      'demo': 'Can I get a demo?',
+      'support': 'What kind of support do you provide?'
     };
     
     const message = suggestionMessages[action] || 'Tell me more about this';
@@ -3793,6 +3842,22 @@ AI Website is built for instant replies, 24×7.<br>
               socialFeedOpen={socialFeedOpen}
               selectedPlatform={selectedPlatform}
               onSocialFeedClose={handleSocialFeedClose}
+              message={message}
+              setMessage={setMessage}
+              handleKeyPress={handleKeyPress}
+              isTyping={isTyping}
+              userMessageCount={userMessageCount}
+              verified={verified}
+              needsAuth={needsAuth}
+              isRecording={isRecording}
+              handleMicClick={handleMicClick}
+              handleMicTouchStart={handleMicTouchStart}
+              handleMicTouchEnd={handleMicTouchEnd}
+              handleMicMouseDown={handleMicMouseDown}
+              handleMicMouseUp={handleMicMouseUp}
+              isMobile={isMobile}
+              handleSendMessage={handleSendMessage}
+              currentlyPlaying={currentlyPlaying}
             />
         )}
                 
@@ -3878,6 +3943,7 @@ AI Website is built for instant replies, 24×7.<br>
 
                 <VoiceInputIndicatorComponent isRecording={isRecording} />
 
+                {getCurrentTab() !== 'social-media' && !showWelcome && (
                 <InputArea
                   message={message}
                   setMessage={setMessage}
@@ -3894,8 +3960,10 @@ AI Website is built for instant replies, 24×7.<br>
                   handleMicMouseUp={handleMicMouseUp}
                   isMobile={isMobile}
                   handleSendMessage={handleSendMessage}
+                    isWelcomeMode={false}
                   currentlyPlaying={currentlyPlaying}
                 />
+                )}
               </ChatContainer>
             </Chatbox>
           </MainContentArea>

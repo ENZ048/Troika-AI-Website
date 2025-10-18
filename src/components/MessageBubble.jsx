@@ -4,7 +4,6 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
-import SuggestionButtons from "./SuggestionButtons";
 
 const MessageWrapper = styled.div`
   display: flex;
@@ -99,7 +98,7 @@ const MessageBubble = styled.div`
     border-radius: 24px 24px 4px 24px;
   `
       : `
-    background: ${$isDarkMode ? '#1f2937' : '#ffffff'};
+    background: ${$isDarkMode ? '#000000' : '#ffffff'};
     color: ${$isDarkMode ? '#ffffff' : '#1f2937'};
     border-radius: 24px 24px 24px 4px;
     border: 1px solid ${$isDarkMode ? '#374151' : '#e5e7eb'};
@@ -460,15 +459,6 @@ const MessageBubbleComponent = ({
               )}
             </PlayButton>
           </AudioButtonWrapper>
-        )}
-
-        {/* Suggestion buttons for bot messages */}
-        {!isUser && message.suggestions && message.suggestions.length > 0 && (
-          <SuggestionButtons
-            suggestions={message.suggestions}
-            onSuggestionClick={onSuggestionClick}
-            isDarkMode={isDarkMode}
-          />
         )}
       </MessageContainer>
     </MessageWrapper>
