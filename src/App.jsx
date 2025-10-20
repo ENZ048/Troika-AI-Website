@@ -1,11 +1,15 @@
 import SupaChatbot from "./components/SupaChatbot"
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import AuthModal from "./components/AuthModal"
+import OtpModal from "./components/OtpModal"
+import useAuthentication from "./hooks/useAuthentication"
+import { ThemeProvider } from "./contexts/ThemeContext"
 
 // Constants for chatbot configuration
 const CHATBOT_ID = "68f1dfa097793a45f3951812"
-const API_BASE = "https://api.0804.in/api"
-// const API_BASE = "http://localhost:5000/api"
+// const API_BASE = "https://api.0804.in/api"
+const API_BASE = "http://localhost:5000/api"
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -39,6 +43,82 @@ class ErrorBoundary extends React.Component {
 function App() {
   console.log("App component is rendering!");
 
+  // Authentication state
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  
+  const {
+    isAuthenticated,
+    loading: authLoading,
+    error: authError,
+    resendCooldown,
+    sendOtp,
+    verifyOtp,
+    resendOtp
+  } = useAuthentication(API_BASE);
+
+  // Check if user needs authentication on first visit
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  }, [isAuthenticated]);
+
+  // Handle OTP sending
+  const handleSendOtp = async (phone) => {
+    try {
+      setPhoneNumber(phone);
+      await sendOtp(phone);
+      setShowAuthModal(false);
+      setShowOtpModal(true);
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+    }
+  };
+
+  // Handle OTP verification
+  const handleVerifyOtp = async (otp) => {
+    try {
+      await verifyOtp(otp, phoneNumber);
+      setShowOtpModal(false);
+    } catch (error) {
+      console.error('Failed to verify OTP:', error);
+    }
+  };
+
+  // Handle OTP resend
+  const handleResendOtp = async () => {
+    try {
+      await resendOtp(phoneNumber);
+    } catch (error) {
+      console.error('Failed to resend OTP:', error);
+    }
+  };
+
+  // Don't render the chatbot until user is authenticated
+  if (!isAuthenticated) {
+    return (
+      <ThemeProvider>
+        {showAuthModal && (
+          <AuthModal
+            onSendOtp={handleSendOtp}
+            loading={authLoading}
+            error={authError}
+          />
+        )}
+        {showOtpModal && (
+          <OtpModal
+            onVerifyOtp={handleVerifyOtp}
+            onResendOtp={handleResendOtp}
+            loading={authLoading}
+            error={authError}
+            resendCooldown={resendCooldown}
+          />
+        )}
+      </ThemeProvider>
+    );
+  }
   return (
     <BrowserRouter>
       <ErrorBoundary>
@@ -66,7 +146,7 @@ function App() {
             </Routes>
       </ErrorBoundary>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App
