@@ -10,7 +10,6 @@ export const useAuth = () => {
   return context;
 };
 
-const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 const AUTH_STORAGE_KEY = 'chatbot_auth';
 const PHONE_STORAGE_KEY = 'chatbot_user_phone';
 
@@ -29,7 +28,7 @@ export const AuthProvider = ({ children, apiBase }) => {
     checkExistingAuth();
   }, []);
 
-  const checkExistingAuth = useCallback(() => {
+  const checkExistingAuth = useCallback(async () => {
     try {
       const savedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
 
@@ -44,26 +43,59 @@ export const AuthProvider = ({ children, apiBase }) => {
       const authData = JSON.parse(savedAuth);
       const now = Date.now();
 
-      // Check if authentication exists and hasn't expired
-      if (authData.token && authData.loginTime && authData.expiresAt) {
+      // Check if authentication exists and hasn't expired (client-side check)
+      if (authData.token && authData.issuedAt && authData.expiresAt) {
         const isExpired = now >= authData.expiresAt;
-        const sessionAge = now - authData.loginTime;
+        const sessionAge = now - authData.issuedAt;
         const hoursOld = Math.floor(sessionAge / (60 * 60 * 1000));
 
         console.log('📊 [AUTH CONTEXT] Session age:', hoursOld, 'hours');
         console.log('⏰ [AUTH CONTEXT] Expires at:', new Date(authData.expiresAt).toLocaleString());
         console.log('🕐 [AUTH CONTEXT] Current time:', new Date(now).toLocaleString());
 
-        if (!isExpired) {
-          console.log('✅ [AUTH CONTEXT] Valid session found - Auto-authenticating');
-          console.log('👤 [AUTH CONTEXT] User info:', authData.userInfo);
+        if (isExpired) {
+          console.log('⏰ [AUTH CONTEXT] Token expired (>24 hours) - Clearing authentication');
+          clearAuthData();
+          setLoading(false);
+          setIsInitialized(true);
+          return;
+        }
 
+        // Validate token with backend
+        console.log('🔐 [AUTH CONTEXT] Validating token with backend...');
+        try {
+          const response = await fetch(`${apiBase}/auth/validate-token`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${authData.token}`,
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.valid) {
+              console.log('✅ [AUTH CONTEXT] Token validated by backend - Auto-authenticating');
+              console.log('👤 [AUTH CONTEXT] User info:', authData.userInfo);
+
+              setAuthToken(authData.token);
+              setUserInfo(authData.userInfo);
+              setIsAuthenticated(true);
+            } else {
+              console.log('❌ [AUTH CONTEXT] Backend rejected token - Clearing');
+              clearAuthData();
+            }
+          } else {
+            console.log('❌ [AUTH CONTEXT] Token validation failed - Clearing');
+            clearAuthData();
+          }
+        } catch (validationError) {
+          console.error('❌ [AUTH CONTEXT] Backend validation error:', validationError);
+          // If backend is unreachable but token not expired, trust local token
+          console.log('⚠️ [AUTH CONTEXT] Backend unreachable, using local token');
           setAuthToken(authData.token);
           setUserInfo(authData.userInfo);
           setIsAuthenticated(true);
-        } else {
-          console.log('⏰ [AUTH CONTEXT] Session expired (>24 hours) - Clearing authentication');
-          clearAuthData();
         }
       } else {
         console.log('⚠️ [AUTH CONTEXT] Invalid auth data structure - Clearing');
@@ -76,7 +108,7 @@ export const AuthProvider = ({ children, apiBase }) => {
       setLoading(false);
       setIsInitialized(true);
     }
-  }, []);
+  }, [apiBase]);
 
   // Clear authentication data
   const clearAuthData = useCallback(() => {
@@ -174,25 +206,30 @@ export const AuthProvider = ({ children, apiBase }) => {
 
       const data = await response.json();
       console.log('✅ [AUTH CONTEXT] OTP verification successful');
+      console.log('🔑 [AUTH CONTEXT] Backend response:', {
+        hasToken: !!data.token,
+        issuedAt: data.issuedAt,
+        expiresAt: data.expiresAt,
+        expiresIn: data.expiresIn
+      });
 
       // Save phone number
       if (phone) {
         localStorage.setItem(PHONE_STORAGE_KEY, phone);
       }
 
-      // Save authentication data with timestamp
-      const now = Date.now();
+      // Save authentication data with backend-provided timestamps
       const authData = {
         token: data.token,
         userInfo: data.userInfo || { phone },
-        loginTime: now,
-        expiresAt: now + SESSION_DURATION
+        issuedAt: data.issuedAt,      // Backend timestamp in milliseconds
+        expiresAt: data.expiresAt      // Backend timestamp in milliseconds
       };
 
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
       console.log('💾 [AUTH CONTEXT] Auth data saved - Session valid for 24 hours');
-      console.log('📅 [AUTH CONTEXT] Login time:', new Date(now).toLocaleString());
-      console.log('📅 [AUTH CONTEXT] Expires at:', new Date(authData.expiresAt).toLocaleString());
+      console.log('📅 [AUTH CONTEXT] Issued at:', new Date(data.issuedAt).toLocaleString());
+      console.log('📅 [AUTH CONTEXT] Expires at:', new Date(data.expiresAt).toLocaleString());
 
       setAuthToken(data.token);
       setUserInfo(data.userInfo || { phone });
@@ -209,11 +246,35 @@ export const AuthProvider = ({ children, apiBase }) => {
   }, [apiBase]);
 
   // Logout
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     console.log('🚪 [AUTH CONTEXT] Logging out user');
+
+    // Call backend logout endpoint if token exists
+    if (authToken) {
+      try {
+        console.log('📤 [AUTH CONTEXT] Calling backend logout endpoint');
+        const response = await fetch(`${apiBase}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (response.ok) {
+          console.log('✅ [AUTH CONTEXT] Backend logout successful');
+        } else {
+          console.warn('⚠️ [AUTH CONTEXT] Backend logout failed, clearing local data anyway');
+        }
+      } catch (error) {
+        console.error('❌ [AUTH CONTEXT] Logout error:', error);
+        // Continue with local logout even if backend call fails
+      }
+    }
+
     clearAuthData();
     setError(null);
-  }, [clearAuthData]);
+  }, [authToken, apiBase, clearAuthData]);
 
   // Resend OTP
   const resendOtp = useCallback(async (phone) => {
@@ -263,6 +324,21 @@ export const AuthProvider = ({ children, apiBase }) => {
 
     return () => clearInterval(interval);
   }, [isAuthenticated, logout]);
+
+  // Listen for 401 logout events from API client
+  useEffect(() => {
+    const handleLogoutEvent = (event) => {
+      console.log('🔔 [AUTH CONTEXT] Received logout event:', event.detail);
+      clearAuthData();
+      setError(null);
+    };
+
+    window.addEventListener('auth:logout', handleLogoutEvent);
+
+    return () => {
+      window.removeEventListener('auth:logout', handleLogoutEvent);
+    };
+  }, [clearAuthData]);
 
   const value = {
     isAuthenticated,

@@ -114,25 +114,43 @@ function AuthenticationGate({ children }) {
   if (!isInitialized || authLoading) {
     return (
       <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        width: '100vw',
         height: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        zIndex: 9999
       }}>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px'
+        }}>
           <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(255, 255, 255, 0.3)',
-            borderTop: '4px solid white',
+            width: '60px',
+            height: '60px',
+            border: '5px solid rgba(255, 255, 255, 0.2)',
+            borderTop: '5px solid white',
             borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 20px'
+            animation: 'spin 0.8s linear infinite'
           }}></div>
-          <p>Loading...</p>
+          <p style={{
+            margin: 0,
+            fontSize: '16px',
+            fontWeight: '500',
+            letterSpacing: '0.5px'
+          }}>Verifying authentication...</p>
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
