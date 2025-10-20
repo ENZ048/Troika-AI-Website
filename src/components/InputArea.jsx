@@ -908,7 +908,6 @@ const InputArea = ({
   handleKeyPress,
   isTyping,
   userMessageCount,
-  botMessageCount,
   verified,
   needsAuth,
   isRecording,
@@ -922,12 +921,11 @@ const InputArea = ({
   currentlyPlaying,
   isWelcomeMode = false,
   showInlineAuth = false,
-  shouldShowAuth = false,
-  isAuthenticated = false
+  shouldShowAuth = false
 }) => {
   const { isDarkMode } = useTheme();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const shouldDisable = isTyping || showInlineAuth || shouldShowAuth || (!isAuthenticated && botMessageCount >= 2); // Disable when typing OR when auth is required OR when bot has sent 2+ messages
+  const shouldDisable = isTyping || showInlineAuth || shouldShowAuth; // Disable when typing OR when auth modal is showing
 
   const handleQuestionClick = (question) => {
     setMessage(question);
@@ -972,8 +970,6 @@ const InputArea = ({
               ? "Thinking..."
               : showInlineAuth || shouldShowAuth
               ? "Please verify your identity to continue..."
-              : (!isAuthenticated && botMessageCount >= 2)
-              ? "Authentication required to continue..."
               : "Ask me anything..."
           }
           disabled={shouldDisable}

@@ -33,22 +33,22 @@ const MessageContainer = styled.div`
 `;
 
 const MessageBubble = styled.div`
-  padding: ${(props) => (props.$isPricing || props.$isSales ? "0" : "0.875rem 1rem")};
-  border-radius: 24px;
+  padding: ${(props) => (props.$isPricing || props.$isSales ? "0" : props.$isUser ? "0.875rem 1rem" : "0")};
+  border-radius: ${(props) => (props.$isUser ? "24px" : "0")};
   font-size: 1rem;
   line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  word-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
+  overflow-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
   white-space: ${(props) => (props.$isUser ? "nowrap" : "normal")};
-  hyphens: auto;
-  word-break: break-word;
+  hyphens: ${(props) => (props.$isUser ? "auto" : "none")};
+  word-break: ${(props) => (props.$isUser ? "break-word" : "normal")};
   position: relative;
   margin: ${(props) => (props.$isUser ? "0.5rem 0" : "0.25rem 0")};
   width: ${(props) => (props.$isUser ? "auto" : "100%")};
   max-width: 100%;
   min-width: ${(props) => (props.$isUser ? "200px" : "60px")};
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  box-shadow: ${(props) => (props.$isPricing || props.$isSales ? 'none' : '0 10px 40px rgba(0, 0, 0, 0.15)')};
+  box-shadow: ${(props) => (props.$isPricing || props.$isSales || !props.$isUser ? 'none' : '0 10px 40px rgba(0, 0, 0, 0.15)')};
   transform: scale(1);
   transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
 
@@ -66,20 +66,20 @@ const MessageBubble = styled.div`
   }
 
   &:hover {
-    transform: scale(1.02);
+    transform: ${(props) => (props.$isUser ? "scale(1.02)" : "scale(1)")};
   }
-  
+
   /* Better mobile spacing */
   @media (max-width: 480px) {
     margin: ${(props) => (props.$isUser ? "0.4rem 0" : "0.2rem 0")};
     min-width: ${(props) => (props.$isUser ? "150px" : "50px")};
-    padding: 0.75rem 0.875rem;
+    padding: ${(props) => (props.$isUser ? "0.75rem 0.875rem" : "0")};
   }
-  
+
   @media (max-width: 360px) {
     margin: ${(props) => (props.$isUser ? "0.3rem 0" : "0.15rem 0")};
     min-width: ${(props) => (props.$isUser ? "120px" : "40px")};
-    padding: 0.625rem 0.75rem;
+    padding: ${(props) => (props.$isUser ? "0.625rem 0.75rem" : "0")};
   }
 
   ${({ $isUser, $isDarkMode, $isPricing }) =>
@@ -98,118 +98,207 @@ const MessageBubble = styled.div`
     border-radius: 24px 24px 4px 24px;
   `
       : `
-    background: ${$isDarkMode ? '#000000' : '#ffffff'};
+    background: transparent;
     color: ${$isDarkMode ? '#ffffff' : '#1f2937'};
-    border-radius: 24px 24px 24px 4px;
-    border: 1px solid ${$isDarkMode ? '#374151' : '#e5e7eb'};
+    border-radius: 0;
+    border: none;
   `}
 
 `;
 
 const MessageContent = styled.div`
   text-align: left;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  word-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
+  overflow-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
+  word-break: ${(props) => (props.$isUser ? "break-word" : "normal")};
+  hyphens: ${(props) => (props.$isUser ? "auto" : "none")};
   white-space: normal;
   width: 100%;
   max-width: 100%;
+  word-spacing: ${(props) => (props.$isUser ? "normal" : "0.05em")};
+  letter-spacing: ${(props) => (props.$isUser ? "normal" : "0.005em")};
+  color: ${(props) => (props.$isUser ? "inherit" : props.$isDarkMode ? '#d1d5db' : '#374151')};
+  font-size: 1rem;
+
   /* Prevent pre-wrap from forcing line breaks inside lists */
-  ol, ul, li { white-space: normal; }
-  
+  ol, ul, li {
+    white-space: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+
   /* For pricing and sales messages, allow full width and remove any constraints */
   ${(props) => (props.$isPricing || props.$isSales) && `
     width: 100%;
     max-width: 100%;
     overflow: visible;
   `}
-  
+
   p {
-    margin: 0 0 0.4rem 0;
+    margin: 0 0 1rem 0;
     padding: 0;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    word-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
+    overflow-wrap: ${(props) => (props.$isUser ? "break-word" : "normal")};
+    word-break: ${(props) => (props.$isUser ? "break-word" : "normal")};
+    hyphens: ${(props) => (props.$isUser ? "auto" : "none")};
     white-space: normal;
-    line-height: 1.45;
+    line-height: ${(props) => (props.$isUser ? "1.45" : "1.7")};
     width: 100%;
     max-width: 100%;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  /* Ordered lists (numbered) */
+  /* Ordered lists (numbered) - ChatGPT style */
   ol {
-    margin: 0.15rem 0;
-    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+    padding-left: 2rem;
     list-style-position: outside;
-    
+    list-style-type: decimal;
+
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  /* Unordered lists (bullets) */
+  /* Unordered lists (bullets) - ChatGPT style */
   ul {
-    margin: 0.15rem 0;
-    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+    padding-left: 2rem;
     list-style-position: outside;
-    
+    list-style-type: disc;
+
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  /* List items */
+  /* List items - ChatGPT style */
   li {
-    margin: 0.2rem 0;
-    padding-left: 0.25rem; /* tighter so text aligns closer to marker */
-    line-height: 1.45;
-    
+    margin: 0.6rem 0;
+    padding-left: 0.35rem;
+    line-height: 1.7;
+
     /* Nested paragraphs in list items */
     p {
       margin: 0;
       display: inline;
       line-height: inherit;
     }
+
+    /* Strong text in lists */
+    strong {
+      font-weight: 700;
+    }
   }
 
   /* Reduce spacing for nested lists */
   li ul, li ol {
-    margin: 0.25rem 0 0.15rem 0;
-    padding-left: 1.25rem;
-  }
-  
-  /* Nested list items should have less spacing */
-  li li {
-    margin: 0.15rem 0;
-    padding-left: 0.3rem;
-    line-height: 1.4;
+    margin: 0.5rem 0 0.35rem 0;
+    padding-left: 1.75rem;
   }
 
-  /* Strong/bold text in lists */
+  /* Nested list items should have less spacing */
+  li li {
+    margin: 0.4rem 0;
+    padding-left: 0.35rem;
+    line-height: 1.6;
+  }
+
+  /* Strong/bold text - ChatGPT style */
   strong {
-    font-weight: 600;
+    font-weight: 700;
+    color: ${(props) => (props.$isDarkMode ? '#ececec' : '#0d0d0d')};
+  }
+
+  /* Headings - ChatGPT style */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    margin: 1.25rem 0 0.75rem 0;
+    line-height: 1.4;
+    color: ${(props) => (props.$isDarkMode ? '#ececec' : '#0d0d0d')};
+
+    &:first-child {
+      margin-top: 0.5rem;
+    }
+  }
+
+  h1 {
+    font-size: 1.5em;
+    margin-bottom: 0.85rem;
+  }
+
+  h2 {
+    font-size: 1.25em;
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1.15em;
+    margin-bottom: 0.7rem;
+  }
+
+  h4 {
+    font-size: 1.1em;
+    margin-bottom: 0.65rem;
+  }
+
+  h5, h6 {
+    font-size: 1.05em;
+  }
+
+  /* Add spacing after headings */
+  h1 + p, h2 + p, h3 + p, h4 + p, h1 + ul, h2 + ul, h3 + ul, h4 + ul {
+    margin-top: 0.35rem;
   }
 
   /* Remove extra spacing from markdown-generated content */
   > *:first-child {
     margin-top: 0;
   }
-  
+
   > *:last-child {
     margin-bottom: 0;
   }
 
   /* Ensure proper spacing between different list types */
   ol + p, ul + p {
+    margin-top: 0.75rem;
+  }
+
+  p + ol, p + ul {
     margin-top: 0.5rem;
   }
-  
-  p + ol, p + ul {
-    margin-top: 0.35rem;
+
+  /* Horizontal rules */
+  hr {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid ${(props) => (props.$isDarkMode ? '#4b5563' : '#e5e7eb')};
+  }
+
+  /* Code blocks */
+  code {
+    background: ${(props) => (props.$isDarkMode ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.8)')};
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: ${(props) => (props.$isDarkMode ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.8)')};
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+
+    code {
+      background: transparent;
+      padding: 0;
+    }
   }
 `;
 
@@ -407,16 +496,28 @@ const MessageBubbleComponent = ({
                     />
                   ),
                   p: ({ node, ...props }) => (
-                    <p style={{ margin: "0", padding: "0" }} {...props} />
+                    <p {...props} />
                   ),
                   div: ({ node, ...props }) => (
                     <div {...props} />
+                  ),
+                  h1: ({ node, ...props }) => (
+                    <h1 {...props} />
                   ),
                   h2: ({ node, ...props }) => (
                     <h2 {...props} />
                   ),
                   h3: ({ node, ...props }) => (
                     <h3 {...props} />
+                  ),
+                  h4: ({ node, ...props }) => (
+                    <h4 {...props} />
+                  ),
+                  strong: ({ node, ...props }) => (
+                    <strong {...props} />
+                  ),
+                  em: ({ node, ...props }) => (
+                    <em {...props} />
                   ),
                 }}
               >

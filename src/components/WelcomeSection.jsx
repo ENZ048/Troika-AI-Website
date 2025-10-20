@@ -2035,10 +2035,8 @@ const WelcomeSection = ({
   // Handle static responses for suggestion cards
   const handleStaticResponse = (suggestion) => {
     // Handle navigation actions from home page
-    if (suggestion.action === 'ai-websites' || 
-        suggestion.action === 'ai-calling' || 
-        suggestion.action === 'ai-whatsapp' || 
-        suggestion.action === 'ai-telegram' ||
+    if (suggestion.action === 'ai-websites' ||
+        suggestion.action === 'ai-calling' ||
         suggestion.action === 'industry-use-cases' ||
         suggestion.action === 'social-media') {
       // Use onSuggestionClick to trigger navigation
@@ -2080,24 +2078,12 @@ const WelcomeSection = ({
       return;
     }
     
-    // Handle AI WhatsApp Agent static content
-    if (suggestion.action === 'whatsapp-overview' && suggestion.staticContent) {
-      if (onSuggestionClick) {
-        onSuggestionClick(suggestion.staticContent);
-      }
-      return;
-    }
-    
     // Handle conversational flows for all services
     if (suggestion.isConversational) {
       let flowData = null;
       
       // Check which conversational flow to use
-      if (telegramConversationalFlow[suggestion.action]) {
-        flowData = telegramConversationalFlow[suggestion.action];
-      } else if (whatsappConversationalFlow[suggestion.action]) {
-        flowData = whatsappConversationalFlow[suggestion.action];
-      } else if (callingConversationalFlow[suggestion.action]) {
+      if (callingConversationalFlow[suggestion.action]) {
         flowData = callingConversationalFlow[suggestion.action];
       } else if (websitesConversationalFlow[suggestion.action]) {
         flowData = websitesConversationalFlow[suggestion.action];
@@ -2117,40 +2103,6 @@ const WelcomeSection = ({
         }
         return;
       }
-    }
-    
-    // Handle other actions in conversational flow (for backward compatibility)
-    if (telegramConversationalFlow[suggestion.action]) {
-      const flowData = telegramConversationalFlow[suggestion.action];
-      const message = flowData.initialMessage || flowData.message;
-      const suggestions = flowData.suggestions || [];
-      
-      if (onSuggestionClick) {
-        onSuggestionClick({
-          type: 'conversational',
-          message: message,
-          suggestions: suggestions,
-          action: suggestion.action
-        });
-      }
-      return;
-    }
-    
-    // Handle WhatsApp conversational flow
-    if (whatsappConversationalFlow[suggestion.action]) {
-      const flowData = whatsappConversationalFlow[suggestion.action];
-      const message = flowData.initialMessage || flowData.message;
-      const suggestions = flowData.suggestions || [];
-      
-      if (onSuggestionClick) {
-        onSuggestionClick({
-          type: 'conversational',
-          message: message,
-          suggestions: suggestions,
-          action: suggestion.action
-        });
-      }
-      return;
     }
     
     // Handle Calling conversational flow
@@ -2215,13 +2167,6 @@ const WelcomeSection = ({
       }
       return;
     }
-    if (suggestion.action === 'whatsapp-pricing' && suggestion.staticContent) {
-      if (onSuggestionClick) {
-        onSuggestionClick(suggestion.staticContent);
-      }
-      return;
-    }
-    
     // Handle social media feed clicks
     if (suggestion.action === 'instagram-feed') {
       // Trigger Instagram feed
@@ -2266,17 +2211,6 @@ const WelcomeSection = ({
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" fill={iconColor}/>
         </svg>
-      ),
-      'whatsapp': (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill={iconColor}/>
-          <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411l.015-.039zm-8.48 18.297h-.004c-1.774 0-3.513-.477-5.031-1.378l-.361-.214-3.741.977 1.001-3.645-.235-.375c-.99-1.572-1.513-3.387-1.516-5.26.003-5.45 4.454-9.884 9.93-9.884 2.65 0 5.14 1.031 7.021 2.906 1.881 1.875 2.914 4.362 2.911 7.012-.003 5.45-4.453 9.884-9.925 9.884l-.05-.023z" fill={iconColor}/>
-        </svg>
-      ),
-      'telegram': (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.67-.52.36-.99.53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.37-.48 1.02-.73 4-1.74 6.68-2.89 8.03-3.45 3.82-1.59 4.62-1.87 5.14-1.88.11 0 .37.03.54.17.14.11.18.26.2.37-.01.06.01.24 0 .38z" fill={iconColor}/>
-        </svg>
       )
     };
     
@@ -2294,16 +2228,6 @@ const WelcomeSection = ({
       icon: "phone",
       text: "AI Calling Agents",
       action: "ai-calling"
-    },
-    {
-      icon: "whatsapp",
-      text: "AI WhatsApp Agent",
-      action: "ai-whatsapp"
-    },
-    {
-      icon: "telegram",
-      text: "AI Telegram Agent",
-      action: "ai-telegram"
     }
   ];
 
@@ -2339,357 +2263,6 @@ const WelcomeSection = ({
     }
   ];
 
-  // AI WhatsApp suggestions - Now with conversational flow
-  const aiWhatsappSuggestions = [
-    {
-      icon: "📱",
-      text: "Overview",
-      action: "whatsapp-overview",
-      isConversational: true
-    },
-    {
-      icon: "💰",
-      text: "Pricing structure",
-      action: "whatsapp-pricing",
-      isConversational: true
-    }
-  ];
-
-  // AI Telegram suggestions - Now with conversational flow (only 2 buttons)
-  const aiTelegramSuggestions = [
-    {
-      icon: "📱",
-      text: "Overview",
-      action: "telegram-overview",
-      isConversational: true
-    },
-    {
-      icon: "💰",
-      text: "Pricing structure",
-      action: "telegram-pricing",
-      isConversational: true
-    }
-  ];
-
-  // Conversational flow data for Telegram AI Agent
-  const telegramConversationalFlow = {
-    "telegram-overview": {
-      initialMessage: "📱 **AI Telegram Agent - Overview**\n\nThe AI Telegram Agent from Troika Tech is your intelligent digital executive designed to handle customer chats, share product info, qualify leads, and manage communities automatically.\n\nIt blends AI conversation, instant messaging, and data intelligence inside your official Telegram channel or bot - perfect for businesses that value speed, security, and automation.",
-      suggestions: [
-        { text: "What problems does it solve?", action: "telegram-problems" },
-        { text: "What are the key features?", action: "telegram-features" },
-        { text: "How does it work?", action: "telegram-how-it-works" },
-        { text: "Back to main menu", action: "back-to-telegram-main" }
-      ]
-    },
-    "telegram-problems": {
-      message: "🔹 **Common Business Problems**\n\n**Delayed Responses**\nCustomers message on Telegram but get delayed responses\n\n**Group Management**\nManaging large Telegram groups or channels is tough\n\n**Repetitive Queries**\nTeams waste time replying to repetitive queries\n\n**Lost Leads**\nYou lose potential leads due to untracked inquiries\n\n**No Central Control**\nNo central control or data from Telegram chats",
-      suggestions: [
-        { text: "What are the solutions?", action: "telegram-solutions" },
-        { text: "Show key features", action: "telegram-features" },
-        { text: "Back to overview", action: "telegram-overview" }
-      ]
-    },
-    "telegram-solutions": {
-      message: "✅ **Solutions with AI Telegram Agent**\n\n**Instant Replies**\nAI replies instantly with the right information and tone\n\n**Smart Moderation**\nAI moderates chats, answers FAQs, and filters spam\n\n**Automated Handling**\nAI handles FAQs and data requests automatically\n\n**Lead Capture**\nAI collects names, numbers, and requirements automatically\n\n**Data Sync**\nAI syncs all data with CRM or email dashboards",
-      suggestions: [
-        { text: "Show key features", action: "telegram-features" },
-        { text: "How does it work?", action: "telegram-how-it-works" },
-        { text: "Back to overview", action: "telegram-overview" }
-      ]
-    },
-    "telegram-features": {
-      message: "✨ **Key Features**\n\n**24×7 Smart Replies**\nHandles all inquiries anytime\n\n**Multilingual Conversations**\nReplies in Hindi, English, Marathi, Gujarati, and 20+ languages\n\n**AI Understanding**\nDetects intent, mood, and urgency\n\n**Lead Capture & Reporting**\nAuto-saves user data and exports to CRM or Google Sheets\n\n**Seamless Integration**\nWorks with your website, CRM, WhatsApp, or Supa Agent ecosystem\n\n**Group Management**\nAuto-welcomes new users, filters spam, and enforces rules\n\n**Broadcasting**\nSends automated updates, offers, and announcements to subscribers",
-      suggestions: [
-        { text: "How does it work?", action: "telegram-how-it-works" },
-        { text: "What's the pricing?", action: "telegram-pricing" },
-        { text: "Back to overview", action: "telegram-overview" }
-      ]
-    },
-    "telegram-how-it-works": {
-      message: "⚙️ **How It Works**\n\n**Step 1: Setup**\nWe create your custom Telegram bot and train it on your business data\n\n**Step 2: Integration**\nConnect it to your Telegram channel or group\n\n**Step 3: Automation**\nThe AI automatically responds to messages, moderates groups, and captures leads\n\n**Step 4: Analytics**\nAll data is synced to your dashboard for easy tracking and follow-up\n\n**Ready to transform your Telegram business?**\nGet your AI Telegram Agent up and running in just 48 hours. No technical knowledge required - we handle everything from setup to training.",
-      suggestions: [
-        { text: "What's the pricing?", action: "telegram-pricing" },
-        { text: "Back to overview", action: "telegram-overview" }
-      ]
-    },
-    "telegram-pricing": {
-      initialMessage: "💰 **AI Telegram Agent - Pricing Structure**\n\nOur AI Telegram Agent pricing is designed to be transparent and cost-effective. We offer a one-time setup fee plus usage-based pricing that scales with your business needs.\n\n**Key Benefits of Our Pricing:**\n\n**No Hidden Costs**\nEverything is clearly outlined\n\n**Pay Only for What You Use**\nUsage-based chat pricing\n\n**Scalable**\nGrows with your business\n\n**ROI-Focused**\nSave more than you spend\n\n**Pricing Overview:**\n\n**One-Time Setup: ₹1,00,000**\nComplete bot creation, training, and deployment\n\n**Monthly Costs:**\n\n**Maintenance**\n₹5,000/month per bot\n\n**Usage**\n₹1 per active chat\n\n**Languages**\n2 included, ₹2,500 per additional language\n\n**Ready to see the detailed pricing table?**",
-      suggestions: [
-        { text: "Show detailed pricing table", action: "telegram-pricing-table" },
-        { text: "What's included in setup?", action: "telegram-setup-details" },
-        { text: "How is pricing calculated?", action: "telegram-pricing-breakdown" },
-        { text: "Back to main menu", action: "back-to-telegram-main" }
-      ]
-    },
-    "telegram-pricing-table": {
-      message: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 100%;">
-        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 24px; font-weight: 700; text-align: center;">🤖 AI Telegram Agent - Complete Pricing Structure</h2>
-        
-        <div style="margin: 20px 0; overflow-x: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
-          <table style="width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 12px; overflow: hidden;">
-            <thead>
-              <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <th style="padding: 16px; text-align: left; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Component</th>
-                <th style="padding: 16px; text-align: center; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Type</th>
-                <th style="padding: 16px; text-align: center; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Price</th>
-                <th style="padding: 16px; text-align: center; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.2);">Included</th>
-                <th style="padding: 16px; text-align: left; font-weight: 600;">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom: 1px solid #e5e7eb; background: #f8fafc;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">🎨 Bot Design & AI Training</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 700; font-size: 14px;">One-time</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">₹1,00,000</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Custom bot creation, AI model training, brand tone customization</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">🔗 API Integration</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 700; font-size: 14px;">One-time</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">Included</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Telegram API setup, webhook configuration, token management</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb; background: #f8fafc;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">🌍 Multilingual Setup</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 700; font-size: 14px;">One-time</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">2 Languages</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Hindi + English included, additional languages at extra cost</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">📊 CRM Integration</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 700; font-size: 14px;">One-time</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">Included</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Google Sheets, Zoho, HubSpot, or custom CRM integration</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb; background: #f8fafc;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">🧪 Testing & Deployment</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 700; font-size: 14px;">One-time</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">Included</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Complete testing, QA, and deployment to your Telegram channel</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">⚙️ Monthly Maintenance</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #f59e0b; font-weight: 700; font-size: 14px;">Monthly</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">₹5,000</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #059669; font-weight: 600;">✅</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Server hosting, updates, API maintenance, technical support</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb; background: #f8fafc;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">💬 Chat Usage</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #f59e0b; font-weight: 700; font-size: 14px;">Per Chat</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">₹1</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #f59e0b; font-weight: 600;">❌</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Only charged for active conversations (not messages)</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; font-weight: 700; color: #374151; font-size: 16px;">🌐 Additional Languages</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #f59e0b; font-weight: 700; font-size: 14px;">Per Language</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #dc2626; font-weight: 700; font-size: 18px;">₹2,500</td>
-                <td style="padding: 16px; border-right: 1px solid #e5e7eb; text-align: center; color: #f59e0b; font-weight: 600;">❌</td>
-                <td style="padding: 16px; color: #6b7280; font-size: 14px;">Each additional language beyond Hindi and English</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #0ea5e9;">
-          <h3 style="color: #0c4a6e; margin-bottom: 15px; font-size: 18px; font-weight: 700;">💡 Pricing Summary</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-            <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <div style="font-weight: 700; color: #0c4a6e; margin-bottom: 5px;">One-Time Setup</div>
-              <div style="font-size: 24px; font-weight: 700; color: #dc2626;">₹1,00,000</div>
-            </div>
-            <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <div style="font-weight: 700; color: #0c4a6e; margin-bottom: 5px;">Monthly Minimum</div>
-              <div style="font-size: 24px; font-weight: 700; color: #dc2626;">₹5,000</div>
-            </div>
-          </div>
-          <p style="color: #0c4a6e; font-size: 14px; margin: 0; font-style: italic;">* Plus usage charges (₹1 per active chat) and any additional language costs</p>
-        </div>
-        
-        <div style="background: rgba(34, 197, 94, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e; margin: 20px 0;">
-          <div style="font-weight: 700; color: #166534; margin-bottom: 8px; display: flex; align-items: center;">
-            <span style="margin-right: 8px; font-size: 18px;">✅</span>No Hidden Costs
-          </div>
-          <div style="color: #166534; font-size: 14px;">All prices are transparent and include taxes. No setup fees beyond the one-time cost.</div>
-        </div>
-      </div>`,
-      suggestions: [
-        { text: "What's included in setup?", action: "telegram-setup-details" },
-        { text: "How is pricing calculated?", action: "telegram-pricing-breakdown" },
-        { text: "Compare with manual handling", action: "telegram-comparison" },
-        { text: "Back to pricing overview", action: "telegram-pricing" }
-      ]
-    },
-    "telegram-setup-details": {
-      message: "🔧 **Setup Fee Includes**\n\n**AI Voice & Text Model Training**\nTrained to understand your brand tone, FAQs, and customer queries\n\n**Telegram API Integration**\nSecure bot setup, webhook linking, and token management\n\n**Data & CRM Sync Setup**\nAuto-push lead data to Google Sheets, CRM, or dashboards\n\n**Flow Design & UI**\nCreating intuitive conversational flows with buttons, menus, and CTAs\n\n**Testing & Deployment**\nMulti-device, multi-language QA testing before launch",
-      suggestions: [
-        { text: "How is pricing calculated?", action: "telegram-pricing-breakdown" },
-        { text: "Compare with manual handling", action: "telegram-comparison" },
-        { text: "Back to pricing", action: "telegram-pricing" }
-      ]
-    },
-    "telegram-pricing-breakdown": {
-      message: "💡 **Price Justification**\n\n**Why these costs?**\n\n**AI Model Design**\nTraining custom NLP on your business FAQs, tone, and keywords\n\n**Integration Setup**\nLinking WhatsApp API, website forms, payment gateway, and CRM\n\n**UI/UX & Flow Design**\nCreating branded chat experiences with visuals, emojis, and flowcharts\n\n**Testing & Fine-Tuning**\nEnsuring accuracy, context handling, and fallback responses\n\n**Maintenance**\n24×7 hosting, updates, and technical support\n\n**Result**: You get a smart Telegram agent that engages, qualifies, and converts users 24×7 without adding staff or complexity.",
-      suggestions: [
-        { text: "Compare with manual handling", action: "telegram-comparison" },
-        { text: "Show ROI", action: "telegram-results" },
-        { text: "Back to pricing", action: "telegram-pricing" }
-      ]
-    },
-    "telegram-comparison": {
-      message: "⚖️ **Benefits Over Manual Telegram Handling**\n\n| Aspect | Human Operator | AI Telegram Agent |\n|--------|----------------|-------------------|\n| Availability | 8 hours/day | 24×7 |\n| Response Speed | Minutes to hours | Instant |\n| Accuracy | Varies | 100% Consistent |\n| Handling Capacity | 1:1 | 1:Unlimited |\n| Multilingual Support | Limited | 20+ Languages |\n| Reporting | Manual | Automated |\n| Monthly Cost | ₹25k–₹40k | ₹5k + usage |",
-      suggestions: [
-        { text: "Show ROI", action: "telegram-results" },
-        { text: "Back to pricing", action: "telegram-pricing" }
-      ]
-    },
-    "telegram-why-telegram": {
-      message: "💡 **Why Telegram?**\n\n**Business Popularity**\nExtremely popular in business, trading, crypto, and community spaces\n\n**Higher Engagement Rate**\nHigher engagement rate than email or websites\n\n**Easy Connection**\nEasy to connect via QR codes, links, or website embeds\n\n**Lightweight & Rich Media**\nLightweight, fast, and supports rich media - perfect for automation",
-      suggestions: [
-        { text: "Show results", action: "telegram-results" },
-        { text: "Back to main menu", action: "back-to-telegram-main" }
-      ]
-    },
-    "telegram-results": {
-      initialMessage: "📊 **AI Telegram Agent - Results**\n\n🎯 **FINAL RESULT**\nWith Troika's AI Telegram Agent, your business gains:\n\n**⚡ Instant chat automation**\nResponds to customers immediately, 24/7\n\n**📈 Real-time lead capture**\nAutomatically collects and saves customer information\n\n**🌍 Multilingual customer handling**\nServes customers in 20+ languages seamlessly\n\n**🛡️ Smart community moderation**\nAutomatically manages groups and filters spam\n\n**📊 Integrated analytics and CRM sync**\nTracks performance and syncs data with your systems\n\n*\"Let your Telegram channel become your 24×7 digital office - powered by Troika AI.\"*",
-      suggestions: [
-        { text: "What's the ROI?", action: "telegram-roi" },
-        { text: "How to get started?", action: "telegram-get-started" },
-        { text: "Back to main menu", action: "back-to-telegram-main" }
-      ]
-    },
-    "telegram-roi": {
-      message: "📈 **ROI: 1 AI Telegram Agent = 10 Human Operators**\n\n**Save ₹3–5 Lakhs/year** in manpower + boost customer engagement.\n\n**Key Benefits:**\n\n**24×7 availability**\nvs 8 hours/day human operators\n\n**Instant responses**\nvs minutes to hours\n\n**100% consistent accuracy**\nvs varying human performance\n\n**Unlimited handling capacity**\nvs 1:1 human ratio\n\n**20+ languages**\nvs limited human language skills\n\n**Automated reporting**\nvs manual tracking",
-      suggestions: [
-        { text: "How to get started?", action: "telegram-get-started" },
-        { text: "Back to results", action: "telegram-results" }
-      ]
-    },
-    "telegram-get-started": {
-      message: "🚀 **Ready to Get Started?**\n\n**Next Steps:**\n\n**Step 1: Contact us**\nfor a free consultation\n\n**Step 2: Share your requirements**\nwe'll customize the solution\n\n**Step 3: 48-hour setup**\nwe handle everything\n\n**Step 4: Go live**\nwith your AI Telegram Agent\n\n**No technical knowledge required** - we handle everything from setup to training!",
-      suggestions: [
-        { text: "Contact now", action: "contact-us" },
-        { text: "Back to results", action: "telegram-results" }
-      ]
-    },
-    "back-to-telegram-main": {
-      message: "📱 **AI Telegram Agent**\n\nChoose what you'd like to know more about:",
-      suggestions: [
-        { text: "Overview", action: "telegram-overview" },
-        { text: "Pricing", action: "telegram-pricing" },
-        { text: "Results", action: "telegram-results" }
-      ]
-    }
-  };
-
-  // Conversational flow data for AI WhatsApp Agent
-  const whatsappConversationalFlow = {
-    "whatsapp-overview": {
-      initialMessage: "📱 **AI WhatsApp Agent - Overview**\n\nYour customers already use WhatsApp - so why not let your business do the same, intelligently?\n\nOur AI WhatsApp Agent automates customer conversations, answers FAQs, shares product details, books appointments, and collects leads - all through a familiar chat interface.\n\nBuilt using Troika's proprietary AI engine, it's custom-trained on your business data, brand tone, and FAQs - responding instantly in multiple languages, 24×7.",
-      suggestions: [
-        { text: "What problems does it solve?", action: "whatsapp-problems" },
-        { text: "What are the key features?", action: "whatsapp-features" },
-        { text: "How does it work?", action: "whatsapp-how-it-works" },
-        { text: "Back to main menu", action: "back-to-whatsapp-main" }
-      ]
-    },
-    "whatsapp-problems": {
-      message: "🔹 **Common Business Problems**\n\n**Delayed Responses**\nCustomers message after office hours, but no one replies\n\n**Human Errors**\nHuman team takes time to respond or makes mistakes\n\n**Missed Leads**\nYou spend heavily on social media but don't capture leads\n\n**Repetitive Work**\nFAQs and inquiries waste employee time\n\n**Poor Follow-up**\nYou struggle to follow up with all leads",
-      suggestions: [
-        { text: "What are the solutions?", action: "whatsapp-solutions" },
-        { text: "Show key features", action: "whatsapp-features" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
-    "whatsapp-solutions": {
-      message: "✅ **Solutions with AI WhatsApp Agent**\n\n**Instant Replies**\nAI replies instantly with correct information\n\n**100% Accuracy**\nAI handles chats instantly, 100% accuracy\n\n**Auto Lead Capture**\nWhatsApp Agent auto-converts visitors into chats & leads\n\n**Automated FAQs**\nAI answers repetitive questions automatically\n\n**Smart Follow-up**\nAI follows up automatically via pre-set workflows",
-      suggestions: [
-        { text: "Show key features", action: "whatsapp-features" },
-        { text: "How does it work?", action: "whatsapp-how-it-works" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
-    "whatsapp-features": {
-      message: "✨ **Key Features**\n\n**24×7 Availability**\nNever miss a message, even at midnight\n\n**Human-like Conversations**\nCustom-trained tone, emojis, and smart understanding\n\n**Multilingual Support**\nHindi, English, Marathi, Gujarati, Tamil & 20+ languages\n\n**CRM Integration**\nAuto-save leads and export to Excel, email, or dashboard\n\n**Automated Notifications**\nSends offers, reminders, and payment links\n\n**Website & Ads Integration**\nDirectly link chats from websites, ads, or QR codes\n\n**Smart Routing**\nEscalates to real staff for complex queries",
-      suggestions: [
-        { text: "How does it work?", action: "whatsapp-how-it-works" },
-        { text: "What's the pricing?", action: "whatsapp-pricing" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
-    "whatsapp-how-it-works": {
-      message: "⚙️ **How It Works**\n\n**Step 1: Setup**\nWe create your custom WhatsApp bot and train it on your business data\n\n**Step 2: Integration**\nConnect it to your WhatsApp Business API\n\n**Step 3: Automation**\nThe AI automatically responds to messages, captures leads, and handles inquiries\n\n**Step 4: Analytics**\nAll data is synced to your dashboard for easy tracking and follow-up\n\n**Ready to transform your WhatsApp business?**\nGet your AI WhatsApp Agent up and running in just 48 hours. No technical knowledge required - we handle everything from setup to training.",
-      suggestions: [
-        { text: "What's the pricing?", action: "whatsapp-pricing" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
-    "whatsapp-pricing": {
-      initialMessage: "💰 **AI WhatsApp Agent - Pricing Structure**\n\nOur AI WhatsApp Agent pricing is designed to be transparent and cost-effective. We offer a one-time setup fee plus usage-based pricing that scales with your business needs.\n\n**Key Benefits of Our Pricing:**\n\n**No Hidden Costs**\nEverything is clearly outlined\n\n**Pay Only for What You Use**\nUsage-based chat pricing\n\n**Scalable**\nGrows with your business\n\n**ROI-Focused**\nSave more than you spend\n\n**Pricing Overview:**\n\n**One-Time Setup: ₹1,00,000**\nComplete bot creation, training, and deployment\n\n**Monthly Costs:**\n\n**Maintenance**\n₹5,000/month per number\n\n**Usage**\n₹1 per chat\n\n**Languages**\n2 included, ₹2,500 per additional language\n\n**Ready to see the detailed pricing table?**",
-      suggestions: [
-        { text: "Show detailed pricing table", action: "whatsapp-pricing-table" },
-        { text: "What's included in setup?", action: "whatsapp-setup-details" },
-        { text: "How is pricing calculated?", action: "whatsapp-pricing-breakdown" },
-        { text: "Back to main menu", action: "back-to-whatsapp-main" }
-      ]
-    },
-    "whatsapp-pricing-table": {
-      message: "💰 **AI WhatsApp Agent - Complete Pricing Structure**\n\n**Component Pricing:**\n\n**Design & Deployment (One-Time): ₹1,00,000**\nAI training on your business data, brand tone design, multilingual setup, custom chatbot logic, integration with your website/CRM\n\n**Chat Engine Usage: ₹1 per chat**\nIntelligent chat handling, NLP processing, data storage, and AI model usage\n\n**Monthly Maintenance: ₹5,000/month per number**\nDashboard, analytics, API hosting, version updates, and technical support\n\n**Languages: 2 Languages (Basic Plan) - Included**\n**Extra Languages: ₹2,500 each**\n\n**Total Cost: Pay as you grow - Based on chat volume**",
-      suggestions: [
-        { text: "What's included in setup?", action: "whatsapp-setup-details" },
-        { text: "How is pricing calculated?", action: "whatsapp-pricing-breakdown" },
-        { text: "Compare with manual chat", action: "whatsapp-comparison" },
-        { text: "Back to pricing overview", action: "whatsapp-pricing" }
-      ]
-    },
-    "whatsapp-setup-details": {
-      message: "🔧 **What's Included in Setup?**\n\n**AI Model Design**\nTraining custom NLP on your business FAQs, tone, and keywords\n\n**Integration Setup**\nLinking WhatsApp API, website forms, payment gateway, and CRM\n\n**UI/UX & Flow Design**\nCreating branded chat experiences with visuals, emojis, and flowcharts\n\n**Testing & Fine-Tuning**\nEnsuring accuracy, context handling, and fallback responses\n\n**Maintenance**\n24×7 hosting, updates, and support\n\n**Result:**\nYour own 24×7 WhatsApp Sales Executive that never forgets a lead",
-      suggestions: [
-        { text: "How is pricing calculated?", action: "whatsapp-pricing-breakdown" },
-        { text: "Compare with manual chat", action: "whatsapp-comparison" },
-        { text: "Back to pricing overview", action: "whatsapp-pricing" }
-      ]
-    },
-    "whatsapp-pricing-breakdown": {
-      message: "📊 **How is Pricing Calculated?**\n\n**One-Time Setup (₹1,00,000):**\n• Custom AI model training\n• WhatsApp Business API integration\n• Brand tone and personality setup\n• Multilingual configuration\n• CRM integration\n• Testing and deployment\n\n**Monthly Maintenance (₹5,000):**\n• 24×7 server hosting\n• Dashboard access\n• Analytics and reporting\n• Technical support\n• Regular updates\n\n**Usage Charges (₹1 per chat):**\n• Only charged for actual conversations\n• No charges for failed messages\n• Transparent billing\n\n**Language Costs:**\n• 2 languages included\n• Additional languages: ₹2,500 each",
-      suggestions: [
-        { text: "Compare with manual chat", action: "whatsapp-comparison" },
-        { text: "Show ROI benefits", action: "whatsapp-roi" },
-        { text: "Back to pricing overview", action: "whatsapp-pricing" }
-      ]
-    },
-    "whatsapp-comparison": {
-      message: "⚖️ **Benefits Over Manual Chat**\n\n**Availability:**\nHuman Chat: 8–10 hours/day\nAI WhatsApp Agent: 24×7\n\n**Response Time:**\nHuman Chat: Minutes/Hours\nAI WhatsApp Agent: Instant\n\n**Accuracy:**\nHuman Chat: 70–80%\nAI WhatsApp Agent: 100%\n\n**Cost:**\nHuman Chat: ₹25,000–₹30,000/month per executive\nAI WhatsApp Agent: ₹5,000 + usage\n\n**Lead Capture:**\nHuman Chat: Manual\nAI WhatsApp Agent: Automatic\n\n**Multilingual:**\nHuman Chat: Limited\nAI WhatsApp Agent: 20+ Languages",
-      suggestions: [
-        { text: "Show ROI benefits", action: "whatsapp-roi" },
-        { text: "What are the key features?", action: "whatsapp-features" },
-        { text: "Back to pricing overview", action: "whatsapp-pricing" }
-      ]
-    },
-    "whatsapp-roi": {
-      message: "📈 **ROI: 1 AI Agent = 10 Human Executives**\n\n**Save ₹3–5 Lakh/year** in staffing while improving customer satisfaction.\n\n**Key Benefits:**\n\n**24×7 availability**\nvs 8 hours/day human executives\n\n**Instant responses**\nvs minutes to hours\n\n**100% consistent accuracy**\nvs varying human performance\n\n**Unlimited handling capacity**\nvs 1:1 human ratio\n\n**20+ languages**\nvs limited human language skills\n\n**Automated reporting**\nvs manual tracking",
-      suggestions: [
-        { text: "How does it work?", action: "whatsapp-how-it-works" },
-        { text: "What's the pricing?", action: "whatsapp-pricing" },
-        { text: "Back to overview", action: "whatsapp-overview" }
-      ]
-    },
-    "back-to-whatsapp-main": {
-      message: "📱 **AI WhatsApp Agent**\n\nChoose what you'd like to know more about:",
-      suggestions: [
-        { text: "Overview", action: "whatsapp-overview" },
-        { text: "Pricing", action: "whatsapp-pricing" },
-        { text: "Results", action: "whatsapp-results" }
-      ]
-    }
-  };
 
   // Conversational flow data for AI Calling Agent
   const callingConversationalFlow = {
@@ -3038,8 +2611,6 @@ const WelcomeSection = ({
   const suggestions = activePage === 'social-media' ? socialMediaSuggestions :
                      activePage === 'ai-websites' ? aiWebsitesSuggestions :
                      activePage === 'ai-calling' ? aiCallingSuggestions :
-                     activePage === 'ai-whatsapp' ? aiWhatsappSuggestions :
-                     activePage === 'ai-telegram' ? aiTelegramSuggestions :
                      activePage === 'industry-use-cases' ? industryUseCasesSuggestions :
                      homeSuggestions;
   const features = activePage === 'social-media' ? socialMediaFeatures :
@@ -3087,11 +2658,9 @@ const WelcomeSection = ({
            activePage === 'how-it-works' ? 'How AI Agents Work' :
            activePage === 'use-case-for-me' ? 'AI Agent Use Cases' :
            activePage === 'pricing-setup' ? 'Troika Tech Setup & Pricing' :
-           activePage === 'ai-websites' ? 'Troika Tech – AI Websites' : 
-           activePage === 'ai-calling' ? 'Troika Tech – AI Calling Agent' : 
-           activePage === 'ai-whatsapp' ? 'Troika Tech – AI Whatsapp Agent' : 
-           activePage === 'ai-telegram' ? 'Troika Tech – AI Telegram Agent' : 
-           activePage === 'industry-use-cases' ? 'AI Websites By Troika Tech' : 
+           activePage === 'ai-websites' ? 'Troika Tech – AI Websites' :
+           activePage === 'ai-calling' ? 'Troika Tech – AI Calling Agent' :
+           activePage === 'industry-use-cases' ? 'AI Websites By Troika Tech' :
            'Hi! This is Troika Tech 👋'}
         </GreetingText>
         <SubText $isDarkMode={isDarkMode} style={{
@@ -3101,12 +2670,10 @@ const WelcomeSection = ({
           margin: '0 auto',
           fontWeight: '400'
         }}>
-          {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites, automated calling agents, WhatsApp automation, and Telegram bots - all designed to help your business grow 24/7.' : 
-           activePage === 'ai-websites' ? '' : 
-           activePage === 'ai-calling' ? '' : 
-           activePage === 'ai-whatsapp' ? '' : 
-           activePage === 'ai-telegram' ? '' : 
-           activePage === 'industry-use-cases' ? '' : 
+          {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites and automated calling agents - all designed to help your business grow 24/7.' :
+           activePage === 'ai-websites' ? '' :
+           activePage === 'ai-calling' ? '' :
+           activePage === 'industry-use-cases' ? '' :
            ''}
         </SubText>
         

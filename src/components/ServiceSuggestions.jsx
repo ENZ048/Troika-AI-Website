@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../contexts/ThemeContext';
 import { FiGlobe, FiPhone, FiMessageCircle } from 'react-icons/fi';
-import { RiWhatsappLine, RiTelegramLine } from 'react-icons/ri';
 
 const Container = styled.div`
   width: 100%;
@@ -20,13 +19,13 @@ const Container = styled.div`
 
 const ServicesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
     gap: 0.625rem;
@@ -151,16 +150,6 @@ const serviceQuestions = {
     'How does the AI Calling Agent work?',
     'Can AI Calling Agent handle multiple calls simultaneously?',
     'What languages does the AI Calling Agent support?'
-  ],
-  'ai-telegram': [
-    'How do I set up an AI Telegram Agent?',
-    'Can the Telegram bot handle customer queries 24/7?',
-    'What kind of automation can Telegram Agent provide?'
-  ],
-  'ai-whatsapp': [
-    'How does AI WhatsApp Agent integrate with my business?',
-    'Can WhatsApp Agent send automated messages?',
-    'Is WhatsApp Agent compliant with privacy regulations?'
   ]
 };
 
@@ -170,9 +159,7 @@ const ServiceSuggestions = ({ onQuestionClick, isWelcomeMode }) => {
 
   const services = [
     { id: 'ai-websites', label: 'AI Website', icon: FiGlobe },
-    { id: 'ai-calling', label: 'AI Calling', icon: FiPhone },
-    { id: 'ai-telegram', label: 'AI Telegram', icon: RiTelegramLine },
-    { id: 'ai-whatsapp', label: 'AI WhatsApp', icon: RiWhatsappLine }
+    { id: 'ai-calling', label: 'AI Calling', icon: FiPhone }
   ];
 
   const handleServiceClick = (serviceId) => {

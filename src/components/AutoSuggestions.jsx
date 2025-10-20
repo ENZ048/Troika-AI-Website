@@ -142,25 +142,9 @@ const suggestionDatabase = {
     'What languages does the AI Calling Agent support?',
     'How much does AI Calling Agent cost?'
   ],
-  telegram: [
-    'How do I set up an AI Telegram Agent?',
-    'Can the Telegram bot handle customer queries 24/7?',
-    'What kind of automation can Telegram Agent provide?',
-    'Is AI Telegram Agent secure?',
-    'How much does AI Telegram Agent cost?'
-  ],
-  whatsapp: [
-    'How does AI WhatsApp Agent integrate with my business?',
-    'Can WhatsApp Agent send automated messages?',
-    'Is WhatsApp Agent compliant with privacy regulations?',
-    'How much does AI WhatsApp Agent cost?',
-    'Can WhatsApp Agent handle multiple conversations?'
-  ],
   pricing: [
     'What is the pricing for AI Websites?',
     'What is the pricing for AI Calling Agent?',
-    'What is the pricing for AI Telegram Agent?',
-    'What is the pricing for AI WhatsApp Agent?',
     'Do you offer custom pricing plans?'
   ],
   other: [

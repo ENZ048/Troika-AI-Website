@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
-export const useAudio = (isMuted, hasUserInteracted = true) => {
+export const useAudio = (isMuted, hasUserInteracted = true, onAudioEnded = null) => {
   const [audioObject, setAudioObject] = useState(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const currentAudioRef = useRef(null);
@@ -139,12 +139,18 @@ export const useAudio = (isMuted, hasUserInteracted = true) => {
           setAudioObject(null);
           currentAudioRef.current = null;
           URL.revokeObjectURL(audioUrl);
+
+          // Call the onAudioEnded callback if provided
+          if (onAudioEnded) {
+            console.log(`Audio ended for message ${messageIndex}, calling onAudioEnded callback`);
+            onAudioEnded(messageIndex);
+          }
         };
       } catch (error) {
         console.error("Error processing audio:", error);
       }
     },
-    [audioObject, currentlyPlaying, isMuted, hasUserInteracted]
+    [audioObject, currentlyPlaying, isMuted, hasUserInteracted, onAudioEnded]
   );
 
   const stopAudio = useCallback(() => {

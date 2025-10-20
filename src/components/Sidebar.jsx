@@ -21,7 +21,8 @@ import {
   FaChevronDown,
   FaTimes,
   FaBrain,
-  FaPhoneAlt
+  FaPhoneAlt,
+  FaMagic 
 } from "react-icons/fa";
 
 const SidebarContainer = styled.div`
@@ -296,17 +297,17 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
 
         <SidebarContent>
           <Section>
-            <NavItem 
+            <NavItem
               $isDarkMode={isDarkMode}
               onClick={() => handlePageChange('new-chat', '/')}
               className=""
             >
-              <NavIcon><FaPlus /></NavIcon>
-              <NavText>New chat</NavText>
+              <NavIcon><FaMagic   /></NavIcon>
+              <NavText>Ask Me Anything</NavText>
             </NavItem>
           </Section>
 
-          <Section>
+          {/* <Section>
             <SectionTitle $isDarkMode={isDarkMode}>Services</SectionTitle>
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
@@ -324,7 +325,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 </NavItem>
               );
             })}
-          </Section>
+          </Section> */}
 
         </SidebarContent>
 
@@ -335,7 +336,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
           marginTop: "auto",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           gap: "0.5rem",
           color: isDarkMode ? "#9ca3af" : "#6b7280",
           fontSize: "0.875rem",
