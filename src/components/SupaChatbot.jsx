@@ -24,7 +24,11 @@ import SocialFeedPanel from "./SocialFeedPanel";
 // import InlineAuth from "./InlineAuth";
 // import OtpVerification from "./OtpVerification";
 import InlineAuth from "./InlineAuth";
+import AuthMessageBubble from "./AuthMessageBubble";
+import AuthModal from "./AuthModal";
 import OtpVerification from "./OtpVerification";
+import OtpMessageBubble from "./OtpMessageBubble";
+import OtpModal from "./OtpModal";
 import StreamingMessage from "./StreamingMessage";
 import InputArea from "./InputArea";
 
@@ -81,6 +85,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     "Verify yourself to continue chat"
   );
   const [userMessageCount, setUserMessageCount] = useState(0);
+  const [botMessageCount, setBotMessageCount] = useState(0);
   const [showInlineAuth, setShowInlineAuth] = useState(false);
   const [showInlineAuthInput, setShowInlineAuthInput] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
@@ -185,6 +190,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       addMessageToTab(targetTab, botMessage);
       setCurrentStreamingMessageId(null);
       setIsTyping(false);
+      
+      // Increment bot message count
+      incrementBotMessageCount();
       
       // Clear the message origin tab after bot response
       setMessageOriginTab(null);
@@ -370,30 +378,37 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     // Special handling for "new-chat" - clear all history and go to home
     if (tabId === 'new-chat') {
       console.log('🆕 New chat requested - clearing all history');
-      
+
+      // If user is in the middle of authentication, prevent new chat action
+      if (showInlineAuth && (showInlineAuthInput || showOtpInput)) {
+        console.log('⚠️ Authentication in progress - preventing new chat until verification');
+        toast.warning('Please complete authentication before starting a new chat');
+        return;
+      }
+
       // Stop any ongoing audio/TTS immediately
       stopAudio();
-      
+
       // Stop streaming audio specifically
       pauseAudio();
-      
+
       // Stop any streaming response
       if (isStreaming) {
         stopStreaming();
       }
-      
+
       // Clear all states
       setIsTyping(false);
       setCurrentStreamingMessageId(null);
       setMessageOriginTab(null);
-      
+
       // Clear all chat history
       setChatHistory([]);
       setShowWelcome(true);
-      
+
       // Clear all tab histories from localStorage
       clearAllTabHistories();
-      
+
       // Clear user message count
       if (sessionId && chatbotId) {
         try {
@@ -404,19 +419,33 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           console.error("Error clearing user message count:", error);
         }
       }
-      
+
+      // Clear bot message count as well
+      setBotMessageCount(0);
+
       // Generate new session ID for fresh start
       const newSessionId = crypto.randomUUID();
       localStorage.setItem("sessionId", newSessionId);
       setSessionId(newSessionId);
-      
+
+      // Reset authentication states for new chat ONLY if user is authenticated
+      // This prevents closing the modal if user hasn't verified yet
+      if (isAuthenticated) {
+        setVerified(false);
+        setNeedsAuth(false);
+        setShowInlineAuth(false);
+        setShowInlineAuthInput(false);
+        setShowOtpInput(false);
+        setCurrentAuthValue('');
+      }
+
       // Navigate to home and replace the current URL
       navigate('/', { replace: true });
       return;
     }
     
     navigate(`/${tabId}`);
-  }, [navigate, sessionId, chatbotId, clearAllTabHistories, messageOriginTab, isStreaming, isTyping, stopStreaming, streamingResponse, addMessageToTab, stopAudio, pauseAudio]);
+  }, [navigate, sessionId, chatbotId, clearAllTabHistories, messageOriginTab, isStreaming, isTyping, stopStreaming, streamingResponse, addMessageToTab, stopAudio, pauseAudio, showInlineAuth, showInlineAuthInput, showOtpInput, isAuthenticated]);
 
   // Cleanup effect to reset navigation flag on unmount
   useEffect(() => {
@@ -538,6 +567,24 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       return newCount;
     });
   }, [sessionId, chatbotId, userMessageCount]);
+
+  // Function to increment bot message count
+  const incrementBotMessageCount = useCallback(() => {
+    console.log('incrementBotMessageCount called, current count:', botMessageCount);
+    setBotMessageCount(prev => {
+      const newCount = prev + 1;
+      console.log('Incrementing bot message count from', prev, 'to', newCount);
+      
+      // Check if this is the second bot message and trigger authentication
+      if (!isAuthenticated && newCount >= 2) {
+        console.log('Second bot message detected - showing authentication');
+        setShowInlineAuth(true);
+        setShowInlineAuthInput(true);
+      }
+      
+      return newCount;
+    });
+  }, [sessionId, chatbotId, botMessageCount, isAuthenticated]);
 
   // Function to generate TTS for greeting message
   const generateGreetingTTS = useCallback(
@@ -764,18 +811,21 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     localStorage.setItem("sessionId", id);
     setSessionId(id);
     
-    // Set verified state to true to bypass auth UI while sending default phone
-    setVerified(true);
-    setNeedsAuth(false);
-    setShowInlineAuth(false);
-    setShowAuthScreen(false);
-    
-    // Clear any existing auth data from localStorage
-    try {
-      localStorage.removeItem(AUTH_GATE_KEY(id, chatbotId));
-      localStorage.removeItem(SESSION_STORE_KEY);
-    } catch (error) {
-      console.log("Error clearing auth data:", error);
+    // Only reset auth states on page refresh, not on navigation
+    if (isRefresh) {
+      // Set verified state to true to bypass auth UI while sending default phone
+      setVerified(true);
+      setNeedsAuth(false);
+      setShowInlineAuth(false);
+      setShowAuthScreen(false);
+      
+      // Clear any existing auth data from localStorage
+      try {
+        localStorage.removeItem(AUTH_GATE_KEY(id, chatbotId));
+        localStorage.removeItem(SESSION_STORE_KEY);
+      } catch (error) {
+        console.log("Error clearing auth data:", error);
+      }
     }
   }, []);
 
@@ -1007,6 +1057,35 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       };
     }
   }, [showWelcome, chatHistory.length]);
+
+  // Auto-scroll when phone input appears (authentication required)
+  useEffect(() => {
+    if (showInlineAuth && !showWelcome) {
+      const scrollToBottom = () => {
+        if (endOfMessagesRef.current) {
+          endOfMessagesRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end' 
+          });
+        } else if (messagesContainerRef.current) {
+          const container = messagesContainerRef.current;
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      };
+      
+      // Scroll when phone input appears
+      const timeoutId = setTimeout(scrollToBottom, 100);
+      const extraTimeoutId = setTimeout(scrollToBottom, 300);
+      
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(extraTimeoutId);
+      };
+    }
+  }, [showInlineAuth, showWelcome]);
 
   // Handle inline auth input display - commented out for default auth state
   /* useEffect(() => {
@@ -1371,8 +1450,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
   };
 
-  // Check if user needs authentication (after 2 messages)
-  const shouldShowAuth = !isAuthenticated && userMessageCount >= 2;
+  // Check if user needs authentication (after 2 bot messages)
+  const shouldShowAuth = !isAuthenticated && botMessageCount >= 2;
 
   const handleSendMessage = useCallback(
     async (inputText) => {
@@ -1383,13 +1462,6 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         setShowWelcome(false);
       }
 
-      // Check authentication after 2 messages
-      if (shouldShowAuth) {
-        setShowInlineAuth(true);
-        setShowInlineAuthInput(true);
-        return;
-      }
-
       if (!sessionId) {
         console.log('No sessionId, returning early');
         console.log('Current sessionId state:', sessionId);
@@ -1398,6 +1470,10 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
       const textToSend = inputText || message;
       if (!textToSend.trim()) return;
+
+      // Increment user message count
+      console.log('Incrementing user message count, current count:', userMessageCount);
+      incrementUserMessageCount();
 
       // Stop any currently streaming response
       if (isStreaming) {
@@ -1444,10 +1520,6 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       // Additional scroll after content is rendered
       setTimeout(scrollImmediately, 100);
       setTimeout(scrollImmediately, 300);
-
-      // Increment user message count
-      console.log('Incrementing user message count, current count:', userMessageCount);
-      incrementUserMessageCount();
 
       try {
         // Check if apiBase is defined
@@ -1613,6 +1685,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           };
           addMessageToTab(currentTab, botMessage);
           setIsTyping(false);
+          
+          // Increment bot message count
+          incrementBotMessageCount();
           
           // Force scroll to bottom after message is added
           setTimeout(() => {
@@ -3847,6 +3922,7 @@ AI Website is built for instant replies, 24×7.<br>
               handleKeyPress={handleKeyPress}
               isTyping={isTyping}
               userMessageCount={userMessageCount}
+              botMessageCount={botMessageCount}
               verified={verified}
               needsAuth={needsAuth}
               isRecording={isRecording}
@@ -3858,6 +3934,9 @@ AI Website is built for instant replies, 24×7.<br>
               isMobile={isMobile}
               handleSendMessage={handleSendMessage}
               currentlyPlaying={currentlyPlaying}
+              showInlineAuth={showInlineAuth}
+              shouldShowAuth={shouldShowAuth}
+              isAuthenticated={isAuthenticated}
             />
         )}
                 
@@ -3911,8 +3990,7 @@ AI Website is built for instant replies, 24×7.<br>
 
                     {/* Authentication Components */}
                     {showInlineAuth && showInlineAuthInput && (
-                      <InlineAuth
-                        theme={isDarkMode ? 'dark' : 'light'}
+                      <AuthModal
                         onSendOtp={handleSendOtpNew}
                         loading={authLoading}
                         error={authError}
@@ -3920,8 +3998,7 @@ AI Website is built for instant replies, 24×7.<br>
                     )}
 
                     {showInlineAuth && showOtpInput && (
-                      <OtpVerification
-                        theme={isDarkMode ? 'dark' : 'light'}
+                      <OtpModal
                         onVerifyOtp={handleVerifyOtpNew}
                         onResendOtp={handleResendOtpNew}
                         loading={authLoading}
@@ -3950,6 +4027,7 @@ AI Website is built for instant replies, 24×7.<br>
                   handleKeyPress={handleKeyPress}
                   isTyping={isTyping}
                   userMessageCount={userMessageCount}
+                  botMessageCount={botMessageCount}
                   verified={verified}
                   needsAuth={needsAuth}
                   isRecording={isRecording}
@@ -3962,6 +4040,9 @@ AI Website is built for instant replies, 24×7.<br>
                   handleSendMessage={handleSendMessage}
                     isWelcomeMode={false}
                   currentlyPlaying={currentlyPlaying}
+                  showInlineAuth={showInlineAuth}
+                  shouldShowAuth={shouldShowAuth}
+                  isAuthenticated={isAuthenticated}
                 />
                 )}
               </ChatContainer>

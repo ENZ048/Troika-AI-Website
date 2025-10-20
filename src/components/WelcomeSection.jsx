@@ -2001,6 +2001,7 @@ const WelcomeSection = ({
   handleKeyPress,
   isTyping,
   userMessageCount,
+  botMessageCount,
   verified,
   needsAuth,
   isRecording,
@@ -2011,7 +2012,10 @@ const WelcomeSection = ({
   handleMicMouseUp,
   isMobile,
   handleSendMessage,
-  currentlyPlaying
+  currentlyPlaying,
+  showInlineAuth = false,
+  shouldShowAuth = false,
+  isAuthenticated = false
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -3113,6 +3117,7 @@ const WelcomeSection = ({
           handleKeyPress={handleKeyPress}
           isTyping={isTyping}
           userMessageCount={userMessageCount}
+          botMessageCount={botMessageCount}
           verified={verified}
           needsAuth={needsAuth}
           isRecording={isRecording}
@@ -3125,6 +3130,9 @@ const WelcomeSection = ({
           handleSendMessage={handleSendMessage}
           isWelcomeMode={true}
           currentlyPlaying={currentlyPlaying}
+          showInlineAuth={showInlineAuth}
+          shouldShowAuth={shouldShowAuth}
+          isAuthenticated={isAuthenticated}
         />
 
 
