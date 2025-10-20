@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../contexts/ThemeContext';
-import { FiGlobe, FiPhone, FiMessageCircle } from 'react-icons/fi';
+import { FiMessageCircle } from 'react-icons/fi';
 
 const Container = styled.div`
   width: 100%;
@@ -9,73 +9,11 @@ const Container = styled.div`
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  
+  gap: 0.5rem;
+
   /* Hide on mobile */
   @media (max-width: 768px) {
     display: none;
-  }
-`;
-
-const ServicesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
-`;
-
-const ServiceButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: ${props => props.$isActive 
-    ? props.$isDarkMode ? '#111111' : '#f3f4f6'
-    : props.$isDarkMode ? '#000000' : '#ffffff'};
-  border: 1px solid ${props => props.$isActive 
-    ? '#8b5cf6' 
-    : props.$isDarkMode ? '#404040' : '#e5e7eb'};
-  border-radius: 8px;
-  color: ${props => props.$isActive 
-    ? '#8b5cf6' 
-    : props.$isDarkMode ? '#ffffff' : '#1f2937'};
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  
-  svg {
-    font-size: 1.125rem;
-    flex-shrink: 0;
-  }
-  
-  &:hover {
-    background: ${props => props.$isDarkMode ? '#111111' : '#f9fafb'};
-    border-color: ${props => props.$isDarkMode ? '#525252' : '#d1d5db'};
-    transform: translateY(-1px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 0.8125rem;
-    padding: 0.625rem 0.875rem;
-    
-    svg {
-      font-size: 1rem;
-    }
   }
 `;
 
@@ -84,7 +22,7 @@ const QuestionsContainer = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   animation: slideDown 0.2s ease;
-  
+
   @keyframes slideDown {
     from {
       opacity: 0;
@@ -140,73 +78,44 @@ const QuestionButton = styled.button`
   }
 `;
 
-const serviceQuestions = {
-  'ai-websites': [
-    'How can AI Websites help grow my business?',
-    'What features does an AI Website include?',
-    'Can I customize my AI Website design?'
+const questionsByPage = {
+  'ai-agent': [
+    'How is your AI Agent different from a normal chatbot?',
+    'Can it handle chats, WhatsApp, and calls together as one system?',
+    'How long does it take to set up my own AI Agent?',
+    'Will the AI sound human and understand different languages?'
   ],
-  'ai-calling': [
-    'How does the AI Calling Agent work?',
-    'Can AI Calling Agent handle multiple calls simultaneously?',
-    'What languages does the AI Calling Agent support?'
+  'ai-calling-agent': [
+    'Does your AI Calling Agent sound like a real person or a robot?',
+    'Can it make outbound calls and answer incoming calls too?',
+    'What\'s the cost per minute and setup charge for the calling agent?',
+    'Can it speak in Indian languages like Hindi or Marathi for my customers?'
   ]
 };
 
-const ServiceSuggestions = ({ onQuestionClick, isWelcomeMode }) => {
+const ServiceSuggestions = ({ onQuestionClick, isWelcomeMode, activePage }) => {
   const { isDarkMode } = useTheme();
-  const [selectedService, setSelectedService] = useState(null);
-
-  const services = [
-    { id: 'ai-websites', label: 'AI Website', icon: FiGlobe },
-    { id: 'ai-calling', label: 'AI Calling', icon: FiPhone }
-  ];
-
-  const handleServiceClick = (serviceId) => {
-    setSelectedService(selectedService === serviceId ? null : serviceId);
-  };
-
-  const handleQuestionClick = (question) => {
-    onQuestionClick(question);
-    setSelectedService(null); // Close the questions after selection
-  };
 
   // Only show on welcome mode
   if (!isWelcomeMode) return null;
 
+  // Get questions for the current page, default to ai-agent questions
+  const questions = questionsByPage[activePage] || questionsByPage['ai-agent'];
+
   return (
     <Container>
-      <ServicesGrid>
-        {services.map((service) => {
-          const Icon = service.icon;
-          return (
-            <ServiceButton
-              key={service.id}
-              $isDarkMode={isDarkMode}
-              $isActive={selectedService === service.id}
-              onClick={() => handleServiceClick(service.id)}
-            >
-              <Icon />
-              {service.label}
-            </ServiceButton>
-          );
-        })}
-      </ServicesGrid>
-      
-      {selectedService && (
-        <QuestionsContainer>
-          {serviceQuestions[selectedService].map((question, index) => (
-            <QuestionButton
-              key={index}
-              $isDarkMode={isDarkMode}
-              onClick={() => handleQuestionClick(question)}
-            >
-              <FiMessageCircle />
-              {question}
-            </QuestionButton>
-          ))}
-        </QuestionsContainer>
-      )}
+      <QuestionsContainer>
+        {questions.map((question, index) => (
+          <QuestionButton
+            key={index}
+            $isDarkMode={isDarkMode}
+            onClick={() => onQuestionClick(question)}
+          >
+            <FiMessageCircle />
+            {question}
+          </QuestionButton>
+        ))}
+      </QuestionsContainer>
     </Container>
   );
 };

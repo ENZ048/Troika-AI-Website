@@ -22,7 +22,10 @@ import {
   FaTimes,
   FaBrain,
   FaPhoneAlt,
-  FaMagic 
+  FaMagic,
+  FaTelegram,
+  FaInstagram,
+  FaLinkedin
 } from "react-icons/fa";
 
 const SidebarContainer = styled.div`
@@ -154,6 +157,7 @@ const NavItem = styled.button`
   padding: 0.75rem 1rem;
   background: none;
   border: none;
+  outline: none;
   color: ${props => props.$isDarkMode ? '#ffffff' : '#000000'};
   text-align: left;
   cursor: pointer;
@@ -172,20 +176,15 @@ const NavItem = styled.button`
 
   &:active {
     background: ${props => props.$isDarkMode ? '#1f1f1f' : '#e5e5e5'};
+    outline: none;
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &.active {
     background: ${props => props.$isDarkMode ? '#2a2a2a' : '#f0f0f0'};
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: #10a37f;
-    }
   }
 `;
 
@@ -202,6 +201,36 @@ const NavText = styled.span`
   flex: 1;
 `;
 
+const SocialIconsContainer = styled.div`
+  padding: 1rem;
+  border-top: 1px solid ${props => props.$isDarkMode ? '#2f2f2f' : '#e5e5e5'};
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: auto;
+`;
+
+const SocialIcon = styled.a`
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-betwen;
+  border-radius: 8px;
+  background: transparent;
+  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
+  transition: all 0.2s ease;
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  &:hover {
+    color: ${props => props.$hoverColor || '#8b5cf6'};
+    transform: translateY(-2px);
+  }
+`;
 
 const MobileOverlay = styled.div`
   position: fixed;
@@ -235,13 +264,10 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
   }, []);
 
   const navigationItems = [
-    { id: 'home', label: 'Home', icon: FaHome, path: '/', color: '#10a37f' },
-    { id: 'who-is-troika', label: 'Who is Troika?', icon: FaInfoCircle, path: '/who-is-troika', color: '#10a37f' },
-    { id: 'what-is-ai-agent', label: 'What is AI agent?', icon: FaBrain, path: '/what-is-ai-agent', color: '#3b82f6' },
-    { id: 'how-it-works', label: 'How it works?', icon: FaBolt, path: '/how-it-works', color: '#f59e0b' },
-    { id: 'use-case-for-me', label: 'Use Case For Me?', icon: FaChartLine, path: '/use-case-for-me', color: '#8b5cf6' },
-    { id: 'pricing-setup', label: 'Pricing & SetUp', icon: FaRupeeSign, path: '/pricing-setup', color: '#dc2626' },
-    { id: 'social-media', label: 'Social Media', icon: FaShareAlt, path: '/social-media', color: '#8b5cf6' }
+    { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, path: '/ai-agent', color: '#10a37f' },
+    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, path: '/ai-calling-agent', color: '#3b82f6' },
+    { id: 'whatsapp-marketing', label: 'WhatsApp Marketing', icon: FaWhatsapp, path: '/whatsapp-marketing', color: '#25d366' },
+    { id: 'rcs-messaging', label: 'RCS Messaging', icon: FaComment, path: '/rcs-messaging', color: '#8b5cf6' }
   ];
 
   const handlePageChange = (pageId, path) => {
@@ -307,7 +333,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             </NavItem>
           </Section>
 
-          {/* <Section>
+          <Section>
             <SectionTitle $isDarkMode={isDarkMode}>Services</SectionTitle>
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
@@ -325,9 +351,87 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 </NavItem>
               );
             })}
-          </Section> */}
+          </Section>
+
+          <Section>
+            <SectionTitle $isDarkMode={isDarkMode}>Contact</SectionTitle>
+            <NavItem
+              $isDarkMode={isDarkMode}
+              onClick={() => handlePageChange('get-quote', '/get-quote')}
+              className={`nav-item ${isActive('/get-quote') ? 'active' : ''}`}
+            >
+              <NavIcon style={{ color: '#f59e0b' }}>
+                <FaRupeeSign />
+              </NavIcon>
+              <NavText>Get Quote</NavText>
+            </NavItem>
+            <NavItem
+              $isDarkMode={isDarkMode}
+              onClick={() => handlePageChange('schedule-meeting', '/schedule-meeting')}
+              className={`nav-item ${isActive('/schedule-meeting') ? 'active' : ''}`}
+            >
+              <NavIcon style={{ color: '#ec4899' }}>
+                <FaHandshake />
+              </NavIcon>
+              <NavText>Schedule a Meeting</NavText>
+            </NavItem>
+            <NavItem
+              $isDarkMode={isDarkMode}
+              onClick={() => handlePageChange('book-call', '/book-call')}
+              className={`nav-item ${isActive('/book-call') ? 'active' : ''}`}
+            >
+              <NavIcon style={{ color: '#10b981' }}>
+                <FaPhone />
+              </NavIcon>
+              <NavText>Book a Call</NavText>
+            </NavItem>
+          </Section>
 
         </SidebarContent>
+
+        {/* Social Media Icons */}
+        <SocialIconsContainer $isDarkMode={isDarkMode}>
+          <SocialIcon
+            href="https://wa.me/your-number"
+            target="_blank"
+            rel="noopener noreferrer"
+            $isDarkMode={isDarkMode}
+            $hoverColor="#25d366"
+            title="WhatsApp"
+          >
+            <FaWhatsapp />
+          </SocialIcon>
+          <SocialIcon
+            href="https://t.me/your-telegram"
+            target="_blank"
+            rel="noopener noreferrer"
+            $isDarkMode={isDarkMode}
+            $hoverColor="#0088cc"
+            title="Telegram"
+          >
+            <FaTelegram />
+          </SocialIcon>
+          <SocialIcon
+            href="https://instagram.com/your-instagram"
+            target="_blank"
+            rel="noopener noreferrer"
+            $isDarkMode={isDarkMode}
+            $hoverColor="#E4405F"
+            title="Instagram"
+          >
+            <FaInstagram />
+          </SocialIcon>
+          <SocialIcon
+            href="https://linkedin.com/company/your-linkedin"
+            target="_blank"
+            rel="noopener noreferrer"
+            $isDarkMode={isDarkMode}
+            $hoverColor="#0077b5"
+            title="LinkedIn"
+          >
+            <FaLinkedin />
+          </SocialIcon>
+        </SocialIconsContainer>
 
         {/* Powered by Troika Tech - Branding */}
         <div style={{

@@ -921,7 +921,8 @@ const InputArea = ({
   currentlyPlaying,
   isWelcomeMode = false,
   showInlineAuth = false,
-  shouldShowAuth = false
+  shouldShowAuth = false,
+  activePage
 }) => {
   const { isDarkMode } = useTheme();
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -1007,9 +1008,10 @@ const InputArea = ({
       </InputWrapper>
 
       {/* Service Suggestions - only visible in welcome mode */}
-      <ServiceSuggestions 
+      <ServiceSuggestions
         isWelcomeMode={isWelcomeMode}
         onQuestionClick={handleQuestionClick}
+        activePage={activePage}
       />
 
       {/* Feature highlights */}

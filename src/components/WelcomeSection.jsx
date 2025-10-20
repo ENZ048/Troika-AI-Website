@@ -911,7 +911,7 @@ const GreetingText = styled.h1`
   font-weight: 500 !important;
   color: ${props => props.$isDarkMode ? '#ffffff' : '#1f2937'};
 
-  margin: 0.5rem 0 0.75rem 0;
+  margin: 0.5rem 0 1rem 0;
 
   position: relative;
 
@@ -977,7 +977,7 @@ const SubText = styled.p`
 
   color: ${props => props.$isDarkMode ? '#a0a0a0' : '#6b7280'};
 
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 2rem 0;
 
   position: relative;
 
@@ -2228,6 +2228,26 @@ const WelcomeSection = ({
       icon: "phone",
       text: "AI Calling Agents",
       action: "ai-calling"
+    },
+    {
+      icon: "❓",
+      text: "What services does Troika Tech offer?",
+      action: "What services does Troika Tech offer?"
+    },
+    {
+      icon: "ℹ️",
+      text: "Can you tell me about Troika Tech?",
+      action: "Can you tell me about Troika Tech?"
+    },
+    {
+      icon: "💰",
+      text: "What are your pricing plans?",
+      action: "What are your pricing plans?"
+    },
+    {
+      icon: "📞",
+      text: "How can I contact your team?",
+      action: "How can I contact your team?"
     }
   ];
 
@@ -2660,6 +2680,7 @@ const WelcomeSection = ({
            activePage === 'pricing-setup' ? 'Troika Tech Setup & Pricing' :
            activePage === 'ai-websites' ? 'Troika Tech – AI Websites' :
            activePage === 'ai-calling' ? 'Troika Tech – AI Calling Agent' :
+           activePage === 'ai-agent' ? 'Hi! This is Troika Tech 👋' :
            activePage === 'industry-use-cases' ? 'AI Websites By Troika Tech' :
            'Hi! This is Troika Tech 👋'}
         </GreetingText>
@@ -2671,8 +2692,10 @@ const WelcomeSection = ({
           fontWeight: '400'
         }}>
           {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites and automated calling agents - all designed to help your business grow 24/7.' :
+           activePage === 'ai-agent' ? 'A 24×7 digital employee that chats, calls, and messages like a real team member to automate your business.' :
+           activePage === 'ai-calling-agent' ? 'A human-like voice AI that makes and answers calls to engage, follow up, and close leads automatically.' :
            activePage === 'ai-websites' ? '' :
-           activePage === 'ai-calling' ? '' :
+           activePage === 'ai-calling' ? 'A human-like voice AI that makes and answers calls to engage, follow up, and close leads automatically.' :
            activePage === 'industry-use-cases' ? '' :
            ''}
         </SubText>
@@ -2700,6 +2723,7 @@ const WelcomeSection = ({
           showInlineAuth={showInlineAuth}
           shouldShowAuth={shouldShowAuth}
           isAuthenticated={isAuthenticated}
+          activePage={activePage}
         />
 
 
