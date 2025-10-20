@@ -193,7 +193,7 @@ const AuthModal = ({
         </ModalHeader>
 
         <ModalSubtitle $isDarkMode={isDarkMode}>
-          Please verify your WhatsApp number to continue chatting
+          Please verify your phone number to access our website
         </ModalSubtitle>
 
         <form onSubmit={handleSubmit}>
@@ -205,7 +205,7 @@ const AuthModal = ({
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter your WhatsApp number"
+              placeholder="Enter your phone number"
               $isDarkMode={isDarkMode}
               required
             />
@@ -215,7 +215,7 @@ const AuthModal = ({
             type="submit"
             disabled={!isValidInput() || loading}
           >
-            {loading ? 'Sending...' : 'Send OTP via WhatsApp'}
+            {loading ? 'Sending...' : 'Send OTP'}
           </SendButton>
 
           {error && (

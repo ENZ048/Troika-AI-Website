@@ -259,7 +259,7 @@ const OtpModal = ({
         </ModalHeader>
 
         <ModalSubtitle $isDarkMode={isDarkMode}>
-          We sent a 6-digit code to your WhatsApp number
+          We sent a 6-digit verification code to your phone number
         </ModalSubtitle>
         
         <form onSubmit={handleSubmit}>

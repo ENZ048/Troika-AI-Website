@@ -53,7 +53,9 @@ const useAuthentication = (apiBase) => {
       const endpoint = `${apiBase}/whatsapp-otp/send`;
       const requestBody = {
         phone,
-        chatbotId: '68ea0b4d28fb01da88e59697'
+        chatbotId: '68ea0b4d28fb01da88e59697',
+        campaignName: 'Signup OTP Campaign',
+        templateName: 'otp_message'
       };
 
       const response = await fetch(endpoint, {
@@ -93,7 +95,9 @@ const useAuthentication = (apiBase) => {
       const requestBody = {
         phone,
         otp,
-        chatbotId: '68ea0b4d28fb01da88e59697'
+        chatbotId: '68ea0b4d28fb01da88e59697',
+        campaignName: 'Signup OTP Campaign',
+        templateName: 'otp_message'
       };
 
       const response = await fetch(endpoint, {
