@@ -54,6 +54,7 @@ function AuthenticationGate({ children }) {
 
   const {
     isAuthenticated,
+    userInfo,
     loading: authLoading,
     error: authError,
     resendCooldown,
@@ -61,6 +62,13 @@ function AuthenticationGate({ children }) {
     verifyOtp,
     resendOtp
   } = useAuthentication(API_BASE);
+
+  // Persist phone from userInfo once authenticated
+  useEffect(() => {
+    if (isAuthenticated && userInfo && userInfo.phone) {
+      try { localStorage.setItem('chatbot_user_phone', String(userInfo.phone)); } catch {}
+    }
+  }, [isAuthenticated, userInfo]);
 
   // Save the intended route when user is not authenticated
   useEffect(() => {
@@ -131,7 +139,7 @@ function AuthenticationGate({ children }) {
     );
   }
 
-  // User is authenticated, render the children
+  // User is authenticated; render children
   return children;
 }
 

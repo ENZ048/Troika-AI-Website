@@ -21,6 +21,13 @@ const useAuthentication = (apiBase) => {
           setAuthToken(authData.token);
           setUserInfo(authData.userInfo);
           setIsAuthenticated(true);
+          // Ensure phone is also available under the simple key used by proposal sender
+          try {
+            if (authData.userInfo && authData.userInfo.phone) {
+              localStorage.setItem('chatbot_user_phone', String(authData.userInfo.phone));
+              console.log('💾 [AUTH DEBUG] Restored phone to localStorage from saved auth');
+            }
+          } catch {}
         } else {
           console.log('⏰ [AUTH DEBUG] Saved authentication expired, clearing...');
           // Token expired, clear it

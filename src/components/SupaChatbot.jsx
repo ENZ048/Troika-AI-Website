@@ -19,6 +19,7 @@ import VoiceInputIndicatorComponent from "./VoiceInputIndicator";
 import WelcomeSection from "./WelcomeSection";
 import Confetti from "./Confetti";
 import ServiceSelectionButtons from "./ServiceSelectionButtons";
+import ServiceSelection from "./ServiceSelection";
 import Sidebar from "./Sidebar";
 import SocialFeedPanel from "./SocialFeedPanel";
 // import InlineAuth from "./InlineAuth";
@@ -3616,7 +3617,79 @@ AI Website is built for instant replies, 24×7.<br>
               />
 
               <ChatContainer $isWelcomeMode={showWelcome}>
-        {showWelcome && (
+        {getCurrentTab() === 'get-quote' ? (
+          <ServiceSelection 
+            onSendProposal={async (service) => {
+              try {
+                // Prefer authenticated phone from hook, else fallback to localStorage
+                // Try multiple places where phone may be stored
+                // Try primary stored phone
+                let stored = localStorage.getItem('chatbot_user_phone') || '';
+                // Fallback: some flows save a JSON object under supa_pending_otp with { phone, otp }
+                if (!stored) {
+                  try {
+                    const pending = JSON.parse(localStorage.getItem('supa_pending_otp') || 'null');
+                    if (pending && pending.phone) stored = String(pending.phone);
+                  } catch {}
+                }
+                // From auth hook
+                const authPhone = (userInfo && userInfo.phone) ? String(userInfo.phone) : '';
+                // From saved auth blob if hook didn't hydrate yet
+                let authBlobPhone = '';
+                try {
+                  const blob = JSON.parse(localStorage.getItem('chatbot_auth') || 'null');
+                  if (blob && blob.userInfo && blob.userInfo.phone) authBlobPhone = String(blob.userInfo.phone);
+                } catch {}
+                let phoneRaw = authPhone || authBlobPhone || stored;
+                if (!phoneRaw) {
+                  toast.error('Phone not found. Please complete phone verification once.');
+                  return;
+                }
+                // Normalize and validate
+                let digits = String(phoneRaw).replace(/\D/g, '');
+                // If longer than 12, try to capture last 10
+                if (digits.length > 12 && /\d{10}$/.test(digits)) {
+                  digits = digits.slice(-10);
+                }
+                // Build destination
+                let destination = '';
+                if (digits.length === 10) {
+                  destination = `91${digits}`;
+                } else if (digits.length === 12 && digits.startsWith('91')) {
+                  destination = digits;
+                } else {
+                  toast.error('Invalid Number');
+                  return;
+                }
+                const payload = {
+                  apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDYyNzc3NzAzNzQyNTczY2RlMDZhZiIsIm5hbWUiOiJUcm9pa2EgVGVjaCBTZXJ2aWNlcyIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NjQ2Mjc3NmNhNjM2YzYwZWQxNGJlYjciLCJhY3RpdmVQbGFuIjoiTk9ORSIsImlhdCI6MTcxNTg3MzY1NX0.ACrl15Ft8PoHdjrrNTUPNZIHbm4T9fRSLfxPzQRCbVM",
+                  campaignName: "proposalsending",
+                  destination,
+                  userName: "Troika Tech Services",
+                  templateParams: ["$FirstName"],
+                  paramsFallbackValue: { FirstName: service.name },
+                  source: "new-landing-page form",
+                  media: {},
+                  buttons: [],
+                  carouselCards: [],
+                  location: {},
+                  attributes: {}
+                };
+                const res = await fetch('https://backend.api-wa.co/campaign/troika-tech-services/api/v2', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data?.message || 'Failed to send proposal');
+                toast.success('Proposal sent on WhatsApp.');
+              } catch (e) {
+                toast.error(e.message);
+              }
+            }}
+            phoneNumber={localStorage.getItem('chatbot_user_phone') || ''}
+          />
+        ) : showWelcome ? (
             <WelcomeSection 
               onSuggestionClick={handleSuggestionClick} 
               activePage={getCurrentTab()}
@@ -3644,7 +3717,7 @@ AI Website is built for instant replies, 24×7.<br>
               shouldShowAuth={shouldShowAuth}
               isAuthenticated={isAuthenticated}
             />
-        )}
+        ) : null}
                 
                 <MessagesContainer 
                   ref={messagesContainerRef}
