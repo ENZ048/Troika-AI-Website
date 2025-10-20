@@ -3,7 +3,12 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(git fetch --all)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate UI components and add new routes\n\n- Added new sidebar routes for AI agent, calling agent, WhatsApp marketing, RCS messaging, and contact pages\n- Updated ServiceSuggestions to show page-specific questions instead of service tabs\n- Enhanced Sidebar with new service navigation items and social media icons\n- Updated WelcomeSection with new page-specific greetings and descriptions\n- Passed activePage prop through component tree for context-aware UI\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push origin main)",
+      "Bash(git checkout -b auth origin/auth)",
+      "Bash(git add .claude/settings.local.json)",
+      "Bash(git commit -m \"Update Claude settings permissions\")"
     ],
     "deny": [],
     "ask": []
