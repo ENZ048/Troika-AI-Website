@@ -38,13 +38,13 @@ import GlobalStyle from "../styles/GlobalStyles";
 
 // Import theme
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 
 // Import hooks
 import { useBattery } from "../hooks/useBattery";
 import { useClock } from "../hooks/useClock";
 import { useAudio } from "../hooks/useAudio";
 import { useVoiceRecording } from "../hooks/useVoiceRecording";
-import useAuthentication from "../hooks/useAuthentication";
 import useStreamingChat from "../hooks/useStreamingChat";
 
 // Import utils
@@ -161,7 +161,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     verifyOtp,
     logout,
     resendOtp
-  } = useAuthentication(apiBase);
+  } = useAuth();
 
   // State for tracking the currently streaming message
   const [currentStreamingMessageId, setCurrentStreamingMessageId] = useState(null);
@@ -473,6 +473,23 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       sessionStorage.removeItem('hasNavigated');
     };
   }, []);
+
+  // Stop audio playback when user switches tabs/routes
+  useEffect(() => {
+    console.log('Route changed to:', location.pathname);
+
+    // Stop any audio playing from useAudio hook
+    if (currentlyPlaying !== null) {
+      console.log('Stopping audio due to route change');
+      stopAudio();
+    }
+
+    // Stop any streaming audio from WebAudioPlayer
+    if (audioPlaying) {
+      console.log('Pausing streaming audio due to route change');
+      pauseAudio();
+    }
+  }, [location.pathname, stopAudio, pauseAudio, currentlyPlaying, audioPlaying]);
 
   // Auto-send conversation transcript after 30 seconds of inactivity
   useEffect(() => {
