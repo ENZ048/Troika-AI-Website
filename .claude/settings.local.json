@@ -21,7 +21,11 @@
       "Bash(findstr \":517\")",
       "Bash(taskkill //F //PID 19548)",
       "Bash(taskkill //F //PID 19220)",
-      "Bash(taskkill //F //PID 7560)"
+      "Bash(taskkill //F //PID 7560)",
+      "Bash(git checkout quote -- src/components/ServiceSelection.jsx)",
+      "Bash(git checkout quote -- src/App.jsx src/components/SupaChatbot.jsx src/hooks/useAuthentication.js)",
+      "Bash(git stash pop)",
+      "Bash(git add docs/ src/ README.md)"
     ],
     "deny": [],
     "ask": []
