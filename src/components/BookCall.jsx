@@ -10,7 +10,7 @@ import { useClock } from "../hooks/useClock";
 import GlobalStyle from "../styles/GlobalStyles";
 import { Wrapper, Overlay, AnimatedBlob, Chatbox, MainContentArea } from "../styles/MainStyles";
 
-const ScheduleContentContainer = styled.div`
+const BookCallContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -58,46 +58,6 @@ const Subtitle = styled.p`
   }
 `;
 
-const OpenCalendlyButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2.5rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-  margin-bottom: 2rem;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-  }
-`;
-
-const ErrorNote = styled.div`
-  background: ${props => props.$isDarkMode ? '#2a2a2a' : '#fff3cd'};
-  border: 1px solid ${props => props.$isDarkMode ? '#444' : '#ffc107'};
-  color: ${props => props.$isDarkMode ? '#ffc107' : '#856404'};
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-  max-width: 600px;
-`;
-
 const CalendlyWrapper = styled.div`
   width: 100%;
   max-width: 900px;
@@ -113,7 +73,7 @@ const CalendlyWrapper = styled.div`
   }
 `;
 
-function ScheduleMeeting() {
+function BookCall() {
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -177,11 +137,11 @@ function ScheduleMeeting() {
               sidebarOpen={sidebarOpen}
             />
 
-            <ScheduleContentContainer $isDarkMode={isDarkMode}>
+            <BookCallContentContainer $isDarkMode={isDarkMode}>
               <ContentWrapper>
-                <Title $isDarkMode={isDarkMode}>Schedule a Meeting</Title>
+                <Title $isDarkMode={isDarkMode}>Book a Call</Title>
                 <Subtitle $isDarkMode={isDarkMode}>
-                  Book a time that works best for you. We're excited to connect!
+                  Choose a time that works for you and let's talk about how we can help your business grow.
                 </Subtitle>
 
                 <CalendlyWrapper $isDarkMode={isDarkMode}>
@@ -194,7 +154,7 @@ function ScheduleMeeting() {
                   />
                 </CalendlyWrapper>
               </ContentWrapper>
-            </ScheduleContentContainer>
+            </BookCallContentContainer>
           </Chatbox>
         </MainContentArea>
       </Overlay>
@@ -202,4 +162,4 @@ function ScheduleMeeting() {
   );
 }
 
-export default ScheduleMeeting;
+export default BookCall;

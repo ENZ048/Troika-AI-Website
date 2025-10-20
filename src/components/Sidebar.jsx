@@ -401,7 +401,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
         {/* Social Media Icons */}
         <SocialIconsContainer $isDarkMode={isDarkMode}>
           <SocialIcon
-            href="https://wa.me/your-number"
+            href="https://api.whatsapp.com/send?phone=919897433544"
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
@@ -423,7 +423,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             <FaTelegram />
           </SocialIcon>
           <SocialIcon
-            href="https://instagram.com/your-instagram"
+            href="https://www.instagram.com/troikatechindia/"
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
@@ -434,7 +434,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             <FaInstagram />
           </SocialIcon>
           <SocialIcon
-            href="https://linkedin.com/company/your-linkedin"
+            href="https://in.linkedin.com/company/troika-tech"
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}

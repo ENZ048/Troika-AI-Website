@@ -13,7 +13,15 @@
       "Bash(git merge origin/auth -m \"Merge auth branch with full screen auth into main\")",
       "Bash(npm run build)",
       "Bash(npm install react-calendly)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5173)",
+      "Bash(taskkill /F /PID 1700)",
+      "Bash(taskkill //F //PID 1700)",
+      "Bash(findstr \":517\")",
+      "Bash(taskkill //F //PID 19548)",
+      "Bash(taskkill //F //PID 19220)",
+      "Bash(taskkill //F //PID 7560)"
     ],
     "deny": [],
     "ask": []

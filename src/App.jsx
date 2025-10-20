@@ -1,5 +1,6 @@
 import SupaChatbot from "./components/SupaChatbot"
 import ScheduleMeeting from "./components/ScheduleMeeting"
+import BookCall from "./components/BookCall"
 import React, { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import AuthModal from "./components/AuthModal"
@@ -62,13 +63,25 @@ function AuthenticationGate({ children }) {
     resendOtp
   } = useAuthentication(API_BASE);
 
-  // Save the intended route when user is not authenticated
+  // Track if initial auth check is complete
+  const [initialAuthCheckComplete, setInitialAuthCheckComplete] = useState(false);
+
+  // Wait for initial auth check to complete before showing modals
   useEffect(() => {
-    if (!isAuthenticated && !intendedRoute) {
+    // Give time for useAuthentication to check localStorage
+    const timer = setTimeout(() => {
+      setInitialAuthCheckComplete(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Save the intended route when user is not authenticated (after initial check)
+  useEffect(() => {
+    if (initialAuthCheckComplete && !isAuthenticated && !intendedRoute) {
       setIntendedRoute(location.pathname);
       setShowAuthModal(true);
     }
-  }, [isAuthenticated, location.pathname, intendedRoute]);
+  }, [initialAuthCheckComplete, isAuthenticated, location.pathname, intendedRoute]);
 
   // Handle OTP sending
   const handleSendOtp = async (phone) => {
@@ -171,7 +184,7 @@ function App() {
               <Route path="/rcs-messaging" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/get-quote" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/schedule-meeting" element={<ScheduleMeeting />} />
-              <Route path="/book-call" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
+              <Route path="/book-call" element={<BookCall />} />
             </Routes>
           </AuthenticationGate>
         </ErrorBoundary>
