@@ -123,12 +123,16 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const pendingGreetingAudio = useRef(null);
   const languageMessageShown = useRef(false);
   const greetingAddedRef = useRef(false);
-  const pendingAuthAfterTTS = useRef(false);
-  const pendingMessageAfterAuth = useRef(null);
+  // Commented out: Inline auth after 2 messages - now auth is shown at start only
+  /* const pendingAuthAfterTTS = useRef(false);
+  const pendingMessageAfterAuth = useRef(null); */
 
   // Callback to handle auth screen display after TTS completes
   const handleAudioEnded = useCallback((messageIndex) => {
-    console.log('Audio ended for message:', messageIndex, 'pendingAuthAfterTTS:', pendingAuthAfterTTS.current);
+    console.log('Audio ended for message:', messageIndex);
+
+    // Commented out: Inline auth after 2 messages - now auth is shown at start only
+    /* console.log('Audio ended for message:', messageIndex, 'pendingAuthAfterTTS:', pendingAuthAfterTTS.current);
 
     // If auth is pending after TTS, show it now
     if (pendingAuthAfterTTS.current) {
@@ -136,7 +140,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setShowInlineAuth(true);
       setShowInlineAuthInput(true);
       pendingAuthAfterTTS.current = false;
-    }
+    } */
   }, []);
 
   // Custom hooks
@@ -590,7 +594,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       const newCount = prev + 1;
       console.log('Incrementing bot message count from', prev, 'to', newCount);
 
-      // Check if this is the second bot message and trigger authentication
+      // Commented out: Inline auth after 2 messages - now auth is shown at start only
+      /* // Check if this is the second bot message and trigger authentication
       // But only show auth after TTS stops or user tries to send another message
       if (!isAuthenticated && newCount >= 2) {
         console.log('Second bot message detected - marking auth pending until TTS completes or user tries to send another message');
@@ -601,7 +606,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
 
         // Auth will now wait until TTS ends or user tries to send next message
         console.log('Auth is now pending - will show after TTS ends or user tries to send next message');
-      }
+      } */
 
       return newCount;
     });
@@ -1481,7 +1486,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setShowInlineAuth(false);
       toast.success('Authentication successful!');
 
-      // Send pending message if user had tried to send one before auth
+      // Commented out: Inline auth after 2 messages - now auth is shown at start only
+      /* // Send pending message if user had tried to send one before auth
       if (pendingMessageAfterAuth.current) {
         console.log('Sending pending message after authentication:', pendingMessageAfterAuth.current);
         const messageToSend = pendingMessageAfterAuth.current;
@@ -1490,7 +1496,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         setTimeout(() => {
           handleSendMessage(messageToSend);
         }, 100);
-      }
+      } */
     } catch (error) {
       toast.error(error.message || 'Invalid OTP');
     }
@@ -1531,7 +1537,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       const textToSend = inputText || message;
       if (!textToSend.trim()) return;
 
-      // Check if auth is pending and user tries to send another message
+      // Commented out: Inline auth after 2 messages - now auth is shown at start only
+      /* // Check if auth is pending and user tries to send another message
       // This handles the case where user has received 2 bot messages and tries to send another message
       if (pendingAuthAfterTTS.current && !isAuthenticated) {
         console.log('Auth pending detected - user trying to send message after 2 bot messages');
@@ -1545,7 +1552,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         setMessage("");
         // Don't send the message now, it will be sent after authentication
         return;
-      }
+      } */
 
       // Increment user message count
       console.log('Incrementing user message count, current count:', userMessageCount);

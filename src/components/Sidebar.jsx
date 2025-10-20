@@ -202,33 +202,37 @@ const NavText = styled.span`
 `;
 
 const SocialIconsContainer = styled.div`
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   border-top: 1px solid ${props => props.$isDarkMode ? '#2f2f2f' : '#e5e5e5'};
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-top: auto;
 `;
 
 const SocialIcon = styled.a`
-  width: 25px;
-  height: 25px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-betwen;
-  border-radius: 8px;
+  justify-content: center;
+  border-radius: 12px;
   background: transparent;
-  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
-  transition: all 0.2s ease;
+  color: ${props => props.$defaultColor || (props.$isDarkMode ? '#9ca3af' : '#6b7280')};
+  transition: all 0.3s ease;
 
   svg {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
   }
 
   &:hover {
     color: ${props => props.$hoverColor || '#8b5cf6'};
-    transform: translateY(-2px);
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(1.1);
   }
 `;
 
@@ -264,22 +268,27 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
   }, []);
 
   const navigationItems = [
-    { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, path: '/ai-agent', color: '#10a37f' },
-    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, path: '/ai-calling-agent', color: '#3b82f6' },
-    { id: 'whatsapp-marketing', label: 'WhatsApp Marketing', icon: FaWhatsapp, path: '/whatsapp-marketing', color: '#25d366' },
-    { id: 'rcs-messaging', label: 'RCS Messaging', icon: FaComment, path: '/rcs-messaging', color: '#8b5cf6' }
+    { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, color: '#10a37f' },
+    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, color: '#3b82f6' },
+    { id: 'whatsapp-marketing', label: 'WhatsApp Marketing', icon: FaWhatsapp, color: '#25d366' },
+    { id: 'rcs-messaging', label: 'RCS Messaging', icon: FaComment, color: '#8b5cf6' }
   ];
 
-  const handlePageChange = (pageId, path) => {
-    console.log('🔄 Navigating to:', path);
-    
+  const handlePageChange = (routeId) => {
+    console.log('🔄 Navigating to:', routeId);
+
     // Use the navigation handler if provided, otherwise use direct navigation
     if (onTabNavigation) {
-      onTabNavigation(pageId);
+      // Pass just the route ID (without leading slash) to the parent
+      // e.g., 'ai-agent' or 'new-chat' or 'schedule-meeting'
+      const cleanRouteId = routeId.startsWith('/') ? routeId.substring(1) : routeId;
+      onTabNavigation(cleanRouteId === '' ? 'new-chat' : cleanRouteId);
     } else {
+      // For direct navigation, ensure we have a leading slash
+      const path = routeId.startsWith('/') ? routeId : `/${routeId}`;
       navigate(path);
     }
-    
+
     if (window.innerWidth <= 768) {
       onClose();
     }
@@ -325,7 +334,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
           <Section>
             <NavItem
               $isDarkMode={isDarkMode}
-              onClick={() => handlePageChange('new-chat', '/')}
+              onClick={() => handlePageChange('new-chat')}
               className=""
             >
               <NavIcon><FaMagic   /></NavIcon>
@@ -341,8 +350,8 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 <NavItem
                   key={item.id}
                   $isDarkMode={isDarkMode}
-                  onClick={() => handlePageChange(item.id, item.path)}
-                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                  onClick={() => handlePageChange(item.id)}
+                  className={`nav-item ${isActive(`/${item.id}`) ? 'active' : ''}`}
                 >
                   <NavIcon style={{ color: item.color || 'inherit' }}>
                     <IconComponent />
@@ -357,7 +366,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             <SectionTitle $isDarkMode={isDarkMode}>Contact</SectionTitle>
             <NavItem
               $isDarkMode={isDarkMode}
-              onClick={() => handlePageChange('get-quote', '/get-quote')}
+              onClick={() => handlePageChange('get-quote')}
               className={`nav-item ${isActive('/get-quote') ? 'active' : ''}`}
             >
               <NavIcon style={{ color: '#f59e0b' }}>
@@ -367,7 +376,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             </NavItem>
             <NavItem
               $isDarkMode={isDarkMode}
-              onClick={() => handlePageChange('schedule-meeting', '/schedule-meeting')}
+              onClick={() => handlePageChange('schedule-meeting')}
               className={`nav-item ${isActive('/schedule-meeting') ? 'active' : ''}`}
             >
               <NavIcon style={{ color: '#ec4899' }}>
@@ -377,7 +386,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             </NavItem>
             <NavItem
               $isDarkMode={isDarkMode}
-              onClick={() => handlePageChange('book-call', '/book-call')}
+              onClick={() => handlePageChange('book-call')}
               className={`nav-item ${isActive('/book-call') ? 'active' : ''}`}
             >
               <NavIcon style={{ color: '#10b981' }}>
@@ -396,6 +405,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
+            $defaultColor="#25d366"
             $hoverColor="#25d366"
             title="WhatsApp"
           >
@@ -406,6 +416,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
+            $defaultColor="#0088cc"
             $hoverColor="#0088cc"
             title="Telegram"
           >
@@ -416,6 +427,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
+            $defaultColor="#E4405F"
             $hoverColor="#E4405F"
             title="Instagram"
           >
@@ -426,6 +438,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
+            $defaultColor="#0077b5"
             $hoverColor="#0077b5"
             title="LinkedIn"
           >
@@ -435,7 +448,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
 
         {/* Powered by Troika Tech - Branding */}
         <div style={{
-          padding: "1rem",
+          padding: "0.75rem 1rem",
           borderTop: `1px solid ${isDarkMode ? '#1f1f1f' : '#e5e5e5'}`,
           marginTop: "auto",
           display: "flex",

@@ -1,6 +1,7 @@
 import SupaChatbot from "./components/SupaChatbot"
+import ScheduleMeeting from "./components/ScheduleMeeting"
 import React, { useState, useEffect } from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import AuthModal from "./components/AuthModal"
 import OtpModal from "./components/OtpModal"
 import useAuthentication from "./hooks/useAuthentication"
@@ -8,8 +9,11 @@ import { ThemeProvider } from "./contexts/ThemeContext"
 
 // Constants for chatbot configuration
 const CHATBOT_ID = "68f1dfa097793a45f3951812"
-// const API_BASE = "https://api.0804.in/api"
-const API_BASE = "http://localhost:5000/api"
+const API_BASE = "https://api.0804.in/api"
+// const API_BASE = "http://localhost:5000/api"
+
+// Development mode - set to true to bypass authentication during development
+const SKIP_AUTH_IN_DEV = true;
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -40,14 +44,14 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-function App() {
-  console.log("App component is rendering!");
-
-  // Authentication state
+// Authentication wrapper component
+function AuthenticationGate({ children }) {
+  const location = useLocation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
-  
+  const [intendedRoute, setIntendedRoute] = useState(null);
+
   const {
     isAuthenticated,
     loading: authLoading,
@@ -58,12 +62,13 @@ function App() {
     resendOtp
   } = useAuthentication(API_BASE);
 
-  // Check if user needs authentication on first visit
+  // Save the intended route when user is not authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !intendedRoute) {
+      setIntendedRoute(location.pathname);
       setShowAuthModal(true);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname, intendedRoute]);
 
   // Handle OTP sending
   const handleSendOtp = async (phone) => {
@@ -82,6 +87,7 @@ function App() {
     try {
       await verifyOtp(otp, phoneNumber);
       setShowOtpModal(false);
+      // Route preservation is handled by React Router automatically
     } catch (error) {
       console.error('Failed to verify OTP:', error);
     }
@@ -96,10 +102,15 @@ function App() {
     }
   };
 
-  // Don't render the chatbot until user is authenticated
+  // Skip authentication in development mode
+  if (SKIP_AUTH_IN_DEV) {
+    return children;
+  }
+
+  // Show auth modals if user is not authenticated
   if (!isAuthenticated) {
     return (
-      <ThemeProvider>
+      <>
         {showAuthModal && (
           <AuthModal
             onSendOtp={handleSendOtp}
@@ -116,12 +127,22 @@ function App() {
             resendCooldown={resendCooldown}
           />
         )}
-      </ThemeProvider>
+      </>
     );
   }
+
+  // User is authenticated, render the children
+  return children;
+}
+
+function App() {
+  console.log("App component is rendering!");
+
   return (
-    <BrowserRouter>
-      <ErrorBoundary>
+    <ThemeProvider>
+      <BrowserRouter>
+        <ErrorBoundary>
+          <AuthenticationGate>
             <Routes>
               <Route path="/" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/new-chat" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
@@ -149,11 +170,13 @@ function App() {
               <Route path="/whatsapp-marketing" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/rcs-messaging" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/get-quote" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
-              <Route path="/schedule-meeting" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
+              <Route path="/schedule-meeting" element={<ScheduleMeeting />} />
               <Route path="/book-call" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
             </Routes>
-      </ErrorBoundary>
-    </BrowserRouter>
+          </AuthenticationGate>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

@@ -2220,34 +2220,19 @@ const WelcomeSection = ({
   // Home suggestions
   const homeSuggestions = [
     {
-      icon: "website",
-      text: "AI Websites",
-      action: "ai-websites"
+      icon: "🤖",
+      text: "Talk to our AI — see what your next employee looks like.",
+      action: "Talk to our AI — see what your next employee looks like."
     },
     {
-      icon: "phone",
-      text: "AI Calling Agents",
-      action: "ai-calling"
+      icon: "💬",
+      text: "Ask anything about your business — our Agent will answer instantly.",
+      action: "Ask anything about your business — our Agent will answer instantly."
     },
     {
-      icon: "❓",
-      text: "What services does Troika Tech offer?",
-      action: "What services does Troika Tech offer?"
-    },
-    {
-      icon: "ℹ️",
-      text: "Can you tell me about Troika Tech?",
-      action: "Can you tell me about Troika Tech?"
-    },
-    {
-      icon: "💰",
-      text: "What are your pricing plans?",
-      action: "What are your pricing plans?"
-    },
-    {
-      icon: "📞",
-      text: "How can I contact your team?",
-      action: "How can I contact your team?"
+      icon: "⚡",
+      text: "We don't build bots. We build Business Class Automations.",
+      action: "We don't build bots. We build Business Class Automations."
     }
   ];
 

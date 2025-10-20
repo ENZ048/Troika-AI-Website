@@ -8,14 +8,17 @@ const ModalOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: ${props => props.$isDarkMode
+    ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)'
+    : 'linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.90) 100%)'
+  };
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   @keyframes fadeIn {
     from {
@@ -28,160 +31,344 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  background: ${props => props.$isDarkMode ? '#1f2937' : '#ffffff'};
-  border: 2px solid ${props => props.$isDarkMode ? '#374151' : '#e5e7eb'};
-  border-radius: 16px;
-  padding: 32px;
+  position: relative;
+  background: ${props => props.$isDarkMode
+    ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+    : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'
+  };
+  border: 1px solid ${props => props.$isDarkMode
+    ? 'rgba(148, 163, 184, 0.1)'
+    : 'rgba(226, 232, 240, 0.8)'
+  };
+  border-radius: 24px;
+  padding: 40px;
   margin: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 400px;
+  box-shadow: ${props => props.$isDarkMode
+    ? '0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(148, 163, 184, 0.05), inset 0 1px 0 0 rgba(148, 163, 184, 0.05)'
+    : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(148, 163, 184, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.9)'
+  };
+  max-width: 440px;
   width: 100%;
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: ${props => props.$isDarkMode
+      ? 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.08) 0%, transparent 60%)'
+      : 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.05) 0%, transparent 60%)'
+    };
+    pointer-events: none;
+  }
 
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(40px) scale(0.96);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 
   @media (max-width: 480px) {
-    padding: 24px;
+    padding: 32px 24px;
     margin: 16px;
+    border-radius: 20px;
   }
 `;
 
 const ModalHeader = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 28px;
+  z-index: 1;
 `;
 
 const ModalAvatar = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  background: ${props => props.$isDarkMode
+    ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%)'
+    : 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)'
+  };
+  border: 1px solid ${props => props.$isDarkMode
+    ? 'rgba(16, 185, 129, 0.2)'
+    : 'rgba(16, 185, 129, 0.15)'
+  };
+  box-shadow: ${props => props.$isDarkMode
+    ? '0 8px 24px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+    : '0 8px 24px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)'
+  };
 `;
 
 const ModalAvatarImage = styled.img`
-  width: 80%;
-  height: 80%;
+  width: 85%;
+  height: 85%;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 14px;
 `;
 
 const ModalTitle = styled.h2`
-  color: ${props => props.$isDarkMode ? '#f9fafb' : '#111827'};
-  font-size: 1.5rem;
-  font-weight: 600;
+  color: ${props => props.$isDarkMode ? '#f1f5f9' : '#0f172a'};
+  font-size: 1.75rem;
+  font-weight: 700;
   margin: 0;
+  letter-spacing: -0.025em;
+  background: ${props => props.$isDarkMode
+    ? 'linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)'
+    : 'linear-gradient(135deg, #0f172a 0%, #334155 100%)'
+  };
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const ModalSubtitle = styled.p`
-  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
+  position: relative;
+  color: ${props => props.$isDarkMode ? '#94a3b8' : '#64748b'};
   font-size: 1rem;
-  margin: 0 0 24px 0;
-  line-height: 1.5;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+  z-index: 1;
 `;
 
 const OtpInputsContainer = styled.div`
+  position: relative;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  z-index: 1;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const OtpInput = styled.input`
-  width: 48px;
-  height: 48px;
-  border: 2px solid ${props => props.$isDarkMode ? '#374151' : '#e5e7eb'};
-  border-radius: 8px;
-  background: ${props => props.$isDarkMode ? '#1f2937' : '#ffffff'};
-  color: ${props => props.$isDarkMode ? '#f9fafb' : '#111827'};
-  font-size: 1.25rem;
-  font-weight: 600;
+  width: 52px;
+  height: 56px;
+  border: 2px solid ${props => props.$isDarkMode
+    ? 'rgba(148, 163, 184, 0.15)'
+    : 'rgba(226, 232, 240, 0.8)'
+  };
+  border-radius: 12px;
+  background: ${props => props.$isDarkMode
+    ? 'rgba(15, 23, 42, 0.4)'
+    : 'rgba(255, 255, 255, 0.8)'
+  };
+  color: ${props => props.$isDarkMode ? '#f1f5f9' : '#0f172a'};
+  font-size: 1.5rem;
+  font-weight: 700;
   text-align: center;
-  transition: all 0.2s ease;
-  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${props => props.$isDarkMode
+    ? 'inset 0 2px 4px rgba(0, 0, 0, 0.1)'
+    : 'inset 0 2px 4px rgba(0, 0, 0, 0.03)'
+  };
+
+  &:hover {
+    border-color: ${props => props.$isDarkMode
+      ? 'rgba(16, 185, 129, 0.3)'
+      : 'rgba(16, 185, 129, 0.4)'
+    };
+  }
+
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #10b981;
+    background: ${props => props.$isDarkMode
+      ? 'rgba(15, 23, 42, 0.6)'
+      : '#ffffff'
+    };
+    box-shadow: ${props => props.$isDarkMode
+      ? '0 0 0 4px rgba(16, 185, 129, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1)'
+      : '0 0 0 4px rgba(16, 185, 129, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.03)'
+    };
+    transform: translateY(-2px) scale(1.05);
   }
-  
+
   &:invalid {
     border-color: #ef4444;
+  }
+
+  @media (max-width: 480px) {
+    width: 44px;
+    height: 50px;
+    font-size: 1.25rem;
   }
 `;
 
 const VerifyButton = styled.button`
+  position: relative;
   width: 100%;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #059669, #047857);
-    transform: translateY(-1px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3),
+              0 2px 4px rgba(16, 185, 129, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 1;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
-  
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4),
+                0 3px 8px rgba(16, 185, 129, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
   &:disabled {
-    background: #9ca3af;
+    background: ${props => props.$isDarkMode
+      ? 'linear-gradient(135deg, #475569 0%, #334155 100%)'
+      : 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)'
+    };
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
   }
 `;
 
 const ResendButton = styled.button`
+  position: relative;
   width: 100%;
-  padding: 8px 16px;
-  background: transparent;
-  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
-  border: 1px solid ${props => props.$isDarkMode ? '#374151' : '#e5e7eb'};
-  border-radius: 8px;
-  font-size: 0.875rem;
+  padding: 12px 18px;
+  background: ${props => props.$isDarkMode
+    ? 'rgba(30, 41, 59, 0.5)'
+    : 'rgba(248, 250, 252, 0.8)'
+  };
+  color: ${props => props.$isDarkMode ? '#94a3b8' : '#64748b'};
+  border: 1px solid ${props => props.$isDarkMode
+    ? 'rgba(148, 163, 184, 0.15)'
+    : 'rgba(226, 232, 240, 0.8)'
+  };
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 12px;
-  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 16px;
+  z-index: 1;
+
   &:hover:not(:disabled) {
-    background: ${props => props.$isDarkMode ? '#374151' : '#f3f4f6'};
+    background: ${props => props.$isDarkMode
+      ? 'rgba(51, 65, 85, 0.6)'
+      : 'rgba(241, 245, 249, 1)'
+    };
+    border-color: ${props => props.$isDarkMode
+      ? 'rgba(148, 163, 184, 0.25)'
+      : 'rgba(203, 213, 225, 1)'
+    };
+    transform: translateY(-1px);
   }
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
   }
 `;
 
 const ErrorMessage = styled.div`
   color: #ef4444;
   font-size: 0.875rem;
-  margin-top: 12px;
+  font-weight: 500;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: ${props => props.$isDarkMode
+    ? 'rgba(239, 68, 68, 0.1)'
+    : 'rgba(254, 226, 226, 0.8)'
+  };
+  border: 1px solid ${props => props.$isDarkMode
+    ? 'rgba(239, 68, 68, 0.2)'
+    : 'rgba(239, 68, 68, 0.3)'
+  };
+  border-radius: 10px;
   text-align: center;
+  animation: shake 0.3s ease-in-out;
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
 `;
 
 const SuccessMessage = styled.div`
   color: #10b981;
   font-size: 0.875rem;
-  margin-top: 12px;
+  font-weight: 500;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: ${props => props.$isDarkMode
+    ? 'rgba(16, 185, 129, 0.1)'
+    : 'rgba(209, 250, 229, 0.8)'
+  };
+  border: 1px solid ${props => props.$isDarkMode
+    ? 'rgba(16, 185, 129, 0.2)'
+    : 'rgba(16, 185, 129, 0.3)'
+  };
+  border-radius: 10px;
   text-align: center;
+  animation: slideIn 0.3s ease-out;
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
 const OtpModal = ({ 
@@ -243,10 +430,10 @@ const OtpModal = ({
   const isOtpComplete = otp.every(digit => digit !== '');
 
   return (
-    <ModalOverlay>
+    <ModalOverlay $isDarkMode={isDarkMode}>
       <ModalContainer $isDarkMode={isDarkMode}>
         <ModalHeader>
-          <ModalAvatar>
+          <ModalAvatar $isDarkMode={isDarkMode}>
             <ModalAvatarImage
               src="/logo.png"
               alt="AI"
@@ -261,7 +448,7 @@ const OtpModal = ({
         <ModalSubtitle $isDarkMode={isDarkMode}>
           We sent a 6-digit verification code to your phone number
         </ModalSubtitle>
-        
+
         <form onSubmit={handleSubmit}>
           <OtpInputsContainer>
             {otp.map((digit, index) => (
@@ -285,16 +472,17 @@ const OtpModal = ({
           <VerifyButton
             type="submit"
             disabled={!isOtpComplete || loading}
+            $isDarkMode={isDarkMode}
           >
-            {loading ? 'Verifying...' : 'Verify Code'}
+            <span>{loading ? 'Verifying...' : 'Verify Code'}</span>
           </VerifyButton>
 
           {error && (
-            <ErrorMessage>{error}</ErrorMessage>
+            <ErrorMessage $isDarkMode={isDarkMode}>{error}</ErrorMessage>
           )}
 
           {success && (
-            <SuccessMessage>{success}</SuccessMessage>
+            <SuccessMessage $isDarkMode={isDarkMode}>{success}</SuccessMessage>
           )}
 
           <ResendButton

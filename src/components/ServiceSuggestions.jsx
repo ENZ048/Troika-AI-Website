@@ -79,6 +79,11 @@ const QuestionButton = styled.button`
 `;
 
 const questionsByPage = {
+  'home': [
+    'Talk to our AI — see what your next employee looks like.',
+    'Ask anything about your business — our Agent will answer instantly.',
+    'We don\'t build bots. We build Business Class Automations.'
+  ],
   'ai-agent': [
     'How is your AI Agent different from a normal chatbot?',
     'Can it handle chats, WhatsApp, and calls together as one system?',
@@ -99,8 +104,8 @@ const ServiceSuggestions = ({ onQuestionClick, isWelcomeMode, activePage }) => {
   // Only show on welcome mode
   if (!isWelcomeMode) return null;
 
-  // Get questions for the current page, default to ai-agent questions
-  const questions = questionsByPage[activePage] || questionsByPage['ai-agent'];
+  // Get questions for the current page, default to home questions
+  const questions = questionsByPage[activePage] || questionsByPage['home'];
 
   return (
     <Container>

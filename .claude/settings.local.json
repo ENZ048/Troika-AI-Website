@@ -8,7 +8,12 @@
       "Bash(git push origin main)",
       "Bash(git checkout -b auth origin/auth)",
       "Bash(git add .claude/settings.local.json)",
-      "Bash(git commit -m \"Update Claude settings permissions\")"
+      "Bash(git commit -m \"Update Claude settings permissions\")",
+      "Bash(git checkout main)",
+      "Bash(git merge origin/auth -m \"Merge auth branch with full screen auth into main\")",
+      "Bash(npm run build)",
+      "Bash(npm install react-calendly)",
+      "Bash(npm run dev)"
     ],
     "deny": [],
     "ask": []
