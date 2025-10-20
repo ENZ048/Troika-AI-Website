@@ -13,7 +13,7 @@ const API_BASE = "https://api.0804.in/api"
 // const API_BASE = "http://localhost:5000/api"
 
 // Development mode - set to true to bypass authentication during development
-const SKIP_AUTH_IN_DEV = true;
+const SKIP_AUTH_IN_DEV = false;
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
