@@ -3410,82 +3410,40 @@ AI Website is built for instant replies, 24×7.<br>
 
   // Voice recording handlers
   const handleMicClick = () => {
-    if (!isMobile) {
-      if (isRecording) {
-        stopRecording();
-      } else {
-        startRecording((text) => {
-          handleSendMessage(text);
-        }).catch((error) => {
-          toast.error(error.message || "Voice recording failed");
-        });
-      }
+    // Allow click on both mobile and desktop as fallback
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording((text) => {
+        handleSendMessage(text);
+      }).catch((error) => {
+        toast.error(error.message || "Voice recording failed. Please ensure microphone permissions are granted.");
+      });
     }
   };
 
+  // Simplified touch handlers - just use click behavior (start/stop toggle)
   const handleMicTouchStart = useCallback(
     (e) => {
-      if (isMobile && !isTyping) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        
-        // Add haptic feedback if available
-        hapticFeedback(50); // Short vibration
-        
-        startRecording((text) => {
-          handleSendMessage(text);
-        }).catch((error) => {
-          toast.error(error.message || "Voice recording failed");
-        });
-      }
+      // No-op: Let onClick handle it
     },
-    [isMobile, isTyping, startRecording, handleSendMessage]
+    []
   );
 
   const handleMicTouchEnd = useCallback(
     (e) => {
-      if (isMobile) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        
-        // Add haptic feedback if available
-        hapticFeedback(25); // Short vibration
-        
-        stopRecording();
-      }
+      // No-op: Let onClick handle it
     },
-    [isMobile, stopRecording]
+    []
   );
 
   const handleMicMouseDown = useCallback((e) => {
-    if (isMobile) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Add haptic feedback if available
-      hapticFeedback(50);
-      
-      startRecording((text) => {
-        handleSendMessage(text);
-      }).catch((error) => {
-        toast.error(error.message || "Voice recording failed");
-      });
-    }
-  }, [isMobile, startRecording, handleSendMessage]);
+    // No-op: Let onClick handle it
+  }, []);
 
   const handleMicMouseUp = useCallback((e) => {
-    if (isMobile) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Add haptic feedback if available
-      hapticFeedback(25);
-      
-      stopRecording();
-    }
-  }, [isMobile, stopRecording]);
+    // No-op: Let onClick handle it
+  }, []);
 
   // Sidebar and page management handlers
   const handleSidebarToggle = useCallback(() => {

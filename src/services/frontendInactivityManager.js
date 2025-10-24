@@ -3,6 +3,7 @@ import conversationTranscriptService from './conversationTranscriptService';
 class FrontendInactivityManager {
   constructor() {
     this.activeTimers = new Map();
+    this.transcriptSentSessions = new Set(); // Track sessions that already received transcripts
     this.INACTIVITY_TIMEOUT = 30000; // 30 seconds
   }
 
@@ -70,6 +71,12 @@ class FrontendInactivityManager {
       console.log('🤖 [INACTIVITY DEBUG] Chatbot ID:', chatbotId);
       console.log('📊 [INACTIVITY DEBUG] Chat history length:', chatHistory?.length || 0);
 
+      // Check if transcript was already sent for this session
+      if (this.transcriptSentSessions.has(sessionId)) {
+        console.log(`⚠️ [INACTIVITY DEBUG] Transcript already sent for session: ${sessionId}. Skipping duplicate send.`);
+        return;
+      }
+
       if (!chatHistory || chatHistory.length === 0) {
         console.warn(`⚠️ [INACTIVITY DEBUG] No chat history found for session: ${sessionId}`);
         return;
@@ -88,9 +95,12 @@ class FrontendInactivityManager {
       console.log('📥 [INACTIVITY DEBUG] Transcript service result:', result);
 
       if (result.success) {
+        // Mark this session as having received a transcript
+        this.transcriptSentSessions.add(sessionId);
         console.log(`✅ [INACTIVITY DEBUG] Conversation transcript sent successfully for session: ${sessionId}`);
         console.log(`📱 [INACTIVITY DEBUG] PDF URL: ${result.s3Url}`);
         console.log(`📊 [INACTIVITY DEBUG] Message count: ${result.messageCount}`);
+        console.log(`🔒 [INACTIVITY DEBUG] Session marked as transcript-sent. Total sessions with transcripts: ${this.transcriptSentSessions.size}`);
       } else {
         console.error(`❌ [INACTIVITY DEBUG] Failed to send conversation transcript: ${result.message}`);
         console.error(`❌ [INACTIVITY DEBUG] Error details:`, result.error);
@@ -148,6 +158,42 @@ class FrontendInactivityManager {
    */
   getActiveTimerCount() {
     return this.activeTimers.size;
+  }
+
+  /**
+   * Check if transcript was already sent for a session
+   * @param {String} sessionId - Session ID
+   * @returns {Boolean} True if transcript was sent
+   */
+  isTranscriptSent(sessionId) {
+    return this.transcriptSentSessions.has(sessionId);
+  }
+
+  /**
+   * Clear transcript sent tracking for a session
+   * @param {String} sessionId - Session ID
+   */
+  clearTranscriptTracking(sessionId) {
+    if (this.transcriptSentSessions.has(sessionId)) {
+      this.transcriptSentSessions.delete(sessionId);
+      console.log(`🧹 [TRANSCRIPT DEBUG] Cleared transcript tracking for session: ${sessionId}`);
+    }
+  }
+
+  /**
+   * Clear all transcript tracking
+   */
+  clearAllTranscriptTracking() {
+    this.transcriptSentSessions.clear();
+    console.log('🧹 [TRANSCRIPT DEBUG] Cleared all transcript tracking');
+  }
+
+  /**
+   * Get count of sessions with sent transcripts
+   * @returns {Number} Number of sessions with sent transcripts
+   */
+  getTranscriptSentCount() {
+    return this.transcriptSentSessions.size;
   }
 }
 

@@ -932,7 +932,7 @@ const GreetingText = styled.h1`
 
     font-size: 1.5rem !important;
 
-    margin: 0.375rem 0 0.5rem 0;
+    margin: 0.375rem 0 1rem 0;
   }
 
 
@@ -940,15 +940,7 @@ const GreetingText = styled.h1`
   @media (max-width: 480px) {
 
             font-size: 1.5rem !important;
-        margin: 1.25rem 0 -0.62rem 0;
-  }
-
-
-
-  @media (max-width: 375px) {
-
-    font-size: 1.2rem !important;
-    margin: 0.5rem 0 0.5rem 0;
+        margin: 1.25rem 0 0.75rem 0;
   }
 
 
@@ -956,7 +948,7 @@ const GreetingText = styled.h1`
   @media (max-width: 375px) {
 
   font-size: 1.5rem !important;
-        margin: 1.25rem 0 -0.62rem 0;
+        margin: 1.25rem 0 0.75rem 0;
   }
 
 
@@ -964,7 +956,7 @@ const GreetingText = styled.h1`
   @media (max-width: 320px) {
 
     font-size: 1.8rem !important;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 1rem 0;
   }
 
 `;
@@ -996,6 +988,7 @@ const SubText = styled.p`
   @media (max-width: 768px) {
 
     font-size: 1rem;
+    padding: 0 0.75rem;
 
   }
 
@@ -1006,6 +999,7 @@ const SubText = styled.p`
     font-size: 0.9rem;
 
     margin: 0 0 1rem 0;
+    padding: 0 0.5rem;
 
   }
 
@@ -1016,6 +1010,7 @@ const SubText = styled.p`
     font-size: 0.85rem;
 
     margin: 0 0 1rem 0;
+    padding: 0 0.4rem;
 
   }
 
@@ -1026,6 +1021,7 @@ const SubText = styled.p`
     font-size: 0.8rem;
 
     margin: 0 0 1rem 0;
+    padding: 0 0.3rem;
 
   }
 
@@ -2676,7 +2672,8 @@ const WelcomeSection = ({
           lineHeight: '1.7',
           maxWidth: '700px',
           margin: '0 auto',
-          fontWeight: '400'
+          fontWeight: '400',
+          padding: '0 1rem'
         }}>
           {activePage === 'new-chat' ? 'Welcome to Troika Tech! We specialize in creating intelligent AI solutions that transform how businesses interact with their customers. Our comprehensive suite includes AI-powered websites and automated calling agents - all designed to help your business grow 24/7.' :
            activePage === 'ai-agent' ? 'A 24×7 digital employee that chats, calls, and messages like a real team member to automate your business.' :

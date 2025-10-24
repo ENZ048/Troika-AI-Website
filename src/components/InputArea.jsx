@@ -206,78 +206,78 @@ const InputWrapper = styled.div`
 
 const InputButtons = styled.div`
   position: absolute;
-  right: 12px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 
   /* Enhanced mobile responsiveness - Comprehensive breakpoints */
   @media (max-width: 1200px) {
-    right: 8.6px; /* Increased by 15% from 7.5px */
-    gap: 8.6px; /* Increased by 15% from 7.5px */
+    right: 8px;
+    gap: 6px;
   }
 
   @media (max-width: 1024px) {
-    right: 8px; /* Increased by 15% from 7px */
-    gap: 8px; /* Increased by 15% from 7px */
+    right: 8px;
+    gap: 6px;
   }
 
   @media (max-width: 900px) {
-    right: 7.5px; /* Increased by 15% from 6.5px */
-    gap: 7.5px; /* Increased by 15% from 6.5px */
+    right: 8px;
+    gap: 6px;
   }
 
   @media (max-width: 768px) {
-    right: 7px; /* Increased by 15% from 6px */
-    gap: 7px; /* Increased by 15% from 6px */
+    right: 8px;
+    gap: 5px;
   }
 
   @media (max-width: 640px) {
-    right: 5.8px; /* Increased by 15% from 5px */
-    gap: 5.8px; /* Increased by 15% from 5px */
+    right: 8px;
+    gap: 5px;
   }
 
   @media (max-width: 600px) {
-    right: 5.2px; /* Increased by 15% from 4.5px */
-    gap: 5.2px; /* Increased by 15% from 4.5px */
+    right: 8px;
+    gap: 5px;
   }
 
   @media (max-width: 480px) {
-    right: 4.6px; /* Increased by 15% from 4px */
-    gap: 4.6px; /* Increased by 15% from 4px */
+    right: 8px;
+    gap: 4px;
   }
 
   @media (max-width: 414px) {
-    right: 4px; /* Increased by 15% from 3.5px */
-    gap: 4px; /* Increased by 15% from 3.5px */
+    right: 8px;
+    gap: 4px;
   }
 
   @media (max-width: 390px) {
-    right: 3.5px; /* Increased by 15% from 3px */
-    gap: 3.5px; /* Increased by 15% from 3px */
+    right: 8px;
+    gap: 4px;
   }
 
   @media (max-width: 375px) {
-    right: 2.9px; /* Increased by 15% from 2.5px */
-    gap: 2.9px; /* Increased by 15% from 2.5px */
+    right: 8px;
+    gap: 4px;
   }
 
   @media (max-width: 360px) {
-    right: 3.5px; /* Increased by 15% from 3px */
-    gap: 3.5px; /* Increased by 15% from 3px */
+    right: 8px;
+    gap: 4px;
   }
 
   @media (max-width: 320px) {
-    right: 2.3px; /* Increased by 15% from 2px */
-    gap: 2.3px; /* Increased by 15% from 2px */
+    right: 8px;
+    gap: 4px;
   }
 `;
 
 const ActionButton = styled.button`
-  background: ${props => props.$variant === 'primary' ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #ec4899 100%)' : '#ffffff'};
-  border: ${props => props.$variant === 'primary' ? 'none' : '2px solid #e5e7eb'};
+  background: ${props => props.$variant === 'primary' ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #ec4899 100%)' : 'transparent'};
+  border: ${props => props.$variant === 'primary' ? 'none' : 'none'};
   border-radius: 14px;
   width: 44px;
   height: 44px;
@@ -289,16 +289,14 @@ const ActionButton = styled.button`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   padding: 0;
-  box-shadow: ${props => props.$variant === 'primary' 
-    ? '0 4px 12px rgba(139, 92, 246, 0.35), 0 2px 4px rgba(139, 92, 246, 0.2)' 
-    : '0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'};
+  box-shadow: none;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${props => props.$variant === 'primary' 
-      ? '0 6px 16px rgba(139, 92, 246, 0.45), 0 3px 6px rgba(139, 92, 246, 0.3)' 
-      : '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)'};
-    border-color: ${props => props.$variant === 'primary' ? 'transparent' : '#d1d5db'};
+    box-shadow: none;
+    background: ${props => props.$variant === 'primary'
+      ? 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #ec4899 100%)'
+      : 'transparent'};
   }
 
   &:active {
@@ -987,9 +985,13 @@ const InputArea = ({
             onMouseDown={handleMicMouseDown}
             onMouseUp={handleMicMouseUp}
             disabled={shouldDisable}
-            title={isRecording ? "Stop recording" : "Start voice recording"}
+            title={isRecording ? "Stop recording" : (isMobile ? "Tap or hold to record" : "Click to record")}
+            style={{
+              background: isRecording ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
+              color: isRecording ? '#ef4444' : '#6b7280'
+            }}
           >
-            {isRecording && !isMobile ? <FiSquare /> : <FiMic />}
+            {isRecording ? <FiSquare /> : <FiMic />}
           </ActionButton>
           <SendButton
             onClick={() => {

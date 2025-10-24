@@ -19,6 +19,8 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 9999;
   animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20px;
+  overflow-y: auto;
 
   @keyframes fadeIn {
     from {
@@ -27,6 +29,10 @@ const ModalOverlay = styled.div`
     to {
       opacity: 1;
     }
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
   }
 `;
 
@@ -42,7 +48,7 @@ const ModalContainer = styled.div`
   };
   border-radius: 24px;
   padding: 40px;
-  margin: 20px;
+  margin: 0;
   box-shadow: ${props => props.$isDarkMode
     ? '0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(148, 163, 184, 0.05), inset 0 1px 0 0 rgba(148, 163, 184, 0.05)'
     : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(148, 163, 184, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.9)'
@@ -50,7 +56,9 @@ const ModalContainer = styled.div`
   max-width: 440px;
   width: 100%;
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
+  overflow: visible;
+  max-height: 95vh;
+  overflow-y: auto;
 
   &::before {
     content: '';
@@ -78,9 +86,19 @@ const ModalContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 32px 24px;
-    margin: 16px;
+    padding: 24px 20px;
     border-radius: 20px;
+    max-height: 90vh;
+  }
+
+  @media (max-width: 375px) {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  @media (max-width: 320px) {
+    padding: 16px 12px;
+    border-radius: 14px;
   }
 `;
 
@@ -156,6 +174,17 @@ const OtpInputsContainer = styled.div`
 
   @media (max-width: 480px) {
     gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 375px) {
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 320px) {
+    gap: 4px;
+    margin-bottom: 16px;
   }
 `;
 
@@ -210,6 +239,18 @@ const OtpInput = styled.input`
     width: 44px;
     height: 50px;
     font-size: 1.25rem;
+  }
+
+  @media (max-width: 375px) {
+    width: 40px;
+    height: 46px;
+    font-size: 1.15rem;
+  }
+
+  @media (max-width: 320px) {
+    width: 36px;
+    height: 42px;
+    font-size: 1.1rem;
   }
 `;
 

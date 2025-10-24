@@ -236,6 +236,34 @@ const SocialIcon = styled.a`
   }
 `;
 
+const PoweredByContainer = styled.div`
+  padding: 0.75rem 1rem;
+  border-top: 1px solid ${props => props.$isDarkMode ? '#1f1f1f' : '#e5e5e5'};
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  color: ${props => props.$isDarkMode ? '#9ca3af' : '#6b7280'};
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+`;
+
+const PoweredByLink = styled.a`
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 600;
+
+  &:hover {
+    color: #8b5cf6;
+  }
+`;
+
 const MobileOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -321,7 +349,8 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 padding: '5px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                outline: 'none'
               }}
               title="Close menu"
             >
@@ -447,18 +476,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
         </SocialIconsContainer>
 
         {/* Powered by Troika Tech - Branding */}
-        <div style={{
-          padding: "0.75rem 1rem",
-          borderTop: `1px solid ${isDarkMode ? '#1f1f1f' : '#e5e5e5'}`,
-          marginTop: "auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          gap: "0.5rem",
-          color: isDarkMode ? "#9ca3af" : "#6b7280",
-          fontSize: "0.875rem",
-          fontWeight: "500"
-        }}>
+        <PoweredByContainer $isDarkMode={isDarkMode}>
           <span>Powered by</span>
           <img
             src="/logo.png"
@@ -469,22 +487,14 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
               filter: isDarkMode ? "brightness(0.8)" : "none"
             }}
           />
-          <a
+          <PoweredByLink
             href="https://troikatech.in/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              transition: "color 0.2s ease",
-              fontWeight: "600"
-            }}
-            onMouseEnter={(e) => e.target.style.color = "#8b5cf6"}
-            onMouseLeave={(e) => e.target.style.color = isDarkMode ? "#9ca3af" : "#6b7280"}
           >
             Troika Tech
-          </a>
-        </div>
+          </PoweredByLink>
+        </PoweredByContainer>
 
       </SidebarContainer>
     </>

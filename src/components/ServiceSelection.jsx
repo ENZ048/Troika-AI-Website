@@ -128,8 +128,8 @@ const ServiceSelection = ({ onSendProposal, phoneNumber }) => {
             $active={selected?.id === s.id}
             $isDarkMode={isDarkMode}
           >
-            <div style={{fontWeight:700, marginBottom:6}}>{s.name}</div>
-            <div style={{opacity:0.8}}>{s.desc}</div>
+            <div style={{fontWeight:700, marginBottom:6, color: isDarkMode ? '#f9fafb' : '#111827'}}>{s.name}</div>
+            <div style={{opacity:0.8, color: isDarkMode ? '#e5e7eb' : '#374151'}}>{s.desc}</div>
             <Desc $isDarkMode={isDarkMode}>{s.long}</Desc>
           </Card>
         ))}
