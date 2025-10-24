@@ -3612,43 +3612,20 @@ AI Website is built for instant replies, 24×7.<br>
                   toast.error('Phone not found. Please complete phone verification once.');
                   return;
                 }
-                // Normalize and validate
-                let digits = String(phoneRaw).replace(/\D/g, '');
-                // If longer than 12, try to capture last 10
-                if (digits.length > 12 && /\d{10}$/.test(digits)) {
-                  digits = digits.slice(-10);
-                }
-                // Build destination
-                let destination = '';
-                if (digits.length === 10) {
-                  destination = `91${digits}`;
-                } else if (digits.length === 12 && digits.startsWith('91')) {
-                  destination = digits;
-                } else {
-                  toast.error('Invalid Number');
-                  return;
-                }
+
+                // Call backend API instead of direct WhatsApp API
                 const payload = {
-                  apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDYyNzc3NzAzNzQyNTczY2RlMDZhZiIsIm5hbWUiOiJUcm9pa2EgVGVjaCBTZXJ2aWNlcyIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NjQ2Mjc3NmNhNjM2YzYwZWQxNGJlYjciLCJhY3RpdmVQbGFuIjoiTk9ORSIsImlhdCI6MTcxNTg3MzY1NX0.ACrl15Ft8PoHdjrrNTUPNZIHbm4T9fRSLfxPzQRCbVM",
-                  campaignName: "proposalsending",
-                  destination,
-                  userName: "Troika Tech Services",
-                  templateParams: ["$FirstName"],
-                  paramsFallbackValue: { FirstName: service.name },
-                  source: "new-landing-page form",
-                  media: {},
-                  buttons: [],
-                  carouselCards: [],
-                  location: {},
-                  attributes: {}
+                  phone: phoneRaw,
+                  serviceName: service.name
                 };
-                const res = await fetch('https://backend.api-wa.co/campaign/troika-tech-services/api/v2', {
+
+                const res = await fetch(`${apiBase}/proposal/send`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(payload)
                 });
                 const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error(data?.message || 'Failed to send proposal');
+                if (!res.ok) throw new Error(data?.error || 'Failed to send proposal');
                 toast.success('Proposal sent on WhatsApp.');
               } catch (e) {
                 toast.error(e.message);
