@@ -926,7 +926,7 @@ const InputArea = ({
 }) => {
   const { isDarkMode } = useTheme();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const shouldDisable = isTyping || showInlineAuth || shouldShowAuth; // Disable when typing OR when auth modal is showing
+  const shouldDisable = isTyping; // Only disable when typing
 
   const handleQuestionClick = (question) => {
     setMessage(question);
@@ -969,8 +969,6 @@ const InputArea = ({
           placeholder={
             isTyping
               ? "Thinking..."
-              : showInlineAuth || shouldShowAuth
-              ? "Please verify your identity to continue..."
               : "Ask me anything..."
           }
           disabled={shouldDisable}

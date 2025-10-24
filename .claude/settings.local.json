@@ -25,7 +25,9 @@
       "Bash(git checkout quote -- src/components/ServiceSelection.jsx)",
       "Bash(git checkout quote -- src/App.jsx src/components/SupaChatbot.jsx src/hooks/useAuthentication.js)",
       "Bash(git stash pop)",
-      "Bash(git add docs/ src/ README.md)"
+      "Bash(git add docs/ src/ README.md)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd Get Quote feature and organize documentation\n\nFeatures Added:\n- Get Quote service selection page with 4 service options\n- WhatsApp proposal delivery integration\n- Multi-level phone number fallback system\n- Responsive service selection UI with theme support\n\nCode Changes:\n- New ServiceSelection.jsx component for quote functionality\n- Updated SupaChatbot.jsx to integrate quote page\n- Enhanced App.jsx with phone persistence\n- Modified useAuthentication.js for phone storage\n\nDocumentation:\n- Moved all documentation to dedicated docs/ folder\n- Created comprehensive GET_QUOTE_FEATURE.md guide\n- Updated README.md with docs structure\n- Added docs/README.md index for easy navigation\n- Organized 11 documentation files\n\nCleanup:\n- Removed .playwright-mcp folder\n- Cleaned up root directory structure\n- Updated project README with clear structure\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git stash drop)"
     ],
     "deny": [],
     "ask": []
