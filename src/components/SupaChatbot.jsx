@@ -746,49 +746,16 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           setShowAuthScreen(false);
         }
 
-        // Check for existing session
-        const storeKey = SESSION_STORE_KEY;
-        const saved = localStorage.getItem(storeKey);
-        if (saved) {
-          try {
-            const qs = `phone=${encodeURIComponent(saved)}`;
-            const url = `${apiBase}/whatsapp-otp/check-session?${qs}&chatbotId=${chatbotId}`;
-
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("Session validation failed");
-            const json = await res.json();
-
-            if (json.valid) {
-              setPhone(saved);
-              setVerified(true);
-              setNeedsAuth(false);
-              setShowAuthScreen(false);
-              setShowInlineAuth(false);
-              // Don't reset userMessageCount here - let it be handled by the auth flow
-              // Removed setHasShownInterestResponse - no longer needed
-              
-              // Greeting disabled - user doesn't want initial greeting
-              // Keep chat history empty on session restore
-              setFinalGreetingReady(true);
-            } else {
-              localStorage.removeItem(storeKey);
-              toast.info("Your session has expired. Please sign in again.");
-              setVerified(false);
-              setNeedsAuth(true);
-              setShowInlineAuth(true);
-            }
-          } catch (err) {
-            localStorage.removeItem(storeKey);
-            toast.error(
-              "Unable to restore your session. Please sign in again."
-            );
-            setVerified(false);
-            setNeedsAuth(true);
-            setShowInlineAuth(true);
-          }
-        } else {
-          // No saved session, check if user needs auth based on message count
-          // This will be handled by the useEffect that loads user message count
+        // Check for existing session using the new authentication system
+        // The useAuthentication hook already handles session validation on mount
+        // No need to show toast notifications here - auth is now handled upfront
+        if (isAuthenticated && userInfo?.phone) {
+          setPhone(userInfo.phone);
+          setVerified(true);
+          setNeedsAuth(false);
+          setShowAuthScreen(false);
+          setShowInlineAuth(false);
+          setFinalGreetingReady(true);
         }
       } catch {
         // Default to WhatsApp auth if configuration fetch fails
@@ -798,7 +765,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     return () => {
       cancelled = true;
     };
-  }, [apiBase, chatbotId]);
+  }, [apiBase, chatbotId, isAuthenticated, userInfo]);
 
   // Generate TTS for initial greeting message
   useEffect(() => {
