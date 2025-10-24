@@ -30,6 +30,10 @@ const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   order: ${(props) => (props.$isUser ? "2" : "1")};
+
+  @media (max-width: 768px) {
+    max-width: ${(props) => (props.$isPricing || props.$isSales ? "100%" : props.$isUser ? "75%" : "95%")};
+  }
 `;
 
 const MessageBubble = styled.div`

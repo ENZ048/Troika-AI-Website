@@ -3,8 +3,42 @@ import conversationTranscriptService from './conversationTranscriptService';
 class FrontendInactivityManager {
   constructor() {
     this.activeTimers = new Map();
-    this.transcriptSentSessions = new Set(); // Track sessions that already received transcripts
     this.INACTIVITY_TIMEOUT = 30000; // 30 seconds
+    this.TRANSCRIPT_TRACKING_KEY = 'supa_transcript_sent_sessions';
+
+    // Load previously sent sessions from localStorage
+    this.transcriptSentSessions = this.loadTranscriptTracking();
+  }
+
+  /**
+   * Load transcript tracking from localStorage
+   * @returns {Set} Set of session IDs that have received transcripts
+   */
+  loadTranscriptTracking() {
+    try {
+      const stored = localStorage.getItem(this.TRANSCRIPT_TRACKING_KEY);
+      if (stored) {
+        const sessions = JSON.parse(stored);
+        console.log('📂 [TRANSCRIPT DEBUG] Loaded transcript tracking from localStorage:', sessions.length, 'sessions');
+        return new Set(sessions);
+      }
+    } catch (error) {
+      console.error('❌ [TRANSCRIPT DEBUG] Error loading transcript tracking:', error);
+    }
+    return new Set();
+  }
+
+  /**
+   * Save transcript tracking to localStorage
+   */
+  saveTranscriptTracking() {
+    try {
+      const sessions = Array.from(this.transcriptSentSessions);
+      localStorage.setItem(this.TRANSCRIPT_TRACKING_KEY, JSON.stringify(sessions));
+      console.log('💾 [TRANSCRIPT DEBUG] Saved transcript tracking to localStorage:', sessions.length, 'sessions');
+    } catch (error) {
+      console.error('❌ [TRANSCRIPT DEBUG] Error saving transcript tracking:', error);
+    }
   }
 
   /**
@@ -97,6 +131,7 @@ class FrontendInactivityManager {
       if (result.success) {
         // Mark this session as having received a transcript
         this.transcriptSentSessions.add(sessionId);
+        this.saveTranscriptTracking(); // Persist to localStorage
         console.log(`✅ [INACTIVITY DEBUG] Conversation transcript sent successfully for session: ${sessionId}`);
         console.log(`📱 [INACTIVITY DEBUG] PDF URL: ${result.s3Url}`);
         console.log(`📊 [INACTIVITY DEBUG] Message count: ${result.messageCount}`);
@@ -176,6 +211,7 @@ class FrontendInactivityManager {
   clearTranscriptTracking(sessionId) {
     if (this.transcriptSentSessions.has(sessionId)) {
       this.transcriptSentSessions.delete(sessionId);
+      this.saveTranscriptTracking(); // Update localStorage
       console.log(`🧹 [TRANSCRIPT DEBUG] Cleared transcript tracking for session: ${sessionId}`);
     }
   }
@@ -185,6 +221,7 @@ class FrontendInactivityManager {
    */
   clearAllTranscriptTracking() {
     this.transcriptSentSessions.clear();
+    this.saveTranscriptTracking(); // Update localStorage
     console.log('🧹 [TRANSCRIPT DEBUG] Cleared all transcript tracking');
   }
 
