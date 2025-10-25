@@ -1006,14 +1006,14 @@ const ChatHeader = ({
           </HeaderButton>
 
           {/* Right: Mute Button */}
-          <HeaderButton
+          {/* <HeaderButton
             $isDarkMode={isDarkMode}
             title={isMuted ? "Unmute" : "Mute"}
             onClick={toggleMute}
             className="mobile-mute-btn"
           >
             {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
-          </HeaderButton>
+          </HeaderButton> */}
         </>
       ) : (
         /* Desktop Layout */
@@ -1039,13 +1039,13 @@ const ChatHeader = ({
             </StatusBlock>
           </HeaderLeft>
           <HeaderRight>
-            <HeaderButton
+            {/* <HeaderButton
               $isDarkMode={isDarkMode}
               title={isMuted ? "Unmute" : "Mute"}
               onClick={toggleMute}
             >
               {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
-            </HeaderButton>
+            </HeaderButton> */}
           </HeaderRight>
         </HeaderInner>
       )}

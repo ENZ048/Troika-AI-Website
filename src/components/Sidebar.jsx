@@ -297,9 +297,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
 
   const navigationItems = [
     { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, color: '#10a37f' },
-    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, color: '#3b82f6' },
-    { id: 'whatsapp-marketing', label: 'WhatsApp Marketing', icon: FaWhatsapp, color: '#25d366' },
-    { id: 'rcs-messaging', label: 'RCS Messaging', icon: FaComment, color: '#8b5cf6' }
+    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, color: '#3b82f6' }
   ];
 
   const handlePageChange = (routeId) => {

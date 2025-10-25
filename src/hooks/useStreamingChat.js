@@ -113,11 +113,12 @@ export function useStreamingChat(options) {
       const streamUrl = `${apiBase}/troika/intelligent-chat/stream`;
 
       // Request data
+      // TEMPORARILY DISABLED TTS - forcing enableTTS to false
       const requestData = {
         chatbotId,
         query,
         sessionId,
-        enableTTS,
+        enableTTS: false, // Temporarily disabled
         phone: phone || "", // Use provided phone or empty string
       };
 
@@ -191,7 +192,8 @@ export function useStreamingChat(options) {
           },
 
           onAudio: (audioContent, sequence) => {
-            // Track first audio time
+            // TEMPORARILY DISABLED: TTS Audio playback
+            /* // Track first audio time
             if (!firstAudioTimeRef.current) {
               firstAudioTimeRef.current = Date.now();
               const firstAudioLatency = firstAudioTimeRef.current - startTimeRef.current;
@@ -211,7 +213,8 @@ export function useStreamingChat(options) {
                 isMuted,
                 sequence
               });
-            }
+            } */
+            console.log('TTS Audio temporarily disabled - ignoring audio chunk');
           },
 
           onSuggestions: (suggestionsData) => {
@@ -297,10 +300,10 @@ export function useStreamingChat(options) {
               console.log('Final answer length:', finalAnswer.length, 'words:', wordCount);
               console.log('Suggestions:', suggestionsRef.current);
 
-              // Finalize audio stream - flush any remaining audio chunks
-              if (audioPlayerRef.current) {
+              // TEMPORARILY DISABLED: Finalize audio stream - flush any remaining audio chunks
+              /* if (audioPlayerRef.current) {
                 audioPlayerRef.current.finalizeStream();
-              }
+              } */
 
               // Call completion callback with the final answer, suggestions, and metadata
               // This callback will set currentStreamingMessageId to null

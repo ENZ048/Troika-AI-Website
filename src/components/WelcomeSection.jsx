@@ -2661,8 +2661,6 @@ const WelcomeSection = ({
            activePage === 'pricing-setup' ? 'Troika Tech Setup & Pricing' :
            activePage === 'ai-websites' ? 'Troika Tech – AI Websites' :
            activePage === 'ai-calling' ? 'Troika Tech – AI Calling Agent' :
-          activePage === 'whatsapp-marketing' ? 'Troika Tech – WhatsApp Marketing' :
-           activePage === 'rcs-messaging' ? 'Troika Tech – RCS Messaging' :
            activePage === 'ai-agent' ? 'Hi! This is Troika Tech 👋' :
            activePage === 'industry-use-cases' ? 'AI Websites By Troika Tech' :
            'Hi! This is Troika Tech 👋'}
@@ -2680,8 +2678,6 @@ const WelcomeSection = ({
            activePage === 'ai-calling-agent' ? 'A human-like voice AI that makes and answers calls to engage, follow up, and close leads automatically.' :
            activePage === 'ai-websites' ? '' :
            activePage === 'ai-calling' ? 'A human-like voice AI that makes and answers calls to engage, follow up, and close leads automatically.' :
-           activePage === 'whatsapp-marketing' ? 'Bulk WhatsApp broadcasting that helps brands send thousands of promotional or informational messages instantly — responsibly, at scale.' :
-           activePage === 'rcs-messaging' ? 'A verified, media-rich messaging service for Android that replaces SMS with branded, interactive, and trackable messages.' :
            activePage === 'industry-use-cases' ? '' :
            ''}
         </SubText>

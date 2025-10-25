@@ -162,8 +162,6 @@ function App() {
               {/* New sidebar routes */}
               <Route path="/ai-agent" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/ai-calling-agent" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
-              <Route path="/whatsapp-marketing" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
-              <Route path="/rcs-messaging" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/get-quote" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/schedule-meeting" element={<ScheduleMeeting />} />
               <Route path="/book-call" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />

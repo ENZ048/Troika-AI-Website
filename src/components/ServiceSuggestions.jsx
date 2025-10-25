@@ -95,18 +95,6 @@ const questionsByPage = {
     'Can it make outbound calls and answer incoming calls too?',
     'What\'s the cost per minute and setup charge for the calling agent?',
     'Can it speak in Indian languages like Hindi or Marathi for my customers?'
-  ],
-  'whatsapp-marketing': [
-    'Can I send promotional messages on WhatsApp using my brand name?',
-    'Is this an official WhatsApp API or a safe alternative?',
-    'How many messages can I send per minute?',
-    'What\'s the monthly cost for WhatsApp bulk messaging?'
-  ],
-  'rcs-messaging': [
-    "What is RCS and how is it different from SMS?",
-    "Will my brand logo and verification tick show in messages?",
-    "How much does RCS messaging cost per message?",
-    "Can customers click buttons like 'Book Now' or 'Call Us' inside the message?"
   ]
 };
 

@@ -147,7 +147,15 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   // Custom hooks
   const { batteryLevel, isCharging } = useBattery();
   const currentTime = useClock();
-  const { playAudio, stopAudio, currentlyPlaying, audioObject, toggleMuteForCurrentAudio, muteCurrentAudio, ensureAudioMuted } = useAudio(isMuted, hasUserInteracted, handleAudioEnded);
+  // TEMPORARILY DISABLED TTS - providing stub functions
+  // const { playAudio, stopAudio, currentlyPlaying, audioObject, toggleMuteForCurrentAudio, muteCurrentAudio, ensureAudioMuted } = useAudio(isMuted, hasUserInteracted, handleAudioEnded);
+  const playAudio = () => {}; // Stub function
+  const stopAudio = () => {}; // Stub function
+  const currentlyPlaying = null; // Stub value
+  const audioObject = null; // Stub value
+  const toggleMuteForCurrentAudio = () => {}; // Stub function
+  const muteCurrentAudio = () => {}; // Stub function
+  const ensureAudioMuted = () => {}; // Stub function
   const { isRecording, startRecording, stopRecording } = useVoiceRecording(apiBase);
   
   // Authentication and streaming hooks
@@ -188,7 +196,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     chatbotId,
     sessionId,
     phone: userInfo?.phone || phone,
-    enableTTS: !isMuted,
+    enableTTS: false, // TEMPORARILY DISABLED TTS
     isMuted,
     onComplete: (data) => {
       console.log('🎉 [SupaChatbot] ===== STREAMING COMPLETE =====');
