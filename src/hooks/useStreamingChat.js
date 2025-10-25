@@ -43,6 +43,7 @@ export function useStreamingChat(options) {
   const updateThrottleRef = useRef(null);
   const suggestionsRef = useRef(null);
   const completedRef = useRef(false); // Flag to prevent duplicate onComplete calls
+  const currentMetadataRef = useRef(null); // ✨ Use ref for immediate access to metadata
 
   // Initialize Web Audio player
   useEffect(() => {
@@ -95,6 +96,7 @@ export function useStreamingChat(options) {
       setError(null);
       setIsStreaming(true);
       setMetrics(null);
+      currentMetadataRef.current = null; // Reset metadata ref
       lastQueryRef.current = query;
       startTimeRef.current = Date.now();
       firstTokenTimeRef.current = null;
@@ -218,6 +220,17 @@ export function useStreamingChat(options) {
             suggestionsRef.current = suggestionsData.items || suggestionsData;
           },
 
+          onMetadata: (metadataData) => {
+            console.log('🔔 [useStreamingChat] ===== METADATA EVENT RECEIVED =====');
+            console.log('🔔 [useStreamingChat] Metadata data:', metadataData);
+            console.log('🔔 [useStreamingChat] Metadata action:', metadataData?.action);
+            console.log('🔔 [useStreamingChat] Metadata calendly_url:', metadataData?.calendly_url);
+
+            // Store metadata in ref for immediate access (not state to avoid timing issues)
+            currentMetadataRef.current = metadataData;
+            console.log('🔔 [useStreamingChat] Current metadata ref updated to:', metadataData);
+          },
+
           onDone: (data) => {
             console.log('=== onDone called ===');
             console.log('Streaming completed:', data);
@@ -289,15 +302,26 @@ export function useStreamingChat(options) {
                 audioPlayerRef.current.finalizeStream();
               }
 
-              // Call completion callback with the final answer and suggestions
+              // Call completion callback with the final answer, suggestions, and metadata
               // This callback will set currentStreamingMessageId to null
-              console.log('Calling onComplete callback');
-              onComplete?.({
+              const metadataToAttach = currentMetadataRef.current; // Get from ref (immediate access)
+
+              console.log('🎯 [useStreamingChat] ===== CALLING onComplete =====');
+              console.log('🎯 [useStreamingChat] Final answer length:', finalAnswer.length);
+              console.log('🎯 [useStreamingChat] Metadata to attach:', metadataToAttach);
+              console.log('🎯 [useStreamingChat] Has metadata?', !!metadataToAttach);
+              console.log('🎯 [useStreamingChat] Metadata action:', metadataToAttach?.action);
+
+              const completeData = {
                 ...data,
                 fullAnswer: finalAnswer,
                 suggestions: suggestionsRef.current || [],
                 metrics: streamingMetrics,
-              });
+                metadata: metadataToAttach, // Attach metadata from ref
+              };
+
+              console.log('🎯 [useStreamingChat] Complete data object:', completeData);
+              onComplete?.(completeData);
 
               // Set isStreaming to false AFTER onComplete to ensure proper state sync
               setIsStreaming(false);

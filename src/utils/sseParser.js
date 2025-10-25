@@ -169,6 +169,15 @@ export class SSEStreamReader {
             console.log('SSE suggestions received:', event.data);
             handlers.onSuggestions?.(event.data);
             break;
+          case 'metadata':
+            // Metadata event - pass to handler for special actions like showing Calendly
+            console.log('📡 [SSE Parser] ===== METADATA EVENT RECEIVED =====');
+            console.log('📡 [SSE Parser] Event type:', event.type);
+            console.log('📡 [SSE Parser] Event data:', event.data);
+            console.log('📡 [SSE Parser] Has onMetadata handler?', !!handlers.onMetadata);
+            handlers.onMetadata?.(event.data);
+            console.log('📡 [SSE Parser] onMetadata handler called');
+            break;
           case 'close':
             // Close event - log but don't warn
             console.log('SSE connection closing:', event.data);

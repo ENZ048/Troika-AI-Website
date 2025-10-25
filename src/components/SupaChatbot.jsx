@@ -191,23 +191,28 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     enableTTS: !isMuted,
     isMuted,
     onComplete: (data) => {
-      console.log('🎉 Streaming complete:', data);
+      console.log('🎉 [SupaChatbot] ===== STREAMING COMPLETE =====');
+      console.log('🎉 [SupaChatbot] Data received:', data);
+      console.log('🎉 [SupaChatbot] Has metadata?', !!data.metadata);
+      console.log('🎉 [SupaChatbot] Metadata:', data.metadata);
 
       // Add the final message to chat history
       const targetTab = messageOriginTab || getCurrentTab();
-      console.log('🎉 STREAMING COMPLETE - Adding bot response to tab:', targetTab);
-      console.log('🎉 messageOriginTab:', messageOriginTab);
-      console.log('🎉 currentTab:', getCurrentTab());
-      console.log('🎉 isStreaming:', isStreaming);
-      console.log('🎉 isTyping:', isTyping);
-      
+      console.log('🎉 [SupaChatbot] Adding bot response to tab:', targetTab);
+
       const botMessage = {
         sender: "bot",
         text: data.fullAnswer,
         timestamp: new Date(),
+        metadata: data.metadata, // Include metadata for special actions like Calendly
       };
 
+      console.log('📝 [SupaChatbot] Bot message object created:', botMessage);
+      console.log('📝 [SupaChatbot] Message has metadata?', !!botMessage.metadata);
+      console.log('📝 [SupaChatbot] Message metadata action:', botMessage.metadata?.action);
+
       addMessageToTab(targetTab, botMessage);
+      console.log('✅ [SupaChatbot] Message added to tab');
       setCurrentStreamingMessageId(null);
       setIsTyping(false);
       
@@ -317,6 +322,60 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       }
     });
   }, []);
+
+  // Handle Calendly booking confirmation
+  const handleCalendlyBooking = useCallback(async (eventDetails) => {
+    console.log('🎉 [SupaChatbot] Meeting booked successfully!', eventDetails);
+
+    const confirmationText = "Great! Your meeting has been booked successfully! You'll receive a confirmation email shortly with all the details.\n\nIn the meantime, feel free to ask me anything about our services, pricing, or how we can help transform your business!";
+
+    const confirmationMessage = {
+      sender: "bot",
+      text: confirmationText,
+      timestamp: new Date()
+    };
+
+    const currentTab = getCurrentTab();
+    const currentHistory = loadTabHistory(currentTab);
+    const newMessageIndex = currentHistory.length;
+
+    addMessageToTab(currentTab, confirmationMessage);
+
+    // Generate and play TTS for confirmation message
+    if (apiBase) {
+      try {
+        console.log('🔊 Generating TTS for booking confirmation...');
+        const response = await axios.post(`${apiBase}/text-to-speech`, {
+          text: confirmationText,
+        });
+
+        if (response.data.audio) {
+          const base64Data = response.data.audio.replace("data:audio/mpeg;base64,", "");
+          const byteArray = Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+          const audioData = {
+            data: byteArray,
+            contentType: "audio/mpeg"
+          };
+
+          console.log('🔊 Playing booking confirmation TTS...');
+          playAudio(audioData, newMessageIndex);
+        }
+      } catch (error) {
+        console.error('Failed to generate TTS for booking confirmation:', error);
+      }
+    }
+
+    // Auto-scroll to show confirmation (within chat container, not full page)
+    setTimeout(() => {
+      if (endOfMessagesRef.current) {
+        endOfMessagesRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      }
+    }, 100);
+  }, [getCurrentTab, addMessageToTab, loadTabHistory, apiBase, playAudio]);
 
   // Handle route changes and load appropriate chat history
   useEffect(() => {
@@ -3641,6 +3700,7 @@ AI Website is built for instant replies, 24×7.<br>
                           currentlyPlaying={currentlyPlaying}
                           playAudio={playAudio}
                           onSuggestionClick={handleBotSuggestionClick}
+                          onCalendlyEventScheduled={handleCalendlyBooking}
                         />
                         {msg.showServiceButtons && showServiceSelection && (
                           <ServiceSelectionButtons
