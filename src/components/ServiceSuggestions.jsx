@@ -80,9 +80,10 @@ const QuestionButton = styled.button`
 
 const questionsByPage = {
   'home': [
-    'Talk to our AI — see what your next employee looks like.',
-    'Ask anything about your business — our Agent will answer instantly.',
-    'We don\'t build bots. We build Business Class Automations.'
+    'What you guys do?',
+    'What is an AI agent?',
+    'How will it help my business?',
+    'What are the charges?'
   ],
   'ai-agent': [
     'How is your AI Agent different from a normal chatbot?',
