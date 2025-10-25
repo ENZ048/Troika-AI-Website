@@ -1029,7 +1029,7 @@ const ChatHeader = ({
                 />
             </Circle>
             <StatusBlock>
-              <BotName $isDarkMode={isDarkMode}>Troika Tech</BotName>
+              <BotName $isDarkMode={isDarkMode}>AI Agent</BotName>
               <Status $isDarkMode={isDarkMode}>
                 <OnlineIndicator />
                 <span>Online</span>
