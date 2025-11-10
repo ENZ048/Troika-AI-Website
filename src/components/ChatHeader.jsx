@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
-import { FiZap, FiUsers, FiMoon, FiSun, FiSettings, FiArrowLeft, FiMenu, FiRefreshCw } from "react-icons/fi";
+import { FiZap, FiUsers, FiSettings, FiArrowLeft, FiMenu, FiRefreshCw } from "react-icons/fi";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Header = styled.div`
@@ -52,48 +52,48 @@ const Header = styled.div`
 
   @media (max-width: 768px) {
     padding: 0.75rem 1rem;
-    min-height: 60px;
+    min-height: 65px;
     justify-content: space-between;
   }
 
   @media (max-width: 640px) {
     padding: 0.75rem 0.875rem;
-    min-height: 60px;
+    min-height: 65px;
   }
 
   @media (max-width: 600px) {
     padding: 0.625rem 0.75rem;
-    min-height: 55px;
+    min-height: 62px;
   }
 
   @media (max-width: 480px) {
     padding: 0.5rem 0.625rem;
-    min-height: 50px;
+    min-height: 60px;
   }
 
   @media (max-width: 414px) {
-    padding: 0.4rem 0.5rem;
-    min-height: 45px;
+    padding: 0.5rem 0.5rem;
+    min-height: 58px;
   }
 
   @media (max-width: 390px) {
-    padding: 0.35rem 0.4rem;
-    min-height: 40px;
+    padding: 0.5rem 0.4rem;
+    min-height: 56px;
   }
 
   @media (max-width: 375px) {
-    padding: 0.3rem 0.35rem;
-    min-height: 38px;
+    padding: 0.5rem 0.35rem;
+    min-height: 55px;
   }
 
   @media (max-width: 360px) {
-    padding: 0.25rem 0.3rem;
-    min-height: 35px;
+    padding: 0.5rem 0.3rem;
+    min-height: 54px;
   }
 
   @media (max-width: 320px) {
-    padding: 0.2rem 0.25rem;
-    min-height: 32px;
+    padding: 0.5rem 0.25rem;
+    min-height: 52px;
   }
 `;
 
@@ -1004,16 +1004,16 @@ const ChatHeader = ({
           >
             <FiMenu />
           </HeaderButton>
-          
-          {/* Right: Theme Toggle Button */}
-          <HeaderButton
+
+          {/* Right: Mute Button */}
+          {/* <HeaderButton
             $isDarkMode={isDarkMode}
-            title={isDarkMode ? "Light Mode" : "Dark Mode"}
-            onClick={toggleTheme}
-            className="mobile-theme-btn"
+            title={isMuted ? "Unmute" : "Mute"}
+            onClick={toggleMute}
+            className="mobile-mute-btn"
           >
-            {isDarkMode ? <FiSun /> : <FiMoon />}
-          </HeaderButton>
+            {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
+          </HeaderButton> */}
         </>
       ) : (
         /* Desktop Layout */
@@ -1029,7 +1029,7 @@ const ChatHeader = ({
                 />
             </Circle>
             <StatusBlock>
-              <BotName $isDarkMode={isDarkMode}>Troika Tech</BotName>
+              <BotName $isDarkMode={isDarkMode}>AI Agent</BotName>
               <Status $isDarkMode={isDarkMode}>
                 <OnlineIndicator />
                 <span>Online</span>
@@ -1039,20 +1039,13 @@ const ChatHeader = ({
             </StatusBlock>
           </HeaderLeft>
           <HeaderRight>
-            <HeaderButton
+            {/* <HeaderButton
               $isDarkMode={isDarkMode}
               title={isMuted ? "Unmute" : "Mute"}
               onClick={toggleMute}
             >
               {isMuted ? <IoVolumeMute /> : <IoVolumeHigh />}
-            </HeaderButton>
-            <HeaderButton
-              $isDarkMode={isDarkMode}
-              title={isDarkMode ? "Light Mode" : "Dark Mode"}
-              onClick={toggleTheme}
-            >
-              {isDarkMode ? <FiSun /> : <FiMoon />}
-            </HeaderButton>
+            </HeaderButton> */}
           </HeaderRight>
         </HeaderInner>
       )}

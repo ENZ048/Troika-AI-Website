@@ -3,7 +3,6 @@ import ScheduleMeeting from "./components/ScheduleMeeting"
 import React, { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import AuthModal from "./components/AuthModal"
-import OtpModal from "./components/OtpModal"
 import useAuthentication from "./hooks/useAuthentication"
 import { ThemeProvider } from "./contexts/ThemeContext"
 
@@ -13,7 +12,7 @@ const API_BASE = "https://api.0804.in/api"
 // const API_BASE = "http://localhost:5000/api"
 
 // Development mode - set to true to bypass authentication during development
-const SKIP_AUTH_IN_DEV = false;
+const SKIP_AUTH_IN_DEV = true;
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -47,7 +46,6 @@ class ErrorBoundary extends React.Component {
 // Authentication wrapper component
 function AuthenticationGate({ children }) {
   const location = useLocation();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [intendedRoute, setIntendedRoute] = useState(null);
@@ -74,7 +72,6 @@ function AuthenticationGate({ children }) {
   useEffect(() => {
     if (!isAuthenticated && !intendedRoute) {
       setIntendedRoute(location.pathname);
-      setShowAuthModal(true);
     }
   }, [isAuthenticated, location.pathname, intendedRoute]);
 
@@ -83,7 +80,6 @@ function AuthenticationGate({ children }) {
     try {
       setPhoneNumber(phone);
       await sendOtp(phone);
-      setShowAuthModal(false);
       setShowOtpModal(true);
     } catch (error) {
       console.error('Failed to send OTP:', error);
@@ -115,27 +111,18 @@ function AuthenticationGate({ children }) {
     return children;
   }
 
-  // Show auth modals if user is not authenticated
+  // Show auth modal if user is not authenticated
   if (!isAuthenticated) {
     return (
-      <>
-        {showAuthModal && (
-          <AuthModal
-            onSendOtp={handleSendOtp}
-            loading={authLoading}
-            error={authError}
-          />
-        )}
-        {showOtpModal && (
-          <OtpModal
-            onVerifyOtp={handleVerifyOtp}
-            onResendOtp={handleResendOtp}
-            loading={authLoading}
-            error={authError}
-            resendCooldown={resendCooldown}
-          />
-        )}
-      </>
+      <AuthModal
+        onSendOtp={handleSendOtp}
+        onVerifyOtp={handleVerifyOtp}
+        onResendOtp={handleResendOtp}
+        loading={authLoading}
+        error={authError}
+        resendCooldown={resendCooldown}
+        showOtpInput={showOtpModal}
+      />
     );
   }
 
@@ -175,8 +162,6 @@ function App() {
               {/* New sidebar routes */}
               <Route path="/ai-agent" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/ai-calling-agent" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
-              <Route path="/whatsapp-marketing" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
-              <Route path="/rcs-messaging" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/get-quote" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />
               <Route path="/schedule-meeting" element={<ScheduleMeeting />} />
               <Route path="/book-call" element={<SupaChatbot chatbotId={CHATBOT_ID} apiBase={API_BASE} />} />

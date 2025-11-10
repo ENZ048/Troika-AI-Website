@@ -4,6 +4,41 @@ class FrontendInactivityManager {
   constructor() {
     this.activeTimers = new Map();
     this.INACTIVITY_TIMEOUT = 30000; // 30 seconds
+    this.TRANSCRIPT_TRACKING_KEY = 'supa_transcript_sent_sessions';
+
+    // Load previously sent sessions from localStorage
+    this.transcriptSentSessions = this.loadTranscriptTracking();
+  }
+
+  /**
+   * Load transcript tracking from localStorage
+   * @returns {Set} Set of session IDs that have received transcripts
+   */
+  loadTranscriptTracking() {
+    try {
+      const stored = localStorage.getItem(this.TRANSCRIPT_TRACKING_KEY);
+      if (stored) {
+        const sessions = JSON.parse(stored);
+        console.log('📂 [TRANSCRIPT DEBUG] Loaded transcript tracking from localStorage:', sessions.length, 'sessions');
+        return new Set(sessions);
+      }
+    } catch (error) {
+      console.error('❌ [TRANSCRIPT DEBUG] Error loading transcript tracking:', error);
+    }
+    return new Set();
+  }
+
+  /**
+   * Save transcript tracking to localStorage
+   */
+  saveTranscriptTracking() {
+    try {
+      const sessions = Array.from(this.transcriptSentSessions);
+      localStorage.setItem(this.TRANSCRIPT_TRACKING_KEY, JSON.stringify(sessions));
+      console.log('💾 [TRANSCRIPT DEBUG] Saved transcript tracking to localStorage:', sessions.length, 'sessions');
+    } catch (error) {
+      console.error('❌ [TRANSCRIPT DEBUG] Error saving transcript tracking:', error);
+    }
   }
 
   /**
@@ -70,6 +105,12 @@ class FrontendInactivityManager {
       console.log('🤖 [INACTIVITY DEBUG] Chatbot ID:', chatbotId);
       console.log('📊 [INACTIVITY DEBUG] Chat history length:', chatHistory?.length || 0);
 
+      // Check if transcript was already sent for this session
+      if (this.transcriptSentSessions.has(sessionId)) {
+        console.log(`⚠️ [INACTIVITY DEBUG] Transcript already sent for session: ${sessionId}. Skipping duplicate send.`);
+        return;
+      }
+
       if (!chatHistory || chatHistory.length === 0) {
         console.warn(`⚠️ [INACTIVITY DEBUG] No chat history found for session: ${sessionId}`);
         return;
@@ -88,9 +129,13 @@ class FrontendInactivityManager {
       console.log('📥 [INACTIVITY DEBUG] Transcript service result:', result);
 
       if (result.success) {
+        // Mark this session as having received a transcript
+        this.transcriptSentSessions.add(sessionId);
+        this.saveTranscriptTracking(); // Persist to localStorage
         console.log(`✅ [INACTIVITY DEBUG] Conversation transcript sent successfully for session: ${sessionId}`);
         console.log(`📱 [INACTIVITY DEBUG] PDF URL: ${result.s3Url}`);
         console.log(`📊 [INACTIVITY DEBUG] Message count: ${result.messageCount}`);
+        console.log(`🔒 [INACTIVITY DEBUG] Session marked as transcript-sent. Total sessions with transcripts: ${this.transcriptSentSessions.size}`);
       } else {
         console.error(`❌ [INACTIVITY DEBUG] Failed to send conversation transcript: ${result.message}`);
         console.error(`❌ [INACTIVITY DEBUG] Error details:`, result.error);
@@ -148,6 +193,44 @@ class FrontendInactivityManager {
    */
   getActiveTimerCount() {
     return this.activeTimers.size;
+  }
+
+  /**
+   * Check if transcript was already sent for a session
+   * @param {String} sessionId - Session ID
+   * @returns {Boolean} True if transcript was sent
+   */
+  isTranscriptSent(sessionId) {
+    return this.transcriptSentSessions.has(sessionId);
+  }
+
+  /**
+   * Clear transcript sent tracking for a session
+   * @param {String} sessionId - Session ID
+   */
+  clearTranscriptTracking(sessionId) {
+    if (this.transcriptSentSessions.has(sessionId)) {
+      this.transcriptSentSessions.delete(sessionId);
+      this.saveTranscriptTracking(); // Update localStorage
+      console.log(`🧹 [TRANSCRIPT DEBUG] Cleared transcript tracking for session: ${sessionId}`);
+    }
+  }
+
+  /**
+   * Clear all transcript tracking
+   */
+  clearAllTranscriptTracking() {
+    this.transcriptSentSessions.clear();
+    this.saveTranscriptTracking(); // Update localStorage
+    console.log('🧹 [TRANSCRIPT DEBUG] Cleared all transcript tracking');
+  }
+
+  /**
+   * Get count of sessions with sent transcripts
+   * @returns {Number} Number of sessions with sent transcripts
+   */
+  getTranscriptSentCount() {
+    return this.transcriptSentSessions.size;
   }
 }
 

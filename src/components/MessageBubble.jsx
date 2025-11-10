@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FaVolumeUp, FaStopCircle } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
+import InlineCalendlyWidget from "./InlineCalendlyWidget";
 
 const MessageWrapper = styled.div`
   display: flex;
@@ -30,6 +31,10 @@ const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   order: ${(props) => (props.$isUser ? "2" : "1")};
+
+  @media (max-width: 768px) {
+    max-width: ${(props) => (props.$isPricing || props.$isSales ? "100%" : props.$isUser ? "75%" : "95%")};
+  }
 `;
 
 const MessageBubble = styled.div`
@@ -400,7 +405,8 @@ const MessageBubbleComponent = ({
   chatHistoryLength,
   currentlyPlaying,
   playAudio,
-  onSuggestionClick
+  onSuggestionClick,
+  onCalendlyEventScheduled
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -430,7 +436,10 @@ const MessageBubbleComponent = ({
     message.text.includes('Follow Us on Social Media') ||
     message.text.includes('Marketing')
   );
-  
+
+  // Check if this message should show Calendly widget
+  const isCalendlyMessage = !isUser && message.metadata?.action === 'show_calendly';
+
   const isHTMLMessage = isPricingMessage || isSalesMessage || isMarketingMessage || message.isHTML;
 
   return (
@@ -453,8 +462,8 @@ const MessageBubbleComponent = ({
         )}
 
         {isHTMLMessage ? (
-          <div 
-            dangerouslySetInnerHTML={{ __html: message.text }} 
+          <div
+            dangerouslySetInnerHTML={{ __html: message.text }}
             style={{
               width: '100%',
               maxWidth: '100%',
@@ -467,6 +476,63 @@ const MessageBubbleComponent = ({
               lineHeight: '1.4'
             }}
           />
+        ) : isCalendlyMessage ? (
+          <>
+            {/* Render the text message first */}
+            <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
+              <MessageContent $isUser={isUser} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    a: ({ node, ...props }) => (
+                      <a
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          padding: "0",
+                          color: "#1e90ff",
+                          textDecoration: "none",
+                          transition: "all 0.2s ease-in-out",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.textDecoration = "underline";
+                          e.target.style.color = "#0f62fe";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.textDecoration = "none";
+                          e.target.style.color = "#1e90ff";
+                        }}
+                      />
+                    ),
+                  }}
+                >
+                  {message.text}
+                </ReactMarkdown>
+              </MessageContent>
+
+              {/* Timestamp inside message bubble */}
+              <Timestamp $isDarkMode={isDarkMode} $isUser={isUser}>
+                {message.timestamp && message.timestamp instanceof Date && !isNaN(message.timestamp.getTime())
+                  ? message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : new Date().toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                }
+              </Timestamp>
+            </MessageBubble>
+
+            {/* Render the Calendly widget below the message */}
+            <InlineCalendlyWidget
+              url={message.metadata.calendly_url || "https://calendly.com/troika-parvati/new-meeting"}
+              onError={(error) => console.error('Calendly widget error:', error)}
+              onEventScheduled={onCalendlyEventScheduled}
+            />
+          </>
         ) : (
           <MessageBubble $isUser={isUser} $isDarkMode={isDarkMode} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
             <MessageContent $isUser={isUser} $isPricing={isPricingMessage} $isSales={isSalesMessage}>
