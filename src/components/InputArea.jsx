@@ -919,12 +919,13 @@ const InputArea = ({
   currentlyPlaying,
   isWelcomeMode = false,
   showInlineAuth = false,
+  showInlineAuthComponent = false,
   shouldShowAuth = false,
   activePage
 }) => {
   const { isDarkMode } = useTheme();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const shouldDisable = isTyping; // Only disable when typing
+  const shouldDisable = isTyping || showInlineAuthComponent; // Disable when typing or inline auth is shown
 
   const handleQuestionClick = (question) => {
     setMessage(question);

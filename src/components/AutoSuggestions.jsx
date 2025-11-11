@@ -129,13 +129,6 @@ const suggestionDatabase = {
     'How do I get started?',
     'How much do AI services cost?'
   ],
-  aiWebsite: [
-    'What is an AI Website?',
-    'How can AI Websites help grow my business?',
-    'What features does an AI Website include?',
-    'How much does an AI Website cost?',
-    'Can I customize my AI Website design?'
-  ],
   aiCalling: [
     'How does the AI Calling Agent work?',
     'Can AI Calling Agent handle multiple calls simultaneously?',
@@ -143,7 +136,6 @@ const suggestionDatabase = {
     'How much does AI Calling Agent cost?'
   ],
   pricing: [
-    'What is the pricing for AI Websites?',
     'What is the pricing for AI Calling Agent?',
     'Do you offer custom pricing plans?'
   ],

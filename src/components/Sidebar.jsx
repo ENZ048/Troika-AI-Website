@@ -391,7 +391,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
 
           <Section>
             <SectionTitle $isDarkMode={isDarkMode}>Contact</SectionTitle>
-            <NavItem
+            {/* <NavItem
               $isDarkMode={isDarkMode}
               onClick={() => handlePageChange('get-quote')}
               className={`nav-item ${isActive('/get-quote') ? 'active' : ''}`}
@@ -400,7 +400,7 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 <FaRupeeSign />
               </NavIcon>
               <NavText>Get Quote</NavText>
-            </NavItem>
+            </NavItem> */}
             <NavItem
               $isDarkMode={isDarkMode}
               onClick={() => handlePageChange('schedule-meeting')}

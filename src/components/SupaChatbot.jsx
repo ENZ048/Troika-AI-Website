@@ -89,6 +89,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const [botMessageCount, setBotMessageCount] = useState(0);
   const [showInlineAuth, setShowInlineAuth] = useState(false);
   const [showInlineAuthInput, setShowInlineAuthInput] = useState(false);
+  const [showInlineAuthComponent, setShowInlineAuthComponent] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [currentAuthValue, setCurrentAuthValue] = useState('');
   const [chatbotLogo, setChatbotLogo] = useState(
@@ -124,6 +125,9 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   const pendingGreetingAudio = useRef(null);
   const languageMessageShown = useRef(false);
   const greetingAddedRef = useRef(false);
+  // Timer for showing inline auth after first message (60 seconds)
+  const authTimerRef = useRef(null);
+  const firstMessageSentRef = useRef(false);
   // Commented out: Inline auth after 2 messages - now auth is shown at start only
   /* const pendingAuthAfterTTS = useRef(false);
   const pendingMessageAfterAuth = useRef(null); */
@@ -473,6 +477,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         return;
       }
 
+      // Prevent navigation when inline auth component is shown
+      if (showInlineAuthComponent) {
+        console.log('⚠️ Inline auth component is shown - preventing navigation');
+        toast.warning('Please complete authentication before navigating');
+        return;
+      }
+
       // Stop any ongoing audio/TTS immediately
       stopAudio();
 
@@ -531,8 +542,15 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       return;
     }
     
+    // Prevent navigation when inline auth component is shown
+    if (showInlineAuthComponent) {
+      console.log('⚠️ Inline auth component is shown - preventing tab navigation');
+      toast.warning('Please complete authentication before changing tabs');
+      return;
+    }
+    
     navigate(`/${tabId}`);
-  }, [navigate, sessionId, chatbotId, clearAllTabHistories, messageOriginTab, isStreaming, isTyping, stopStreaming, streamingResponse, addMessageToTab, stopAudio, pauseAudio, showInlineAuth, showInlineAuthInput, showOtpInput, isAuthenticated]);
+  }, [navigate, sessionId, chatbotId, clearAllTabHistories, messageOriginTab, isStreaming, isTyping, stopStreaming, streamingResponse, addMessageToTab, stopAudio, pauseAudio, showInlineAuth, showInlineAuthInput, showOtpInput, showInlineAuthComponent, isAuthenticated]);
 
   // Cleanup effect to reset navigation flag on unmount
   useEffect(() => {
@@ -1175,6 +1193,15 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
   }, [showInlineAuth, showWelcome]);
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (authTimerRef.current) {
+        clearTimeout(authTimerRef.current);
+      }
+    };
+  }, []);
+
   // Handle inline auth input display - commented out for default auth state
   /* useEffect(() => {
     console.log('Auth display check:', {
@@ -1347,7 +1374,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setUserMessageCount(0);
       setShowInlineAuth(false);
       setShowInlineAuthInput(false);
+      setShowInlineAuthComponent(false);
       setShowOtpInput(false);
+      firstMessageSentRef.current = false;
+      if (authTimerRef.current) {
+        clearTimeout(authTimerRef.current);
+        authTimerRef.current = null;
+      }
       lastGeneratedGreeting.current = null;
       localStorage.removeItem("resend_otp_start");
       greetingAutoPlayed.current = false;
@@ -1453,7 +1486,14 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         setShowAuthScreen(false);
         setShowInlineAuth(false);
         setShowInlineAuthInput(false);
+        setShowInlineAuthComponent(false);
         setShowOtpInput(false);
+        // Clear timer if user authenticates
+        if (authTimerRef.current) {
+          clearTimeout(authTimerRef.current);
+          authTimerRef.current = null;
+        }
+        firstMessageSentRef.current = false;
 
         try {
           const sid = sessionId || localStorage.getItem("sessionId");
@@ -1504,6 +1544,7 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       setCurrentAuthValue(phoneNumber);
       await sendOtp(phoneNumber);
       setShowInlineAuthInput(false);
+      setShowInlineAuthComponent(false); // Hide inline auth component when OTP is sent
       setShowOtpInput(true);
       toast.success('OTP sent to your WhatsApp!');
     } catch (error) {
@@ -1519,6 +1560,12 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       console.log('📱 [AUTH DEBUG] Phone set in SupaChatbot state:', currentAuthValue);
       setShowOtpInput(false);
       setShowInlineAuth(false);
+      setShowInlineAuthComponent(false);
+      // Clear the auth timer since user is now authenticated
+      if (authTimerRef.current) {
+        clearTimeout(authTimerRef.current);
+        authTimerRef.current = null;
+      }
       toast.success('Authentication successful!');
 
       // Commented out: Inline auth after 2 messages - now auth is shown at start only
@@ -1558,6 +1605,13 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     async (inputText) => {
       console.log('handleSendMessage called with:', { inputText, message, sessionId, verified, needsAuth });
 
+      // Prevent sending messages when inline auth component is shown
+      if (showInlineAuthComponent) {
+        console.log('⚠️ Cannot send message - inline auth component is shown');
+        toast.warning('Please complete authentication before sending messages');
+        return;
+      }
+
       // Hide welcome section when user sends a message
       if (showWelcome) {
         setShowWelcome(false);
@@ -1592,6 +1646,26 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       // Increment user message count
       console.log('Incrementing user message count, current count:', userMessageCount);
       incrementUserMessageCount();
+
+      // Start 60-second timer after first user message
+      if (!firstMessageSentRef.current && !isAuthenticated) {
+        firstMessageSentRef.current = true;
+        console.log('⏱️ First message sent - starting 60-second timer for inline auth');
+        
+        // Clear any existing timer
+        if (authTimerRef.current) {
+          clearTimeout(authTimerRef.current);
+        }
+        
+        // Start 60-second timer
+        authTimerRef.current = setTimeout(() => {
+          console.log('⏱️ 60 seconds elapsed - showing inline auth');
+          if (!isAuthenticated) {
+            setShowInlineAuth(true);
+            setShowInlineAuthComponent(true);
+          }
+        }, 60000); // 60 seconds
+      }
 
       // Stop any currently streaming response
       if (isStreaming) {
@@ -1678,7 +1752,8 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       stopStreaming,
       shouldShowAuth,
       authToken,
-      userMessageCount
+      userMessageCount,
+      showInlineAuthComponent
     ]
   );
 
@@ -3738,6 +3813,16 @@ AI Website is built for instant replies, 24×7.<br>
                     )}
 
                     {/* Authentication Components */}
+                    {/* Inline Auth Component - shown after 60 seconds from first message */}
+                    {showInlineAuthComponent && !isAuthenticated && (
+                      <InlineAuth
+                        theme={isDarkMode ? 'dark' : 'light'}
+                        onSendOtp={handleSendOtpNew}
+                        loading={authLoading}
+                        error={authError}
+                      />
+                    )}
+
                     {showInlineAuth && showInlineAuthInput && (
                       <AuthModal
                         onSendOtp={handleSendOtpNew}
@@ -3790,6 +3875,7 @@ AI Website is built for instant replies, 24×7.<br>
                     isWelcomeMode={false}
                   currentlyPlaying={currentlyPlaying}
                   showInlineAuth={showInlineAuth}
+                  showInlineAuthComponent={showInlineAuthComponent}
                   shouldShowAuth={shouldShowAuth}
                   isAuthenticated={isAuthenticated}
                 />
