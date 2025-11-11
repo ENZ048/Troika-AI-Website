@@ -23,7 +23,6 @@ import {
   FaBrain,
   FaPhoneAlt,
   FaMagic,
-  FaTelegram,
   FaInstagram,
   FaLinkedin
 } from "react-icons/fa";
@@ -437,17 +436,6 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
             title="WhatsApp"
           >
             <FaWhatsapp />
-          </SocialIcon>
-          <SocialIcon
-            href="https://t.me/your-telegram"
-            target="_blank"
-            rel="noopener noreferrer"
-            $isDarkMode={isDarkMode}
-            $defaultColor="#0088cc"
-            $hoverColor="#0088cc"
-            title="Telegram"
-          >
-            <FaTelegram />
           </SocialIcon>
           <SocialIcon
             href="https://www.instagram.com/troikatechindia/"
